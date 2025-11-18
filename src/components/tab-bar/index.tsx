@@ -10,6 +10,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { twMerge } from 'tailwind-merge';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Clickable } from '@/components/clickable';
@@ -27,77 +28,8 @@ interface TabItemProps {
 
 interface TabItemPropsWithLayout extends TabItemProps {
   onLayout: (event: LayoutChangeEvent) => void;
+  totalRoutes: number;
 }
-
-const TabItem = ({
-  route,
-  isFocused,
-  descriptors,
-  navigation,
-  onLayout,
-}: TabItemPropsWithLayout): JSX.Element => {
-  const { options } = descriptors[route.key];
-  const accentColor = useCSSVariable('--color-accent') as string;
-  const textColorMuted = useCSSVariable('--color-muted') as string;
-  const spacingSm = useCSSVariable('--spacing-sm') as number;
-
-  const label =
-    options.tabBarLabel !== undefined
-      ? options.tabBarLabel.toString()
-      : options.title !== undefined
-        ? options.title.toString()
-        : route.name;
-
-  // Animated style for gap between icon and label
-  const gapAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      gap: spacingSm,
-    };
-  });
-
-  const onPress = (): void => {
-    const event = navigation.emit({
-      type: 'tabPress',
-      target: route.key,
-      canPreventDefault: true,
-    });
-
-    if (!isFocused && !event.defaultPrevented) {
-      navigation.navigate(route.name);
-    }
-  };
-
-  function renderIcon(): React.ReactNode {
-    if (options.tabBarIcon) {
-      return options.tabBarIcon!({
-        focused: isFocused,
-        color: isFocused ? accentColor : textColorMuted,
-        size: 20,
-      });
-    }
-    return null;
-  }
-
-  return (
-    <Clickable
-      key={route.key}
-      onPress={onPress}
-      onLayout={onLayout}
-      className="py-xs px-sm gap-y-xs relative flex-col items-center justify-center rounded-full"
-      style={gapAnimatedStyle}
-    >
-      {renderIcon()}
-      <Text
-        variant="labelXS"
-        color={isFocused ? 'accent' : 'muted'}
-        className="text-xs"
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
-    </Clickable>
-  );
-};
 
 export const TabBar = ({
   state,
@@ -160,8 +92,10 @@ export const TabBar = ({
       // onLayout={(e) => console.log(e.nativeEvent.layout.height)}
     >
       <View
-        className="px-md py-sm bg-surface border-border gap-xs relative flex-row rounded-full border shadow-md"
-        style={{ maxWidth: screenWidth - spacingLg * 2 }}
+        className="px-md py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
+        style={{
+          maxWidth: screenWidth - spacingLg * 2,
+        }}
       >
         {/* Sliding dot indicator */}
         <Animated.View
@@ -179,10 +113,92 @@ export const TabBar = ({
               descriptors={descriptors}
               navigation={navigation}
               onLayout={handleTabLayout(index)}
+              totalRoutes={state.routes.length}
             />
           );
         })}
       </View>
     </MappedLinearGradient>
+  );
+};
+
+const TabItem = ({
+  route,
+  isFocused,
+  descriptors,
+  navigation,
+  onLayout,
+  totalRoutes,
+}: TabItemPropsWithLayout): JSX.Element => {
+  const { options } = descriptors[route.key];
+  const accentColor = useCSSVariable('--color-accent') as string;
+  const textColorMuted = useCSSVariable('--color-muted') as string;
+  const spacingSm = useCSSVariable('--spacing-sm') as number;
+
+  const label =
+    options.tabBarLabel !== undefined
+      ? options.tabBarLabel.toString()
+      : options.title !== undefined
+        ? options.title.toString()
+        : route.name;
+
+  // Animated style for gap between icon and label
+  const gapAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      gap: spacingSm,
+    };
+  });
+
+  const onPress = (): void => {
+    const event = navigation.emit({
+      type: 'tabPress',
+      target: route.key,
+      canPreventDefault: true,
+    });
+
+    if (!isFocused && !event.defaultPrevented) {
+      navigation.navigate(route.name);
+    }
+  };
+
+  function renderIcon(): React.ReactNode {
+    if (options.tabBarIcon) {
+      return options.tabBarIcon!({
+        focused: isFocused,
+        color: isFocused ? accentColor : textColorMuted,
+        size: 20,
+      });
+    }
+    return null;
+  }
+
+  // Use flex: 1 only when there are many items (5+), otherwise let items size naturally
+  const shouldFlex = totalRoutes >= 5;
+
+  return (
+    <View
+      className={twMerge('min-w-0 shrink', shouldFlex ? 'flex-1' : '')}
+      onLayout={onLayout}
+    >
+      <Clickable
+        key={route.key}
+        onPress={onPress}
+        className="py-xs px-xs gap-y-xs relative h-full flex-col items-center justify-center rounded-full"
+        style={gapAnimatedStyle}
+      >
+        <View className="items-center">{renderIcon()}</View>
+        <View className="min-w-0 items-center px-0.5">
+          <Text
+            variant="labelXS"
+            color={isFocused ? 'accent' : 'muted'}
+            className="text-center text-xs"
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {label}
+          </Text>
+        </View>
+      </Clickable>
+    </View>
   );
 };
