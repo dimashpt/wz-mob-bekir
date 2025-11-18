@@ -133,5 +133,8 @@
   },
   "products": {
     "title": "Produk"
+  },
+  "storybook": {
+    "title": "Storybook"
   }
 }

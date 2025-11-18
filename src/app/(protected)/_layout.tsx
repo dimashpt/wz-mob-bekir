@@ -1,17 +1,32 @@
 import { JSX } from 'react';
 
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
-const SCREEN_NAMES = ['(example)/stack-example', 'storybook'];
+import { Header } from '@/components';
 
 export default function GuardLayout(): JSX.Element {
+  const { t } = useTranslation();
+  const SCREENS: ScreenMap[] = [
+    {
+      path: 'storybook',
+      title: t('storybook.title'),
+      headerShown: true,
+    },
+  ];
+
   return (
     <Stack>
-      {SCREEN_NAMES.map((screenName) => (
+      {SCREENS.map((screen) => (
         <Stack.Screen
-          key={screenName}
-          name={screenName}
-          options={{ headerShown: false }}
+          key={screen.path}
+          name={screen.path}
+          options={{
+            headerShown: screen.headerShown,
+            header: (props) => (
+              <Header nativeProps={props} title={screen.title} />
+            ),
+          }}
         />
       ))}
     </Stack>
