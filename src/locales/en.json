@@ -1,0 +1,138 @@
+{
+  "general": {
+    "greeting": "Hello world!",
+    "close": "Close",
+    "submit": "Submit",
+    "yes": "Yes",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "updating": "Updating... {{progress}}%",
+    "update_available": "Update Available",
+    "error": {
+      "something_went_wrong": "Something went wrong"
+    }
+  },
+  "tab": {
+    "home": "Home",
+    "settings": "Settings",
+    "orders": "Orders",
+    "products": "Products"
+  },
+  "login": {
+    "title": "Log in\nto your account",
+    "description": "Please enter your credentials to continue",
+    "form": {
+      "email": "Email Address",
+      "password": "Password",
+      "submit": "Login",
+      "forgot": "Forgot Password?",
+      "error": {
+        "email_required": "Email is required",
+        "email_invalid": "Invalid email address",
+        "password_required": "Password is required",
+        "password_min": "Password must be at least 6 characters"
+      },
+      "email_placeholder": "johndoe@example.com",
+      "password_placeholder": "Enter your password"
+    },
+    "message": {
+      "success": "Login successful"
+    }
+  },
+  "forgot": {
+    "title": "Forgot Password",
+    "heading": "Forgot Password?",
+    "description": "Enter your email address and we'll send you a link to reset your password",
+    "form": {
+      "email": "Email",
+      "submit": "Send Reset Link",
+      "error": {
+        "email_required": "Email is required",
+        "email_invalid": "Invalid email address"
+      }
+    },
+    "message": {
+      "success": "Password reset link has been sent to your email"
+    }
+  },
+  "reset_password": {
+    "title": "Reset Password",
+    "heading": "Reset Your Password",
+    "description": "Please enter your new password",
+    "password": "New Password",
+    "confirm_password": "Confirm Password",
+    "form": {
+      "submit": "Reset Password"
+    },
+    "error": {
+      "password_required": "Password is required",
+      "password_min_length": "Password must be at least 8 characters",
+      "confirm_password_required": "Confirm password is required",
+      "password_match": "Passwords do not match",
+      "no_spaces": "Password cannot contain spaces",
+      "no_emoji": "Password cannot contain emojis"
+    }
+  },
+  "password_complexity": {
+    "uppercase": "Password must contain at least one uppercase letter",
+    "lowercase": "Password must contain at least one lowercase letter",
+    "number": "Password must contain at least one number",
+    "special": "Password must contain at least one special character"
+  },
+  "profile": {
+    "logout": "Logout",
+    "preferences": "Preferences",
+    "developer_features": "Developer Features",
+    "language": "Language",
+    "theme": "Theme",
+    "push_notifications": "Push Notifications",
+    "clear_cache": "Clear Cache",
+    "developer_tools": "Developer Tools",
+    "description": "This will clear all cached data. You may need to log in again.",
+    "logout_confirmation_description": "Are you sure you want to logout?",
+    "message": {
+      "logout_success": "Logged out successfully",
+      "pending_attendance_removed": "Cache cleared successfully"
+    },
+    "beta_code": {
+      "label": "Developer Code",
+      "placeholder": "Enter developer code",
+      "error": {
+        "code_required": "Developer code is required",
+        "invalid": "Invalid developer code"
+      },
+      "message": {
+        "title": "Enter Developer Code",
+        "title_deactivate": "Deactivate Developer Features",
+        "activated": "Developer features activated",
+        "deactivated": "Developer features deactivated"
+      }
+    },
+    "storybook": "Storybook"
+  },
+  "select_input": {
+    "placeholder": "Select an option"
+  },
+  "update": {
+    "message": "Update Available",
+    "description": "A new version ({{version}}) is available. Would you like to update now?",
+    "button": "Update",
+    "later": "Later"
+  },
+  "attachment_viewer": {
+    "image_load_error": "Failed to load image"
+  },
+  "example": {
+    "stack_example": "Stack Example"
+  },
+  "home": {
+    "title": "Home"
+  },
+  "orders": {
+    "title": "Orders"
+  },
+  "products": {
+    "title": "Products"
+  }
+}

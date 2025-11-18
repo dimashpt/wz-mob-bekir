@@ -1,0 +1,137 @@
+{
+  "general": {
+    "greeting": "Halo dunia!",
+    "close": "Tutup",
+    "submit": "Kirim",
+    "yes": "Ya",
+    "cancel": "Batal",
+    "confirm": "Konfirmasi",
+    "loading": "Memuat...",
+    "updating": "Memperbarui... {{progress}}%",
+    "update_available": "Pembaruan Tersedia",
+    "error": {
+      "something_went_wrong": "Terjadi kesalahan"
+    }
+  },
+  "tab": {
+    "home": "Home",
+    "settings": "Pengaturan",
+    "orders": "Pesanan",
+    "products": "Produk"
+  },
+  "login": {
+    "title": "Masuk ke akunmu",
+    "description": "Silakan masukkan kredensial Anda untuk melanjutkan",
+    "form": {
+      "email": "Alamat Email",
+      "password": "Kata Sandi",
+      "submit": "Masuk",
+      "forgot": "Lupa Kata Sandi?",
+      "error": {
+        "email_required": "Email wajib diisi",
+        "email_invalid": "Alamat email tidak valid",
+        "password_required": "Kata sandi wajib diisi",
+        "password_min": "Kata sandi minimal 6 karakter"
+      },
+      "password_placeholder": "Masukkan kata sandi"
+    },
+    "message": {
+      "success": "Berhasil masuk"
+    }
+  },
+  "forgot": {
+    "title": "Lupa Kata Sandi",
+    "heading": "Lupa Kata Sandi?",
+    "description": "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mereset kata sandi Anda",
+    "form": {
+      "email": "Email",
+      "submit": "Kirim Tautan Reset",
+      "error": {
+        "email_required": "Email wajib diisi",
+        "email_invalid": "Alamat email tidak valid"
+      }
+    },
+    "message": {
+      "success": "Tautan reset kata sandi telah dikirim ke email Anda"
+    }
+  },
+  "reset_password": {
+    "title": "Reset Kata Sandi",
+    "heading": "Reset Kata Sandi Anda",
+    "description": "Silakan masukkan kata sandi baru Anda",
+    "password": "Kata Sandi Baru",
+    "confirm_password": "Konfirmasi Kata Sandi",
+    "form": {
+      "submit": "Reset Kata Sandi"
+    },
+    "error": {
+      "password_required": "Kata sandi wajib diisi",
+      "password_min_length": "Kata sandi minimal 8 karakter",
+      "confirm_password_required": "Konfirmasi kata sandi wajib diisi",
+      "password_match": "Kata sandi tidak cocok",
+      "no_spaces": "Kata sandi tidak boleh mengandung spasi",
+      "no_emoji": "Kata sandi tidak boleh mengandung emoji"
+    }
+  },
+  "password_complexity": {
+    "uppercase": "Kata sandi harus mengandung minimal satu huruf besar",
+    "lowercase": "Kata sandi harus mengandung minimal satu huruf kecil",
+    "number": "Kata sandi harus mengandung minimal satu angka",
+    "special": "Kata sandi harus mengandung minimal satu karakter khusus"
+  },
+  "profile": {
+    "logout": "Keluar",
+    "preferences": "Preferensi",
+    "developer_features": "Fitur Pengembang",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "push_notifications": "Notifikasi Push",
+    "clear_cache": "Hapus Cache",
+    "developer_tools": "Alat Pengembang",
+    "description": "Ini akan menghapus semua data cache. Anda mungkin perlu masuk lagi.",
+    "logout_confirmation_description": "Apakah Anda yakin ingin keluar?",
+    "message": {
+      "logout_success": "Berhasil keluar",
+      "pending_attendance_removed": "Cache berhasil dihapus"
+    },
+    "beta_code": {
+      "label": "Kode Pengembang",
+      "placeholder": "Masukkan kode pengembang",
+      "error": {
+        "code_required": "Kode pengembang wajib diisi",
+        "invalid": "Kode pengembang tidak valid"
+      },
+      "message": {
+        "title": "Masukkan Kode Pengembang",
+        "title_deactivate": "Nonaktifkan Fitur Pengembang",
+        "activated": "Fitur pengembang diaktifkan",
+        "deactivated": "Fitur pengembang dinonaktifkan"
+      }
+    },
+    "storybook": "Storybook"
+  },
+  "select_input": {
+    "placeholder": "Pilih opsi"
+  },
+  "update": {
+    "message": "Pembaruan Tersedia",
+    "description": "Versi baru ({{version}}) tersedia. Apakah Anda ingin memperbarui sekarang?",
+    "button": "Perbarui",
+    "later": "Nanti"
+  },
+  "attachment_viewer": {
+    "image_load_error": "Gagal memuat gambar"
+  },
+  "example": {
+    "stack_example": "Contoh Stack"
+  },
+  "home": {
+    "title": "Home"
+  },
+  "orders": {
+    "title": "Pesanan"
+  },
+  "products": {
+    "title": "Produk"
+  }
+}

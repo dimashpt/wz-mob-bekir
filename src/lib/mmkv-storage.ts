@@ -1,0 +1,92 @@
+import type { MMKV } from 'react-native-mmkv';
+
+import * as Crypto from 'expo-crypto';
+import * as SecureStore from 'expo-secure-store';
+import { createMMKV } from 'react-native-mmkv';
+
+function generateEncryptionKey(storeKey: string): string {
+  let key = SecureStore.getItem(storeKey);
+
+  if (!key) {
+    // generate random key with length 32 bytes
+    key = Array.from(Crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    SecureStore.setItem(storeKey, key);
+  }
+
+  return key;
+}
+let storage: MMKV | null = null;
+let encryptedStorage: MMKV | null = null;
+
+export function getMmkvStorage(): MMKV {
+  if (storage) return storage;
+
+  storage = createMMKV({
+    id: 'mmkv_storage',
+  });
+
+  return storage;
+}
+
+export function getMmkvEncryptedStorage(): MMKV {
+  if (encryptedStorage) return encryptedStorage;
+
+  const encryptionKey = generateEncryptionKey('mmkv_encryption_key');
+  encryptedStorage = createMMKV({
+    id: 'mmkv_encrypted_storage',
+    encryptionKey,
+  });
+
+  return encryptedStorage;
+}
+
+export const mmkvStorage = {
+  getItem: (name: string): string | null => {
+    try {
+      const storage = getMmkvStorage();
+      const value = storage.getString(name);
+      return value ?? null;
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string): void => {
+    try {
+      const storage = getMmkvStorage();
+      storage.set(name, value);
+    } catch {}
+  },
+  removeItem: (name: string): void => {
+    try {
+      const storage = getMmkvStorage();
+      storage.remove(name);
+    } catch {}
+  },
+};
+
+export const mmkvEncryptedStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    try {
+      const storage = getMmkvEncryptedStorage();
+      const value = storage.getString(name);
+      return value ?? null;
+    } catch {
+      return null;
+    }
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    try {
+      const storage = getMmkvEncryptedStorage();
+      storage.set(name, value);
+    } catch {}
+  },
+  removeItem: async (name: string): Promise<void> => {
+    try {
+      const storage = getMmkvEncryptedStorage();
+      storage.remove(name);
+    } catch {}
+  },
+};
