@@ -1,5 +1,11 @@
 import React, { ReactNode } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  StyleProp,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { useRouter } from 'expo-router';
@@ -11,8 +17,12 @@ import { Clickable } from '@/components/clickable';
 import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
 
+export type HeaderRef = {
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+} | null;
+
 interface HeaderProps {
-  ref?: React.RefObject<View>;
+  ref?: React.RefObject<HeaderRef>;
   className?: string;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
@@ -39,7 +49,7 @@ const headerVariants = tv({
  * @param {HeaderProps} props
  */
 export function Header({
-  ref,
+  ref: _ref,
   children,
   onPressBack,
   suffix,
@@ -62,7 +72,6 @@ export function Header({
 
   return (
     <View
-      ref={ref}
       className={twMerge(headerVariants(), className)}
       style={[{ paddingTop: insets.top }, style]}
     >

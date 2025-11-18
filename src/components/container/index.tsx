@@ -1,4 +1,4 @@
-import React, { ComponentProps, forwardRef, ReactNode } from 'react';
+import React, { ComponentProps, ReactNode } from 'react';
 import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
@@ -39,6 +39,7 @@ interface KeyboardAwareScrollViewProps
   children: ReactNode;
   contentContainerClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;
+  ref?: React.Ref<ScrollView>;
 }
 
 const ContainerComponent = ({
@@ -56,27 +57,28 @@ const ContainerComponent = ({
   );
 };
 
-const ContainerScroll = forwardRef<ScrollView, KeyboardAwareScrollViewProps>(
-  (
-    { children, contentContainerClassName, contentContainerStyle, ...props },
-    ref,
-  ) => {
-    return (
-      <KeyboardAwareScrollView
-        ref={ref}
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName={twMerge(
-          scrollContainerVariants(),
-          contentContainerClassName,
-        )}
-        contentContainerStyle={contentContainerStyle}
-        {...props}
-      >
-        {children}
-      </KeyboardAwareScrollView>
-    );
-  },
-);
+function ContainerScroll({
+  children,
+  contentContainerClassName,
+  contentContainerStyle,
+  ref,
+  ...props
+}: KeyboardAwareScrollViewProps): React.ReactElement {
+  return (
+    <KeyboardAwareScrollView
+      ref={ref}
+      keyboardShouldPersistTaps="handled"
+      contentContainerClassName={twMerge(
+        scrollContainerVariants(),
+        contentContainerClassName,
+      )}
+      contentContainerStyle={contentContainerStyle}
+      {...props}
+    >
+      {children}
+    </KeyboardAwareScrollView>
+  );
+}
 
 // Compound component
 export const Container = Object.assign(ContainerComponent, {

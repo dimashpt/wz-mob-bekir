@@ -2,6 +2,7 @@ import React, { JSX, useEffect } from 'react';
 import { LayoutChangeEvent, useWindowDimensions, View } from 'react-native';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   Easing,
@@ -91,7 +92,8 @@ export const TabBar = ({
       }}
       // onLayout={(e) => console.log(e.nativeEvent.layout.height)}
     >
-      <View
+      <BlurView
+        intensity={20}
         className="px-md py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
         style={{
           maxWidth: screenWidth - spacingLg * 2,
@@ -117,7 +119,7 @@ export const TabBar = ({
             />
           );
         })}
-      </View>
+      </BlurView>
     </MappedLinearGradient>
   );
 };
