@@ -10,7 +10,8 @@
     "updating": "Memperbarui... {{progress}}%",
     "update_available": "Pembaruan Tersedia",
     "error": {
-      "something_went_wrong": "Terjadi kesalahan"
+      "something_went_wrong": "Terjadi kesalahan",
+      "unexpected_error": "Ada kesalahan terjadi"
     }
   },
   "tab": {

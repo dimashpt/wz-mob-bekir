@@ -17,6 +17,7 @@ import { useCSSVariable, withUniwind } from 'uniwind';
 import { Clickable } from '@/components/clickable';
 import { Text } from '@/components/text';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { Icon, IconNames } from '../icon';
 
 const MappedLinearGradient = withUniwind(LinearGradient);
 
@@ -135,7 +136,7 @@ const TabItem = ({
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
   const textColorMuted = useCSSVariable('--color-muted') as string;
-  const spacingSm = useCSSVariable('--spacing-sm') as number;
+  const spacingXs = useCSSVariable('--spacing-xs') as number;
 
   const label =
     options.tabBarLabel !== undefined
@@ -144,10 +145,51 @@ const TabItem = ({
         ? options.title.toString()
         : route.name;
 
-  // Animated style for gap between icon and label
-  const gapAnimatedStyle = useAnimatedStyle(() => {
+  // Animated values for transitions (initialize once, not on every render)
+  const labelOpacity = useSharedValue(isFocused ? 0 : 1);
+  const labelHeight = useSharedValue(isFocused ? 0 : 1);
+  const iconScale = useSharedValue(isFocused ? 1.7 : 1);
+  const gapValue = useSharedValue(isFocused ? 0 : spacingXs);
+  const iconTranslateY = useSharedValue(isFocused ? 0 : 0);
+
+  // Update animated values when focus changes
+  useEffect(() => {
+    const config = {
+      duration: 300,
+      easing: Easing.bezier(0.4, 0, 0.2, 1),
+    };
+
+    labelOpacity.value = withTiming(isFocused ? 0 : 1, config);
+    labelHeight.value = withTiming(isFocused ? 0 : 1, config);
+    iconScale.value = withTiming(isFocused ? 1.7 : 1, config);
+    gapValue.value = withTiming(isFocused ? 0 : spacingXs, config);
+    // Slight upward translation when focused to compensate for label disappearing
+    iconTranslateY.value = withTiming(isFocused ? -2 : 0, config);
+  }, [isFocused, spacingXs]);
+
+  // Animated style for the container to handle smooth centering
+  const containerAnimatedStyle = useAnimatedStyle(() => {
     return {
-      gap: spacingSm,
+      gap: gapValue.value,
+    };
+  });
+
+  // Animated style for label
+  const labelAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: labelOpacity.value,
+      height: labelHeight.value * 16, // Approximate label height
+      overflow: 'hidden',
+    };
+  });
+
+  // Animated style for icon
+  const iconAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: iconScale.value },
+        { translateY: iconTranslateY.value },
+      ],
     };
   });
 
@@ -163,17 +205,6 @@ const TabItem = ({
     }
   };
 
-  function renderIcon(): React.ReactNode {
-    if (options.tabBarIcon) {
-      return options.tabBarIcon!({
-        focused: isFocused,
-        color: isFocused ? accentColor : textColorMuted,
-        size: 20,
-      });
-    }
-    return null;
-  }
-
   // Use flex: 1 only when there are many items (5+), otherwise let items size naturally
   const shouldFlex = totalRoutes >= 5;
 
@@ -185,11 +216,26 @@ const TabItem = ({
       <Clickable
         key={route.key}
         onPress={onPress}
-        className="py-xs px-xs gap-y-xs relative h-full flex-col items-center justify-center rounded-full"
-        style={gapAnimatedStyle}
+        className="py-xs px-xs relative h-full flex-col items-center justify-center rounded-full"
+        style={containerAnimatedStyle}
       >
-        <View className="items-center">{renderIcon()}</View>
-        <View className="min-w-0 items-center px-0.5">
+        <Animated.View className="items-center" style={iconAnimatedStyle}>
+          <Icon
+            name={
+              options.tabBarIcon?.({
+                focused: isFocused,
+                color: isFocused ? accentColor : textColorMuted,
+                size: 20,
+              }) as unknown as IconNames
+            }
+            size="xl"
+            color={isFocused ? accentColor : textColorMuted}
+          />
+        </Animated.View>
+        <Animated.View
+          className="min-w-0 items-center px-0.5"
+          style={labelAnimatedStyle}
+        >
           <Text
             variant="labelXS"
             color={isFocused ? 'accent' : 'muted'}
@@ -199,7 +245,7 @@ const TabItem = ({
           >
             {label}
           </Text>
-        </View>
+        </Animated.View>
       </Clickable>
     </View>
   );

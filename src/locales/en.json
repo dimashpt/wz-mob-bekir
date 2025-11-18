@@ -10,7 +10,8 @@
     "updating": "Updating... {{progress}}%",
     "update_available": "Update Available",
     "error": {
-      "something_went_wrong": "Something went wrong"
+      "something_went_wrong": "Something went wrong",
+      "unexpected_error": "Unexpected error occured"
     }
   },
   "tab": {

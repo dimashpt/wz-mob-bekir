@@ -3,7 +3,7 @@ import React, { JSX } from 'react';
 import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { Icon as IconComponent, TabBar } from '@/components';
+import { TabBar } from '@/components';
 import { useAuthStore } from '@/store';
 
 export default function TabLayout(): JSX.Element {
@@ -18,42 +18,44 @@ export default function TabLayout(): JSX.Element {
   return (
     <Tabs
       tabBar={(props) => <TabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        // Animation causes freezing sometimes
+        // animation: 'fade',
+        // transitionSpec: {
+        //   animation: 'timing',
+        //   config: {
+        //     duration: 250,
+        //   },
+        // },
+      }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: t('tab.home'),
-          tabBarIcon: ({ color }) => (
-            <IconComponent name="home" size="xl" color={color} />
-          ),
+          tabBarIcon: () => 'home',
         }}
       />
       <Tabs.Screen
         name="orders"
         options={{
           title: t('tab.orders'),
-          tabBarIcon: ({ color }) => (
-            <IconComponent name="order" size="xl" color={color} />
-          ),
+          tabBarIcon: () => 'order',
         }}
       />
       <Tabs.Screen
         name="products"
         options={{
           title: t('tab.products'),
-          tabBarIcon: ({ color }) => (
-            <IconComponent name="product" size="xl" color={color} />
-          ),
+          tabBarIcon: () => 'product',
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: t('tab.settings'),
-          tabBarIcon: ({ color }) => (
-            <IconComponent name="userSettings" size="xl" color={color} />
-          ),
+          tabBarIcon: () => 'userSettings',
         }}
       />
     </Tabs>

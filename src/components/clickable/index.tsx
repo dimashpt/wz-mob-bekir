@@ -65,7 +65,7 @@ export const Clickable: React.FC<ClickableProps> = ({
         {
           transitionProperty: ['transform', 'opacity'],
           transitionDuration: [100, 100],
-          transform: [{ scale: isPressing ? 0.98 : 1 }],
+          transform: [{ scale: isPressing ? 0.99 : 1 }],
           opacity: isPressing ? 0.8 : 1,
         },
         style,

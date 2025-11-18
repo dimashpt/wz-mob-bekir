@@ -262,6 +262,7 @@ function LoginScreen(): JSX.Element {
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
+                bottomSheet
                 autoCapitalize="none"
                 keyboardType="email-address"
                 onSubmitEditing={handleForgotSubmit(onForgotSubmit)}
