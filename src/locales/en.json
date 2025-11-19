@@ -11,7 +11,8 @@
     "update_available": "Update Available",
     "error": {
       "something_went_wrong": "Something went wrong",
-      "unexpected_error": "Unexpected error occured"
+      "unexpected_error": "Unexpected error occured",
+      "session_expired": "Session expired"
     }
   },
   "tab": {

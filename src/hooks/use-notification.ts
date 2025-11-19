@@ -141,10 +141,10 @@ export function useNotification(): UseNotificationReturn {
 
   // handle race condition
   useEffect(() => {
-    if (pushNotificationToken && user?.user_id && pushNotificationsEnabled) {
+    if (pushNotificationToken && user?.id && pushNotificationsEnabled) {
       // TODO: Mutation - Send push notification token to server
     }
-  }, [pushNotificationToken, user?.user_id, pushNotificationsEnabled]);
+  }, [pushNotificationToken, user?.id, pushNotificationsEnabled]);
 
   return {
     notification,

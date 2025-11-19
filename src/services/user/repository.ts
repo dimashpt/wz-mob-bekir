@@ -9,12 +9,10 @@ import {
 import { USER_ENDPOINTS } from '@/constants/endpoints';
 import { useAuthStore } from '@/store';
 import * as UserService from './index';
-import { UserInfo } from './types';
+import { User } from './types';
 
 type UserQuery = Omit<
-  Partial<
-    DefinedInitialDataOptions<UserInfo, Error, UserInfo, readonly unknown[]>
-  >,
+  Partial<DefinedInitialDataOptions<User, Error, User, readonly unknown[]>>,
   'queryKey' | 'queryFn'
 >;
 
@@ -25,8 +23,8 @@ type UserQuery = Omit<
  */
 export function useUserQuery(
   params: UserQuery = {},
-): UseQueryResult<UserInfo, Error> {
-  const query = useQuery<UserInfo>({
+): UseQueryResult<User, Error> {
+  const query = useQuery<User>({
     ...params,
     queryKey: [USER_ENDPOINTS.GET_USER],
     queryFn: UserService.getUser,

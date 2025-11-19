@@ -6,8 +6,8 @@
 const ENDPOINTS = {
   // Authentication endpoints
   AUTH_ENDPOINTS: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
+    LOGIN: '/auth/v1/login',
+    LOGOUT: '/auth/v1/logout',
     REFRESH_TOKEN: '/auth/refresh-token',
     FORGOT_PASSWORD: '/auth/forgot-password',
   },

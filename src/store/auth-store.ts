@@ -6,24 +6,24 @@ import { initializeAuthInterceptors } from '@/lib/axios';
 import { mmkvEncryptedStorage } from '@/lib/mmkv-storage';
 import { queryClient } from '@/lib/react-query';
 import { LoginResponse } from '@/services/auth/types';
-import { UserInfo } from '@/services/user/types';
+import { User } from '@/services/user/types';
 
 type AuthStatus = 'firstLogin' | 'loggedIn' | 'loggedOut';
 
-type TokenType = {
+export type TokenType = {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 };
 
 type AuthState = {
   status: AuthStatus;
   token: TokenType | null;
-  user: UserInfo | null;
+  user: User | null;
   pushNotificationToken: string | null;
 };
 
 type AuthActions = {
-  setUser: (user: Partial<UserInfo>) => void;
+  setUser: (user: Partial<User>) => void;
   setToken: (credentials: LoginResponse) => void;
   setStatus: (status: AuthStatus) => void;
   logout: () => Promise<void>;
@@ -43,13 +43,12 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       ...initialState,
-      setUser: (user) => set({ user: { ...get().user, ...user } as UserInfo }),
+      setUser: (user) => set({ user: { ...get().user, ...user } as User }),
       setToken: (credentials) => {
         set((state) => ({
           ...state,
           token: {
-            accessToken: credentials.access_token,
-            refreshToken: credentials.refresh_token,
+            accessToken: credentials.auth_token,
           },
         }));
       },
@@ -88,6 +87,7 @@ export const useAuthStore = create<AuthStore>()(
 // Initialize auth interceptors after store creation
 async function refreshTokenFn(): Promise<LoginResponse> {
   const { token } = useAuthStore.getState();
+
   if (!token?.refreshToken) {
     throw new Error('No refresh token available');
   }
@@ -104,5 +104,6 @@ async function refreshTokenFn(): Promise<LoginResponse> {
 
 initializeAuthInterceptors(() => {
   const { token, logout } = useAuthStore.getState();
+
   return { token, logout };
 }, refreshTokenFn);

@@ -1,14 +1,14 @@
 import { SuccessResponse } from '@/@types/api';
 import { USER_ENDPOINTS } from '@/constants/endpoints';
 import { API } from '@/lib/axios';
-import { UserInfo } from './types';
+import { User } from './types';
 
 /**
  * Fetches user information from the API.
  * @returns A promise that resolves to the user information.
  */
-export async function getUser(): Promise<UserInfo> {
-  const response = await API.get<SuccessResponse<UserInfo>>(
+export async function getUser(): Promise<User> {
+  const response = await API.get<SuccessResponse<User>>(
     USER_ENDPOINTS.GET_USER,
     {
       baseURL: process.env.EXPO_PUBLIC_API_SSO_URL,

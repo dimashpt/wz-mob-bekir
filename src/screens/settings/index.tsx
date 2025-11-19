@@ -25,9 +25,10 @@ function SettingsScreen(): ReactElement {
   const logoutMutation = useMutation({
     mutationKey: [AUTH_ENDPOINTS.LOGOUT],
     mutationFn: AuthService.logout,
+    onSuccess: () => snackbar.success(t('profile.message.logout_success')),
     onSettled: () => {
+      logoutDialogRef.current?.close();
       logout();
-      snackbar.success(t('profile.message.logout_success'));
     },
   });
 
@@ -59,7 +60,7 @@ function SettingsScreen(): ReactElement {
         ref={logoutDialogRef}
         title={t('profile.logout')}
         showCloseButton
-        handleSubmit={() => logoutMutation.mutate()}
+        handleSubmit={logoutMutation.mutate}
         variant="error"
         submitButtonProps={{
           text: t('general.yes'),

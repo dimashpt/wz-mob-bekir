@@ -219,7 +219,6 @@ function BottomSheetConfirm({
 
   function handleSubmit(): void {
     if (handleSubmitProp) handleSubmitProp();
-    if (dismissable) ref?.current?.close();
   }
 
   function handleClose(): void {

@@ -29,8 +29,6 @@ function getStandarizedErrorMessage(
     // Check for string values in common error fields
     if (typeof data.message === 'string' && data.message.length > 0) {
       errorMessage = data.message;
-    } else if (typeof data.error === 'string' && data.error.length > 0) {
-      errorMessage = data.error;
     } else if (typeof data.errors === 'string' && data.errors.length > 0) {
       errorMessage = data.errors;
     }

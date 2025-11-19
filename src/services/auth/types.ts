@@ -1,14 +1,22 @@
+import { User, UserPermission } from '../user';
+
 export interface LoginPayload {
   email: string;
   password: string;
 }
 
 export interface LoginResponse {
-  token_type: string;
+  auth_token: string;
   expires_in: number;
-  access_token: string;
-  refresh_token: string;
-  isFirstLogin: boolean;
+  roles: string;
+  tenant: {
+    id: string;
+    logo: string;
+    name: string;
+    plan: string;
+  };
+  permissions: UserPermission[];
+  user: User;
 }
 
 export interface ForgotPasswordPayload {

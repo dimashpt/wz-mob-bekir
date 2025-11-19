@@ -5,6 +5,8 @@ import axios, {
 } from 'axios';
 
 import { ErrorResponse } from '@/@types/api';
+import { LoginResponse } from '@/services/auth';
+import { TokenType } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
 
 // Global variables for refresh token management
@@ -63,10 +65,10 @@ let authStoreInitialized = false;
 
 export function initializeAuthInterceptors(
   getAuthState: () => {
-    token: { accessToken: string; refreshToken: string } | null;
+    token: TokenType | null;
     logout: () => Promise<void>;
   },
-  refreshTokenFn: () => Promise<{ access_token: string }>,
+  refreshTokenFn: () => Promise<LoginResponse>,
 ): void {
   if (authStoreInitialized) return;
   authStoreInitialized = true;
@@ -81,7 +83,7 @@ export function initializeAuthInterceptors(
 
     try {
       const refreshedData = await refreshTokenFn();
-      return refreshedData.access_token;
+      return refreshedData.auth_token;
     } catch (error) {
       // If refresh fails, sign out the user
       logout();

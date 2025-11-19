@@ -86,21 +86,13 @@ function LoginScreen(): JSX.Element {
     mutationFn: AuthService.login,
     onSuccess: (data) => {
       axios.defaults.headers.common['Authorization'] =
-        `Bearer ${data.access_token}`;
+        `Bearer ${data.auth_token}`;
 
       setToken(data!);
-
-      if (data?.isFirstLogin) {
-        setUser({ email: loginMutation.variables?.email });
-        setStatus('firstLogin');
-
-        return;
-      }
+      setUser(data.user);
+      setStatus('loggedIn');
 
       snackbar.success(t('login.message.success'));
-    },
-    onSettled: () => {
-      setStatus('loggedIn');
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
@@ -126,8 +118,8 @@ function LoginScreen(): JSX.Element {
     onError: (error) => {
       if (axios.isAxiosError<ErrorResponse>(error)) {
         const message =
-          typeof error.response?.data?.error === 'string'
-            ? error.response?.data?.error
+          typeof error.response?.data?.errors === 'string'
+            ? error.response?.data?.errors
             : t('general.error.something_went_wrong');
 
         setForgotError('email', { message });
