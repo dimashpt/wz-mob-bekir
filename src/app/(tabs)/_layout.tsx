@@ -46,13 +46,6 @@ export default function TabLayout(): JSX.Element {
         }}
       />
       <Tabs.Screen
-        name="products"
-        options={{
-          title: t('tab.products'),
-          tabBarIcon: () => 'product',
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
           title: t('tab.settings'),
