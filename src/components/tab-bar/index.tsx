@@ -8,6 +8,8 @@ import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
+  withSequence,
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -44,8 +46,9 @@ export const TabBar = ({
   const backgroundColor = useCSSVariable('--color-background') as string;
   const accentColor = useCSSVariable('--color-accent') as string;
 
-  // Shared value for dot indicator position
+  // Shared values for dot indicator position
   const dotX = useSharedValue(0);
+  const dotY = useSharedValue(0);
 
   // Store layout measurements for each tab
   const tabLayouts = React.useRef<
@@ -69,17 +72,24 @@ export const TabBar = ({
   useEffect(() => {
     const activeTabLayout = tabLayouts.current[state.index];
     if (activeTabLayout) {
-      dotX.value = withTiming(activeTabLayout.centerX, {
-        duration: 300,
-        easing: Easing.out(Easing.cubic),
-      });
+      // Slide down, move horizontally at bottom, then slide up
+      dotY.value = withSequence(
+        withTiming(20, { duration: 200, easing: Easing.in(Easing.cubic) }),
+        withTiming(0, { duration: 200, easing: Easing.out(Easing.cubic) }),
+      );
+
+      // Move horizontally when dot reaches the bottom
+      dotX.value = withDelay(
+        200, // Wait for down animation to complete
+        withTiming(activeTabLayout.centerX, { duration: 0 }), // Instant move at bottom
+      );
     }
-  }, [state.index, dotX]);
+  }, [state.index, dotX, dotY]);
 
   // Animated style for the dot
   const dotAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: dotX.value }],
+      transform: [{ translateX: dotX.value }, { translateY: dotY.value }],
     };
   });
 
@@ -95,7 +105,7 @@ export const TabBar = ({
     >
       <BlurView
         intensity={20}
-        className="px-md py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
+        className="gap-xs px-md py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
         style={{
           maxWidth: screenWidth - spacingLg * 2,
         }}
@@ -136,7 +146,6 @@ const TabItem = ({
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
   const textColorMuted = useCSSVariable('--color-muted') as string;
-  const spacingXs = useCSSVariable('--spacing-xs') as number;
 
   const label =
     options.tabBarLabel !== undefined
@@ -145,51 +154,21 @@ const TabItem = ({
         ? options.title.toString()
         : route.name;
 
-  // Animated values for transitions (initialize once, not on every render)
-  const labelOpacity = useSharedValue(isFocused ? 0 : 1);
-  const labelHeight = useSharedValue(isFocused ? 0 : 1);
-  const iconScale = useSharedValue(isFocused ? 1.7 : 1);
-  const gapValue = useSharedValue(isFocused ? 0 : spacingXs);
-  const iconTranslateY = useSharedValue(isFocused ? 0 : 0);
+  // Animated value for icon scale
+  const iconScale = useSharedValue(isFocused ? 1.3 : 1);
 
-  // Update animated values when focus changes
+  // Update icon scale when focus changes
   useEffect(() => {
-    const config = {
+    iconScale.value = withTiming(isFocused ? 1.3 : 1, {
       duration: 300,
       easing: Easing.bezier(0.4, 0, 0.2, 1),
-    };
-
-    labelOpacity.value = withTiming(isFocused ? 0 : 1, config);
-    labelHeight.value = withTiming(isFocused ? 0 : 1, config);
-    iconScale.value = withTiming(isFocused ? 1.7 : 1, config);
-    gapValue.value = withTiming(isFocused ? 0 : spacingXs, config);
-    // Slight upward translation when focused to compensate for label disappearing
-    iconTranslateY.value = withTiming(isFocused ? -2 : 0, config);
-  }, [isFocused, spacingXs]);
-
-  // Animated style for the container to handle smooth centering
-  const containerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      gap: gapValue.value,
-    };
-  });
-
-  // Animated style for label
-  const labelAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: labelOpacity.value,
-      height: labelHeight.value * 16, // Approximate label height
-      overflow: 'hidden',
-    };
-  });
+    });
+  }, [isFocused, iconScale]);
 
   // Animated style for icon
   const iconAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        { scale: iconScale.value },
-        { translateY: iconTranslateY.value },
-      ],
+      transform: [{ scale: iconScale.value }],
     };
   });
 
@@ -216,8 +195,7 @@ const TabItem = ({
       <Clickable
         key={route.key}
         onPress={onPress}
-        className="py-xs px-xs relative h-full flex-col items-center justify-center rounded-full"
-        style={containerAnimatedStyle}
+        className="py-xs px-xs gap-xs relative h-full flex-col items-center justify-center rounded-full"
       >
         <Animated.View className="items-center" style={iconAnimatedStyle}>
           <Icon
@@ -232,20 +210,15 @@ const TabItem = ({
             color={isFocused ? accentColor : textColorMuted}
           />
         </Animated.View>
-        <Animated.View
-          className="min-w-0 items-center px-0.5"
-          style={labelAnimatedStyle}
+        <Text
+          variant="labelXS"
+          color={isFocused ? 'accent' : 'muted'}
+          className="text-center text-xs"
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
-          <Text
-            variant="labelXS"
-            color={isFocused ? 'accent' : 'muted'}
-            className="text-center text-xs"
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {label}
-          </Text>
-        </Animated.View>
+          {label}
+        </Text>
       </Clickable>
     </View>
   );

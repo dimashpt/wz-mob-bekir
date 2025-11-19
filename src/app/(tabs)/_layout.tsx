@@ -55,7 +55,7 @@ export default function TabLayout(): JSX.Element {
         name="settings"
         options={{
           title: t('tab.settings'),
-          tabBarIcon: () => 'userSettings',
+          tabBarIcon: () => 'gear',
         }}
       />
     </Tabs>
