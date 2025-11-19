@@ -13,6 +13,7 @@ type AppState = {
   showBetaFeatures: boolean;
   showDevTools: boolean;
   pushNotificationsEnabled: boolean;
+  hasCompletedOnboarding: boolean;
 };
 
 type AppActions = {
@@ -22,6 +23,7 @@ type AppActions = {
   toggleDevTools: () => void;
   toggleBetaFeatures: () => void;
   setPushNotificationsEnabled: (enabled: boolean) => void;
+  setHasCompletedOnboarding: (completed: boolean) => void;
 };
 
 type AppStore = AppState & AppActions;
@@ -32,6 +34,7 @@ const initialState: AppState = {
   showBetaFeatures: false,
   showDevTools: false,
   pushNotificationsEnabled: true,
+  hasCompletedOnboarding: false,
 };
 
 export const useAppStore = create<AppStore>()(
@@ -60,6 +63,9 @@ export const useAppStore = create<AppStore>()(
       },
       setPushNotificationsEnabled: (enabled: boolean): void => {
         set({ pushNotificationsEnabled: enabled });
+      },
+      setHasCompletedOnboarding: (completed: boolean): void => {
+        set({ hasCompletedOnboarding: completed });
       },
     }),
     {

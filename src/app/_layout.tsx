@@ -45,6 +45,7 @@ function App(): React.ReactNode {
     initializeLanguage,
     theme: appColorScheme,
     showBetaFeatures,
+    hasCompletedOnboarding,
   } = useAppStore();
   const { status } = useAuthStore();
   const colorScheme = useColorScheme();
@@ -143,9 +144,24 @@ function App(): React.ReactNode {
                     opacity: splashFinished ? 1 : 0,
                   }}
                 >
-                  <Stack>
+                  <Stack
+                    initialRouteName={
+                      status === 'loggedIn' ? '(tabs)' : '(auth)'
+                    }
+                  >
                     <Stack.Protected
-                      guard={status === 'loggedOut' || status === 'firstLogin'}
+                      guard={status === 'loggedOut' && !hasCompletedOnboarding}
+                    >
+                      <Stack.Screen
+                        name="index"
+                        options={{ headerShown: false }}
+                      />
+                    </Stack.Protected>
+                    <Stack.Protected
+                      guard={
+                        (status === 'loggedOut' || status === 'firstLogin') &&
+                        hasCompletedOnboarding
+                      }
                     >
                       <Stack.Screen
                         name="(auth)"

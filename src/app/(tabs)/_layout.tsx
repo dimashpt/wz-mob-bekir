@@ -17,10 +17,11 @@ export default function TabLayout(): JSX.Element {
   // Android/Fallback - Custom TabBar with current design
   return (
     <Tabs
+      initialRouteName="home"
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        // Animation causes freezing sometimes
+        // Animation causes freezing, no github issue yet
         // animation: 'fade',
         // transitionSpec: {
         //   animation: 'timing',
@@ -31,7 +32,7 @@ export default function TabLayout(): JSX.Element {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: t('tab.home'),
           tabBarIcon: () => 'home',
