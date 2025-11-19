@@ -2,7 +2,12 @@ import { SuccessResponse } from '@/@types/api';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
 import { API } from '@/lib/axios';
 import { useAuthStore } from '@/store';
-import { ForgotPasswordPayload, LoginPayload, LoginResponse } from './types';
+import {
+  ForgotPasswordPayload,
+  LoginPayload,
+  LoginResponse,
+  ResetPasswordPayload,
+} from './types';
 
 /**
  * Logs in a user using the provided credentials.
@@ -56,6 +61,17 @@ export async function forgotPassword(
 ): Promise<void> {
   const response = await API.post<SuccessResponse<void>>(
     AUTH_ENDPOINTS.FORGOT_PASSWORD,
+    payload,
+  );
+
+  return response.data.data;
+}
+
+export async function resetPassword(
+  payload: ResetPasswordPayload,
+): Promise<void> {
+  const response = await API.post<SuccessResponse<void>>(
+    AUTH_ENDPOINTS.RESET_PASSWORD,
     payload,
   );
 

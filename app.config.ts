@@ -63,8 +63,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
           data: [
             {
               scheme: 'https',
-              host: 'app.lobataros.com',
-              pathPrefix: '/reset-password',
+              host: 'dashboard.bebaskirim.com',
+              pathPrefix: '/auth/reset-password',
             },
           ],
           category: ['BROWSABLE', 'DEFAULT'],

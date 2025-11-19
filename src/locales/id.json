@@ -73,6 +73,9 @@
       "password_match": "Kata sandi tidak cocok",
       "no_spaces": "Kata sandi tidak boleh mengandung spasi",
       "no_emoji": "Kata sandi tidak boleh mengandung emoji"
+    },
+    "message": {
+      "success": "Berhasil mengubah password"
     }
   },
   "password_complexity": {

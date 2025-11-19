@@ -19,6 +19,7 @@ import { useNetworkActivityDevTools } from '@rozenite/network-activity-plugin';
 import { usePerformanceMonitorDevTools } from '@rozenite/performance-monitor-plugin';
 import { useTanStackQueryDevTools } from '@rozenite/tanstack-query-plugin';
 import { QueryClientProvider } from '@tanstack/react-query';
+import * as Linking from 'expo-linking';
 import { Uniwind, useCSSVariable } from 'uniwind';
 
 import { DevTools, InAppUpdateDialog, SnackbarProvider } from '@/components';
@@ -28,6 +29,7 @@ import { queryClient } from '@/lib/react-query';
 import { navigationIntegration, Sentry } from '@/lib/sentry';
 import { default as SplashScreenComponent } from '@/screens/splash';
 import { useAppStore, useAuthStore } from '@/store';
+import { logger } from '@/utils/logger';
 
 // Initialize Exception Handler
 initExceptionHandler();
@@ -73,6 +75,24 @@ function App(): React.ReactNode {
 
   useEffect(() => {
     initializeLanguage();
+
+    function handleDeepLink(event: { url: string }): void {
+      const url = Linking.parse(event.url);
+      logger.log('Deep link:', url);
+      // Expo Router will handle navigation automatically
+    }
+
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+
+    // Handle initial URL when app is closed
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        const parsed = Linking.parse(url);
+        logger.log('Initial URL:', parsed);
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   useEffect(() => {

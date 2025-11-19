@@ -76,19 +76,17 @@ export function Header({
       style={[{ paddingTop: insets.top }, style]}
     >
       <View className="py-sm px-lg relative min-h-[48px] flex-row items-center justify-between">
-        {nativeProps?.navigation.canGoBack() && (
-          <Clickable
-            className="h-6 w-6 items-center justify-center"
-            onPress={handleBackPress}
-          >
-            <Icon
-              name="arrow"
-              size="lg"
-              className="text-foreground"
-              transform={[{ rotate: '90deg' }]}
-            />
-          </Clickable>
-        )}
+        <Clickable
+          className="h-6 w-6 items-center justify-center"
+          onPress={handleBackPress}
+        >
+          <Icon
+            name="arrow"
+            size="lg"
+            className="text-foreground"
+            transform={[{ rotate: '90deg' }]}
+          />
+        </Clickable>
         <View className="absolute top-0 right-0 bottom-0 left-0 items-center justify-center">
           {(title || nativeProps?.options?.title) && (
             <Text variant="labelXL" numberOfLines={1}>

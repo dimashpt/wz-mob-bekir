@@ -22,3 +22,10 @@ export interface LoginResponse {
 export interface ForgotPasswordPayload {
   email: string;
 }
+
+export interface ResetPasswordPayload {
+  email: string;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}

@@ -110,10 +110,10 @@ function LoginScreen(): JSX.Element {
     mutationKey: [AUTH_ENDPOINTS.FORGOT_PASSWORD],
     mutationFn: AuthService.forgotPassword,
     onSuccess: () => {
-      snackbar.success(t('forgot.message.success'));
-      resetForgot({});
       Keyboard.dismiss();
+      resetForgot({});
       forgotPasswordBottomSheetRef.current?.close();
+      snackbar.success(t('forgot.message.success'));
     },
     onError: (error) => {
       if (axios.isAxiosError<ErrorResponse>(error)) {
@@ -247,8 +247,7 @@ function LoginScreen(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
-                label={t('forgot.form.email')}
-                placeholder={t('forgot.form.email')}
+                placeholder={t('login.form.email_placeholder')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}

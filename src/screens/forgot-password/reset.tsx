@@ -1,72 +1,62 @@
-import { JSX, useRef, useState } from 'react';
+import { JSX, useRef } from 'react';
 import { Keyboard, TextInput, View } from 'react-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useFocusEffect, useNavigation } from 'expo-router';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import {
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+  useRouter,
+} from 'expo-router';
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 import { z } from 'zod';
 
-import { Illustrations } from '@/assets/illustrations';
-import {
-  Container,
-  Header,
-  InputField,
-  PasswordComplexity,
-  Text,
-} from '@/components';
+import { Container, Header, InputField, snackbar, Text } from '@/components';
 import { Button } from '@/components/button';
-import { EMOJI_REGEX } from '@/constants/regex';
+import { AUTH_ENDPOINTS } from '@/constants/endpoints';
+import { AuthService } from '@/services';
 import { useAuthStore } from '@/store';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getResetPasswordSchema = (t: (key: string) => string) =>
   z
     .object({
+      email: z.email(),
+      token: z.string(),
       password: z
         .string()
         .min(1, t('reset_password.error.password_required'))
-        .refine((val) => !/\s/.test(val), {
-          message: t('reset_password.error.no_spaces'),
-        })
-        .refine((val) => !EMOJI_REGEX.test(val), {
-          message: t('reset_password.error.no_emoji'),
-        })
-        .refine((val) => /[A-Z]/.test(val), {
-          message: t('password_complexity.uppercase'),
-        })
-        .refine((val) => /[a-z]/.test(val), {
-          message: t('password_complexity.lowercase'),
-        })
-        .refine((val) => /[0-9]/.test(val), {
-          message: t('password_complexity.number'),
-        })
-        .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
-          message: t('password_complexity.special'),
-        })
         .min(8, t('reset_password.error.password_min_length')),
-      confirm_password: z
+      password_confirmation: z
         .string()
         .min(1, t('reset_password.error.confirm_password_required')),
     })
-    .refine((val) => val.password === val.confirm_password, {
+    .refine((val) => val.password === val.password_confirmation, {
       message: t('reset_password.error.password_match'),
-      path: ['confirm_password'],
+      path: ['password_confirmation'],
     });
 
 type ForgotFormValues = z.infer<ReturnType<typeof getResetPasswordSchema>>;
+
+type Params = {
+  token: string;
+  email: string;
+};
 
 export default function ForgotPasswordResetScreen(): JSX.Element {
   // Create refs for input fields
   const passwordRef = useRef<TextInput>(null);
   const passwordConfirmRef = useRef<TextInput>(null);
 
+  const { token, email } = useLocalSearchParams<Params>();
+  const router = useRouter();
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { logout } = useAuthStore();
-  const [isPasswordFieldFocused, setIsPasswordFieldFocused] = useState(false);
   const { bottom } = useSafeAreaInsets();
   const spacingMd = useCSSVariable('--spacing-md') as number;
 
@@ -75,17 +65,21 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
       resolver: zodResolver(getResetPasswordSchema(t)),
       mode: 'onChange',
       defaultValues: {
+        email,
+        token,
         password: '',
-        confirm_password: '',
+        password_confirmation: '',
       },
     });
 
-  /**
-   * This useWatch is used to monitor the password field because the watch from
-   * useForm causes unnecessary re-renders of the entire form, and not watching the
-   * password field due to optimization by react compiler.
-   */
-  const password = useWatch({ control, name: 'password' });
+  const resetPasswordMutation = useMutation({
+    mutationKey: [AUTH_ENDPOINTS.RESET_PASSWORD],
+    mutationFn: AuthService.resetPassword,
+    onSuccess: () => {
+      snackbar.success(t('reset_password.message.success'));
+    },
+    onSettled: handleBack,
+  });
 
   /**
    * Listen to back navigation to logout user, the purpose is to
@@ -101,33 +95,32 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
     return unsubscribe;
   });
 
-  function onSubmit({ password: _password }: ForgotFormValues): void {
+  function onSubmit(values: ForgotFormValues): void {
     Keyboard.dismiss();
 
     // TODO: Mutation - Update password
+    resetPasswordMutation.mutate(values);
+  }
+
+  function handleBack(): void {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      router.replace('/login');
+    }
   }
 
   return (
     <Container variant="surface">
-      <Header title={t('reset_password.title')} />
+      <Header className="border-b-0" onPressBack={handleBack} />
       <Container.Scroll
         className="p-lg flex-1"
-        contentContainerClassName="grow-0"
-        contentContainerStyle={{ paddingBottom: bottom || spacingMd }}
+        contentContainerClassName="justify-end"
+        style={{ paddingBottom: bottom || spacingMd }}
       >
-        <View className="bg-surface p-lg gap-md w-full items-center rounded-lg">
-          <Illustrations.ResetPassword height={200} width={200} />
-          <Text variant="headingL" className="text-center">
-            {t('reset_password.heading')}
-          </Text>
-          <Text variant="bodyM" className="text-center">
-            {t('reset_password.description')}
-          </Text>
+        <View className="bg-surface p-lg gap-md w-full rounded-lg">
+          <Text variant="headingL">{t('reset_password.heading')}</Text>
           <View className="gap-md w-full">
-            <PasswordComplexity
-              password={password}
-              visible={isPasswordFieldFocused}
-            />
             <Controller
               control={control}
               name="password"
@@ -145,15 +138,11 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
                   onChangeText={(text) => {
                     onChange(text);
 
-                    if (getValues('confirm_password') !== '') {
-                      trigger('confirm_password');
+                    if (getValues('password_confirmation') !== '') {
+                      trigger('password_confirmation');
                     }
                   }}
-                  onBlur={() => {
-                    onBlur();
-                    setIsPasswordFieldFocused(false);
-                  }}
-                  onFocus={() => setIsPasswordFieldFocused(true)}
+                  onBlur={onBlur}
                   autoCapitalize="none"
                   textContentType="password"
                   returnKeyType="next"
@@ -166,7 +155,7 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
             />
             <Controller
               control={control}
-              name="confirm_password"
+              name="password_confirmation"
               render={({
                 field: { onChange, value, onBlur },
                 fieldState: { error },
@@ -194,8 +183,7 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
             text={t('reset_password.form.submit')}
             onPress={handleSubmit(onSubmit)}
             className="w-full"
-            // TODO: Loading - Update password
-            loading={false}
+            loading={resetPasswordMutation.isPending}
           />
         </View>
       </Container.Scroll>

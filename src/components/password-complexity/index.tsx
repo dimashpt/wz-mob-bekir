@@ -95,12 +95,12 @@ export const PasswordComplexity: React.FC<PasswordComplexityProps> = ({
   ];
 
   const getRequirementColor = (isMet: boolean): string => {
-    return isMet ? 'text-success' : 'text-foreground-secondary';
+    return isMet ? 'text-success' : 'text-foreground';
   };
 
   return (
     <Animated.View
-      className="gap-xs py-sm px-md bg-subtle border-l-primary z-popover absolute right-0 left-0 w-full rounded-md border-l-[3px] shadow-md"
+      className="gap-xs py-sm px-md bg-surface border-l-accent z-popover border-border absolute right-0 left-0 w-full rounded-md border border-l-[3px]"
       style={[animatedStyle, { top: dynamicTop }]}
       onLayout={handleLayout}
     >

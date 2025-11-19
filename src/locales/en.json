@@ -60,7 +60,7 @@
   },
   "reset_password": {
     "title": "Reset Password",
-    "heading": "Reset Your Password",
+    "heading": "Reset\nYour Password",
     "description": "Please enter your new password",
     "password": "New Password",
     "confirm_password": "Confirm Password",
@@ -71,9 +71,12 @@
       "password_required": "Password is required",
       "password_min_length": "Password must be at least 8 characters",
       "confirm_password_required": "Confirm password is required",
-      "password_match": "Passwords do not match",
+      "password_match": "Password doesn't match",
       "no_spaces": "Password cannot contain spaces",
       "no_emoji": "Password cannot contain emojis"
+    },
+    "message": {
+      "success": "Password reset success"
     }
   },
   "password_complexity": {

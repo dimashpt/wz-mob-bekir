@@ -27,10 +27,10 @@ function getStandarizedErrorMessage(
     const data = error.response.data as ErrorResponse;
 
     // Check for string values in common error fields
-    if (typeof data.message === 'string' && data.message.length > 0) {
-      errorMessage = data.message;
-    } else if (typeof data.errors === 'string' && data.errors.length > 0) {
+    if (typeof data.errors === 'string' && data.errors.length > 0) {
       errorMessage = data.errors;
+    } else if (typeof data.message === 'string' && data.message.length > 0) {
+      errorMessage = data.message;
     }
   }
 
