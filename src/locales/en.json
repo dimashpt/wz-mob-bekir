@@ -136,6 +136,7 @@
   },
   "orders": {
     "title": "Orders",
+    "searchPlaceholder": "Search orders...",
     "total_items": "{{count}} products",
     "status": {
       "unpaid": "Unpaid",

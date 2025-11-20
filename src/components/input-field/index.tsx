@@ -3,6 +3,7 @@ import { Dimensions, TextInput, TextInputProps, View } from 'react-native';
 
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { twMerge } from 'tailwind-merge';
+import { tv } from 'tailwind-variants';
 import { useCSSVariable } from 'uniwind';
 
 import { Clickable } from '@/components/clickable';
@@ -12,7 +13,7 @@ import { Text } from '@/components/text';
 
 const { width } = Dimensions.get('window');
 
-interface CustomTextInputProps extends TextInputProps {
+interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
   mandatory?: boolean;
   description?: string;
   errors?: (string | undefined)[];
@@ -31,7 +32,19 @@ interface CustomTextInputProps extends TextInputProps {
   loading?: boolean;
   secret?: boolean;
   labelSuffix?: React.ReactNode;
+  className?: string;
+  inputClassName?: string;
 }
+
+const inputFieldVariants = tv({
+  base: 'px-md min-h-[56px] flex-row items-center rounded-md border',
+  variants: {
+    variant: {
+      filled: 'bg-field-background',
+      transparent: 'bg-transparent',
+    },
+  },
+});
 
 /**
  * CustomTextInput component is a styled text input field with additional features such as
@@ -70,6 +83,8 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
       loading = false,
       secret = false,
       labelSuffix,
+      className,
+      inputClassName,
       ...props
     },
     ref,
@@ -139,11 +154,13 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
         <View className="gap-xs">
           <View
             className={twMerge(
-              'px-md min-h-[56px] flex-row items-center rounded-sm border',
+              inputFieldVariants({
+                variant: transparent ? 'transparent' : 'filled',
+              }),
               dense && 'min-h-[48px]',
-              transparent ? 'bg-transparent' : 'bg-field-background',
               getBorderClassName(),
               props.disabled && 'bg-field-disabled',
+              className,
             )}
           >
             {left && (
@@ -169,6 +186,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   props.disabled || transparent
                     ? 'text-foreground-muted'
                     : 'text-foreground',
+                  inputClassName,
                 )}
                 onFocus={(e) => {
                   handleFocus();
@@ -191,6 +209,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   props.disabled || transparent
                     ? 'text-foreground-muted'
                     : 'text-field-foreground',
+                  inputClassName,
                 )}
                 placeholderTextColor={placeholderTextColor}
                 onFocus={(e) => {

@@ -135,6 +135,7 @@
   },
   "orders": {
     "title": "Pesanan",
+    "searchPlaceholder": "Cari pesanan...",
     "total_items": "{{count}} produk",
     "status": {
       "unpaid": "Belum Bayar",

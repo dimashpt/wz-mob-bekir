@@ -1,4 +1,4 @@
-import React, { JSX, useMemo } from 'react';
+import React, { JSX, useMemo, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
 
-import { Container, Text } from '@/components';
+import { Container, Icon, InputField, Text } from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { queryClient } from '@/lib/react-query';
@@ -19,6 +19,7 @@ const List = withUniwind(LegendList<Order>);
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const {
     data,
@@ -33,6 +34,27 @@ export default function OrdersScreen(): JSX.Element {
     () => data?.pages.flatMap((page) => page.orders) ?? [],
     [data],
   );
+
+  const filteredOrders = useMemo(() => {
+    let result = orders;
+
+    // Apply search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((order) => {
+        const searchableFields = [
+          order.order_header_id?.toString(),
+          order.store_name,
+        ];
+
+        return searchableFields.some(
+          (field) => field && field.toString().toLowerCase().includes(query),
+        );
+      });
+    }
+
+    return result;
+  }, [orders, searchQuery]);
 
   function handleRefresh(): void {
     // Set the query data to only contain the first page
@@ -58,8 +80,19 @@ export default function OrdersScreen(): JSX.Element {
       <Text variant="headingL" className="mb-lg">
         {t('orders.title')}
       </Text>
+      <View className="gap-sm mb-md">
+        <InputField
+          placeholder={t('orders.searchPlaceholder')}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          autoCapitalize="none"
+          autoCorrect={false}
+          left={<Icon name="search" size="lg" className="text-muted" />}
+          className="bg-surface rounded-full"
+        />
+      </View>
       <List
-        data={orders}
+        data={filteredOrders}
         contentContainerClassName="gap-sm"
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,

@@ -18,6 +18,7 @@ import order from './order.svg';
 import plus from './plus.svg';
 import product from './product.svg';
 import refresh from './refresh.svg';
+import search from './search.svg';
 import shortcut from './shortcut.svg';
 import store from './store.svg';
 import storybook from './storybook.svg';
@@ -50,6 +51,7 @@ export const Icons = {
   plus,
   product,
   refresh,
+  search,
   shortcut,
   store,
   storybook,
