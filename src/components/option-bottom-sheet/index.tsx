@@ -6,13 +6,13 @@ import React, {
 } from 'react';
 import { Dimensions, TouchableHighlight, View } from 'react-native';
 
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
+import { BottomSheetFlatList, BottomSheetFooter } from '@gorhom/bottom-sheet';
 import { twMerge } from 'tailwind-merge';
 
-import { BottomSheetModal } from '@/components/bottom-sheet';
-import { Button } from '@/components/button';
+import { BottomSheet, BottomSheetModal } from '@/components/bottom-sheet';
 import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
+import { Button } from '../button';
 
 export interface Option {
   value: string;
@@ -132,13 +132,37 @@ export const OptionBottomSheet = forwardRef<
     }
 
     return (
-      <BottomSheetModal
+      <BottomSheet.Modal
         ref={bottomSheetModalRef}
         maxDynamicContentSize={height / 2}
         onDismiss={handleDismiss}
+        footerComponent={
+          !multiselect
+            ? undefined
+            : (props) => (
+                <BottomSheetFooter {...props}>
+                  <View className="p-md gap-sm border-border bg-surface flex-row rounded-b-lg border-t">
+                    <Button
+                      text="Reset"
+                      variant="outlined"
+                      onPress={handleReset}
+                      className="flex-1"
+                    />
+                    <Button
+                      text="Done"
+                      variant="filled"
+                      color="primary"
+                      onPress={handleDone}
+                      className="flex-1"
+                    />
+                  </View>
+                </BottomSheetFooter>
+              )
+        }
       >
         <BottomSheetFlatList
           data={options}
+          enableFooterMarginAdjustment
           ListHeaderComponent={
             !title
               ? undefined
@@ -150,6 +174,7 @@ export const OptionBottomSheet = forwardRef<
                   </View>
                 )
           }
+          stickyHeaderIndices={[0]}
           renderItem={({
             item: option,
             index,
@@ -177,32 +202,13 @@ export const OptionBottomSheet = forwardRef<
               </View>
             </TouchableHighlight>
           )}
-          style={{ maxHeight: height / 2 }}
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingBottom: multiselect ? 0 : undefined,
+          }}
           showsVerticalScrollIndicator
-          stickyHeaderIndices={[0]}
-          ListFooterComponent={
-            multiselect
-              ? () => (
-                  <View className="pt-md pb-lg px-md gap-sm flex-row">
-                    <Button
-                      text="Reset"
-                      variant="outlined"
-                      onPress={handleReset}
-                      className="flex-1"
-                    />
-                    <Button
-                      text="Done"
-                      variant="filled"
-                      color="primary"
-                      onPress={handleDone}
-                      className="flex-1"
-                    />
-                  </View>
-                )
-              : undefined
-          }
         />
-      </BottomSheetModal>
+      </BottomSheet.Modal>
     );
   },
 );
