@@ -161,7 +161,7 @@ function LoginScreen(): JSX.Element {
           <View className="gap-md items-start">
             <Image
               source={require('@/assets/images/icon.png')}
-              className="size-30"
+              className="size-20"
               contentFit="contain"
             />
             <Text variant="headingL">{t('login.title')}</Text>
