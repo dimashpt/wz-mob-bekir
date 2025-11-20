@@ -19,6 +19,7 @@ import plus from './plus.svg';
 import product from './product.svg';
 import refresh from './refresh.svg';
 import shortcut from './shortcut.svg';
+import store from './store.svg';
 import storybook from './storybook.svg';
 import tickCircle from './tick-circle.svg';
 import tick from './tick.svg';
@@ -50,6 +51,7 @@ export const Icons = {
   product,
   refresh,
   shortcut,
+  store,
   storybook,
   tick,
   tickCircle,

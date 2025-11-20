@@ -135,12 +135,37 @@
     "title": "Home"
   },
   "orders": {
-    "title": "Orders"
+    "title": "Orders",
+    "total_items": "{{count}} products",
+    "status": {
+      "unpaid": "Unpaid",
+      "draft": "Draft",
+      "to_process": "Paid",
+      "in_process": "Processing",
+      "ready_to_print": "Print Pick List",
+      "packed": "Packed",
+      "ready_for_pickup": "Waiting for Courier",
+      "shipped_order": "Shipped",
+      "shipping_completed_order": "Shipping Completed",
+      "completed_order": "Completed",
+      "in_return": "In Return",
+      "return_order": "Returned",
+      "out_of_stock": "Out of Stock",
+      "unmapping_product": "Product Not Mapped",
+      "unmapping_location": "Location Not Mapped",
+      "unmapping_delivery": "Delivery Not Mapped",
+      "undefined_status": "Pack Failed",
+      "in_cancel": "Awaiting Cancel Approval",
+      "cancelled_order": "Cancelled"
+    }
   },
   "products": {
     "title": "Products"
   },
   "storybook": {
     "title": "Storybook"
+  },
+  "settings": {
+    "title": "Settings"
   }
 }

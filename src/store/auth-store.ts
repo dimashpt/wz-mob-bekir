@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as Notifications from 'expo-notifications';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -65,6 +66,9 @@ export const useAuthStore = create<AuthStore>()(
 
         set(initialState);
 
+        axios.defaults.headers.common['Authorization'] = '';
+        axios.defaults.headers.common['X-Tenant-Id'] = '';
+
         queryClient.clear();
       },
       setPushNotificationToken: (token: AuthState['pushNotificationToken']) => {
@@ -103,7 +107,7 @@ async function refreshTokenFn(): Promise<LoginResponse> {
 }
 
 initializeAuthInterceptors(() => {
-  const { token, logout } = useAuthStore.getState();
+  const store = useAuthStore.getState();
 
-  return { token, logout };
+  return store;
 }, refreshTokenFn);

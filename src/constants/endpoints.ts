@@ -17,9 +17,14 @@ const ENDPOINTS = {
   USER_ENDPOINTS: {
     GET_USER: '/user',
   },
+
+  // Order endpoints
+  ORDER_ENDPOINTS: {
+    LIST_ORDERS: '/tenant/orders',
+  },
 } as const;
 
 export default ENDPOINTS;
 
 // Export individual service endpoints for convenience
-export const { AUTH_ENDPOINTS, USER_ENDPOINTS } = ENDPOINTS;
+export const { AUTH_ENDPOINTS, USER_ENDPOINTS, ORDER_ENDPOINTS } = ENDPOINTS;

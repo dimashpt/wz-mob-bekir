@@ -15,14 +15,14 @@ export type ChipVariant =
   | 'clear';
 
 const chipVariants = tv({
-  base: 'flex-row justify-center items-center rounded-full py-xs px-sm gap-xs border',
+  base: 'flex-row justify-center items-center rounded-full py-xs px-sm gap-xs border self-start',
   variants: {
     variant: {
-      blue: 'bg-accent-light text-accent border-primary',
+      blue: 'bg-accent-soft text-accent border-primary',
       gray: 'bg-muted text-muted-foreground border-border',
-      yellow: 'bg-warning-light text-warning border-warning',
-      red: 'bg-danger-light text-danger border-error',
-      green: 'bg-success-light text-success border-success',
+      yellow: 'bg-warning-soft text-warning border-warning',
+      red: 'bg-danger-soft text-danger border-danger',
+      green: 'bg-success-soft text-success border-success',
       clear: 'bg-transparent text-muted-foreground border-transparent',
     },
   },
@@ -32,7 +32,7 @@ const chipVariants = tv({
 });
 
 const textVariants = tv({
-  base: 'text-[0.625rem]/4',
+  base: 'text-[0.625rem]/tight',
   variants: {
     variant: {
       blue: 'text-accent',

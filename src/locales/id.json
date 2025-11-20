@@ -134,12 +134,37 @@
     "title": "Home"
   },
   "orders": {
-    "title": "Pesanan"
+    "title": "Pesanan",
+    "total_items": "{{count}} produk",
+    "status": {
+      "unpaid": "Belum Bayar",
+      "draft": "Draft",
+      "to_process": "Dibayar",
+      "in_process": "Diproses",
+      "ready_to_print": "Cetak Pick List",
+      "packed": "Dikemas",
+      "ready_for_pickup": "Menunggu Kurir",
+      "shipped_order": "Sedang Dikirim",
+      "shipping_completed_order": "Pengiriman Selesai",
+      "completed_order": "Order Selesai",
+      "in_return": "Dalam Pengembalian",
+      "return_order": "Order Dikembalikan",
+      "out_of_stock": "OOS",
+      "unmapping_product": "Product Belum Di mapping",
+      "unmapping_location": "Location Belum Di Mapping",
+      "unmapping_delivery": "Delivery Belum Di Mapping",
+      "undefined_status": "Gagal Packed",
+      "in_cancel": "Menunggu Persetujuan Cancel",
+      "cancelled_order": "Order Dibatalkan"
+    }
   },
   "products": {
     "title": "Produk"
   },
   "storybook": {
     "title": "Storybook"
+  },
+  "settings": {
+    "title": "Pengaturan"
   }
 }

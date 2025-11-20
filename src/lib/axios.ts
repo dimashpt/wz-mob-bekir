@@ -6,7 +6,7 @@ import axios, {
 
 import { ErrorResponse } from '@/@types/api';
 import { LoginResponse } from '@/services/auth';
-import { TokenType } from '@/store';
+import { AuthStore } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
 
 // Global variables for refresh token management
@@ -24,8 +24,6 @@ export const API = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
-    'x-client-id': process.env.EXPO_PUBLIC_CLIENT_ID,
-    'x-client-secret': process.env.EXPO_PUBLIC_CLIENT_SECRET,
   },
   transitional: {
     // throw ETIMEDOUT error instead of generic ECONNABORTED on request timeouts
@@ -64,10 +62,7 @@ function cleanupRequest(requestKey: string): void {
 let authStoreInitialized = false;
 
 export function initializeAuthInterceptors(
-  getAuthState: () => {
-    token: TokenType | null;
-    logout: () => Promise<void>;
-  },
+  getAuthState: () => AuthStore,
   refreshTokenFn: () => Promise<LoginResponse>,
 ): void {
   if (authStoreInitialized) return;
@@ -109,12 +104,13 @@ export function initializeAuthInterceptors(
         throw new axios.Cancel(`Rate limited: ${requestKey}`);
       }
 
-      const { token } = getAuthState();
+      const { token, user } = getAuthState();
 
       if (token?.accessToken) {
         // Token is expired or invalid - attempt refresh instead of logout
         // This will be handled by the 401 response interceptor
         config.headers['Authorization'] = `Bearer ${token.accessToken}`;
+        config.headers['X-Tenant-Id'] = user?.tenant_id;
       }
 
       // Add security headers

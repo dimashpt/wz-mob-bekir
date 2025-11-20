@@ -18,6 +18,7 @@ import { BottomSheetModal } from '@/components/bottom-sheet';
 import { Button } from '@/components/button';
 import { snackbar } from '@/components/snackbar';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
+import { API } from '@/lib/axios';
 import { AuthService } from '@/services';
 import { useAuthStore } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
@@ -88,8 +89,9 @@ function LoginScreen(): JSX.Element {
     mutationKey: [AUTH_ENDPOINTS.LOGIN],
     mutationFn: AuthService.login,
     onSuccess: (data) => {
-      axios.defaults.headers.common['Authorization'] =
+      API.defaults.headers.common['Authorization'] =
         `Bearer ${data.auth_token}`;
+      API.defaults.headers.common['X-Tenant-Id'] = data.user.tenant_id;
 
       setToken(data!);
       setUser(data.user);

@@ -1,12 +1,17 @@
 import React, { ReactElement, useRef } from 'react';
-import { Platform } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BottomSheet, BottomSheetModal, Button, Container } from '@/components';
+import {
+  BottomSheet,
+  BottomSheetModal,
+  Button,
+  Container,
+  Text,
+} from '@/components';
 import { snackbar } from '@/components/snackbar';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
 import { AuthService } from '@/services';
@@ -33,14 +38,18 @@ function SettingsScreen(): ReactElement {
   });
 
   return (
-    <Container className="pt-0">
+    <Container
+      className="bg-background p-lg flex-1"
+      style={{
+        paddingTop: insets.top + 20,
+      }}
+    >
+      <Text variant="headingL" className="mb-lg">
+        {t('settings.title')}
+      </Text>
       <Animated.ScrollView
-        contentContainerClassName="gap-lg pt-md pb-lg"
-        className="px-lg z-4 grow"
-        style={{
-          paddingTop:
-            insets.top + (Platform.select({ ios: 0, android: 20 }) ?? 0),
-        }}
+        contentContainerClassName="gap-lg"
+        className="z-4 grow"
         scrollEventThrottle={16}
       >
         <PreferencesSection />
