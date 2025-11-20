@@ -1,6 +1,6 @@
 import { PaginationResponse } from '@/@types/api';
 
-export interface OrderParams {
+export interface OrderRequestParams {
   page?: number;
   per_page?: number;
 }
@@ -75,7 +75,7 @@ export interface Order {
   destination_code: string | null;
 }
 
-interface Orderitem {
+export interface Orderitem {
   id: number;
   order_id: number;
   quantity: number;

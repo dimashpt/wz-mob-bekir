@@ -6,36 +6,33 @@ import {
 
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import * as OrderService from './index';
-import { OrderParams, OrderResponse } from './types';
+import { OrderRequestParams, OrderResponse } from './types';
 
-type OrderQuery = Omit<
+type UseOrderQueryParams<T> = Omit<
   Partial<
-    DefinedInitialDataOptions<
-      OrderResponse,
-      Error,
-      OrderResponse,
-      readonly unknown[]
-    >
+    DefinedInitialDataOptions<OrderResponse, Error, T, readonly unknown[]>
   >,
   'queryKey' | 'queryFn'
 >;
 
 /**
- * Custom hook to fetch user information.
- * @param params - Optional parameters for the query.
- * @returns The query object containing user information.
+ * Custom hook to fetch order information.
+ * @param params - Optional parameters for the query, including select for data transformation.
+ * @param queryParams - Query parameters for filtering orders.
+ * @returns The query object containing order information.
+ * @template TData - The type of data returned after selection (defaults to OrderResponse).
  */
-export function useOrderQuery(
-  params: OrderQuery = {},
-  queryParams: OrderParams = {
+export function useOrderQuery<TData = OrderResponse>(
+  params: UseOrderQueryParams<TData> = {},
+  requestParams: OrderRequestParams = {
     page: 1,
     per_page: 5,
   },
-): UseQueryResult<OrderResponse, Error> {
-  const query = useQuery<OrderResponse>({
+): UseQueryResult<TData, Error> {
+  const query = useQuery<OrderResponse, Error, TData>({
     ...params,
-    queryKey: [ORDER_ENDPOINTS.LIST_ORDERS],
-    queryFn: () => OrderService.getOrders(queryParams),
+    queryKey: [ORDER_ENDPOINTS.LIST_ORDERS, requestParams],
+    queryFn: () => OrderService.getOrders(requestParams),
   });
 
   return query;
