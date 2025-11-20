@@ -47,7 +47,7 @@ export interface Order {
   location_name: string;
   location_type: string;
   origin_code: string;
-  store_platform: string;
+  store_platform: StorePlatform;
   buyer_name: string;
   buyer_phone: string | null;
   recipient_name: string;
@@ -87,6 +87,14 @@ export interface Orderitem {
   is_oos: boolean;
   is_child: boolean;
 }
+
+export type StorePlatform =
+  | 'shopee'
+  | 'lazada'
+  | 'tiktok'
+  | 'tokopedia'
+  | 'shopify'
+  | 'other';
 
 export type OrderInternalStatus =
   | 'Unpaid'

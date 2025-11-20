@@ -1,7 +1,9 @@
 import React, { JSX } from 'react';
 import { View } from 'react-native';
 
+import { Image as ExpoImage } from 'expo-image';
 import { useTranslation } from 'react-i18next';
+import { withUniwind } from 'uniwind';
 
 import {
   Chip,
@@ -11,8 +13,14 @@ import {
   Icon,
   Text,
 } from '@/components';
-import { Order, OrderInternalStatus } from '@/services/order/types';
+import {
+  Order,
+  OrderInternalStatus,
+  StorePlatform,
+} from '@/services/order/types';
 import { formatDisplayDate } from '@/utils/date';
+
+const Image = withUniwind(ExpoImage);
 
 export default function OrderListItem({ item }: { item: Order }): JSX.Element {
   const { t } = useTranslation();
@@ -57,6 +65,14 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
     'Cancelled Order': { variant: 'red' },
   };
 
+  const logoConfig: Partial<Record<StorePlatform, string>> = {
+    shopee: require('@/assets/images/brands/shopee.webp'),
+    lazada: require('@/assets/images/brands/lazada.webp'),
+    tiktok: require('@/assets/images/brands/tiktok.webp'),
+    tokopedia: require('@/assets/images/brands/tokopedia.webp'),
+    shopify: require('@/assets/images/brands/shopify.webp'),
+  };
+
   return (
     <Clickable
       className="bg-surface border-border p-md gap-xs rounded-md border"
@@ -64,7 +80,15 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
     >
       <View className="flex-row items-end justify-between">
         <View className="gap-xs flex-row items-center">
-          <Icon name="store" size="base" className="text-foreground" />
+          {logoConfig[item.store_platform] ? (
+            <Image
+              source={logoConfig[item.store_platform]}
+              className="size-6"
+              contentFit="contain"
+            />
+          ) : (
+            <Icon name="store" size="base" className="text-foreground" />
+          )}
           <Text variant="labelM">{item.store_name}</Text>
         </View>
         <Text variant="labelL" className="font-extrabold">
@@ -76,7 +100,7 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
         </Text>
       </View>
       <View className="flex-row items-start justify-between">
-        <Text variant="labelS" color="muted">
+        <Text variant="labelXS" color="muted">
           {item.order_code}
         </Text>
         <View className="gap-xs flex-row items-center">
