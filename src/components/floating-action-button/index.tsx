@@ -137,7 +137,9 @@ export function FloatingActionButton({
       style={[animatedStyle, positionStyle, style]}
       enableHaptic
     >
-      {icon ?? <Icon name="plus" size="2xl" className="text-white" />}
+      {icon ?? (
+        <Icon name="plus" size="2xl" className="text-foreground-inverted" />
+      )}
       {label ? (
         <Text variant="labelS" color="light">
           {label}

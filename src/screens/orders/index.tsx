@@ -1,4 +1,4 @@
-import React, { JSX, useMemo, useState } from 'react';
+import React, { JSX, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -6,8 +6,16 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
 
-import { Container, Icon, InputField, Text } from '@/components';
+import {
+  Container,
+  FilterGroup,
+  FloatingActionButton,
+  Icon,
+  InputField,
+  Text,
+} from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
+import { ORDER_INTERNAL_STATUS } from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { queryClient } from '@/lib/react-query';
 import { useOrderInfiniteQuery } from '@/services/order/repository';
@@ -20,7 +28,7 @@ export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
-
+  const floatingActionButtonRef = useRef<FloatingActionButton>(null);
   const {
     data,
     fetchNextPage,
@@ -80,7 +88,7 @@ export default function OrdersScreen(): JSX.Element {
       <Text variant="headingL" className="mb-lg">
         {t('orders.title')}
       </Text>
-      <View className="gap-sm mb-md">
+      <View className="gap-sm mb-sm">
         <InputField
           placeholder={t('orders.searchPlaceholder')}
           value={searchQuery}
@@ -90,6 +98,45 @@ export default function OrdersScreen(): JSX.Element {
           left={<Icon name="search" size="lg" className="text-muted" />}
           className="bg-surface rounded-full"
         />
+        <FilterGroup
+          scrollViewProps={{
+            contentContainerClassName: 'px-lg',
+            className: '-mx-lg',
+          }}
+          filters={[
+            {
+              name: 'payment_method',
+              label: 'Delivery Status',
+              multiple: true,
+              options: ['COD', 'NON COD', 'DFOD'].map((value) => ({
+                label: value,
+                value,
+              })),
+            },
+            {
+              name: 'channel',
+              label: 'Channel',
+              multiple: true,
+              options: [
+                'shopee',
+                'lazada',
+                'tiktok',
+                'tokopedia',
+                'shopify',
+                'other',
+              ].map((value) => ({ label: value, value })),
+            },
+            {
+              name: 'status',
+              label: 'Status',
+              multiple: true,
+              options: Object.values(ORDER_INTERNAL_STATUS).map((value) => ({
+                label: value,
+                value,
+              })),
+            },
+          ]}
+        />
       </View>
       <List
         data={filteredOrders}
@@ -97,6 +144,7 @@ export default function OrdersScreen(): JSX.Element {
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,
         }}
+        onScroll={floatingActionButtonRef.current?.onScroll}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.order_header_id.toString()}
         renderItem={({ item }) => <OrderListItem item={item} />}
@@ -116,6 +164,16 @@ export default function OrdersScreen(): JSX.Element {
             </View>
           ) : null
         }
+      />
+      <FloatingActionButton
+        ref={floatingActionButtonRef}
+        onPress={() => {
+          console.log('onPress');
+        }}
+        position={{
+          bottom: TAB_BAR_HEIGHT + 20,
+          right: 20,
+        }}
       />
     </Container>
   );
