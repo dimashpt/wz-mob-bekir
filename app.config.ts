@@ -4,15 +4,17 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
   const VARIANT = process.env.APP_VARIANT;
   const VERSION = '0.1.0';
   const BUILD_NUMBER = 1;
+  const BUNDLE_ID = 'com.bebaschat.app';
+
   const config: ExpoConfig = {
     ...defaultConfig,
-    name: 'App',
-    slug: 'app-mobile',
-    owner: 'app-mobile',
+    name: 'Bebaschat',
+    slug: 'bebaschat',
+    owner: 'bebaschat',
     version: VERSION,
     orientation: 'portrait',
     icon: './src/assets/images/icon.png',
-    scheme: 'app',
+    scheme: 'bebaschat',
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     experiments: {
@@ -27,11 +29,11 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     runtimeVersion: { policy: 'appVersion' },
     ios: {
       ...defaultConfig.ios,
-      bundleIdentifier: 'com.lobataros.app',
+      bundleIdentifier: BUNDLE_ID,
       supportsTablet: true,
       buildNumber: BUILD_NUMBER.toString(),
       // Add associatedDomains for Universal Links
-      associatedDomains: ['applinks:app.lobataros.com'],
+      associatedDomains: ['applinks:dashboard.bebaschat.com'],
       icon: './src/assets/images/icon-ios.icon',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
@@ -41,7 +43,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     },
     android: {
       ...defaultConfig.android,
-      package: 'com.lobataros.app',
+      package: BUNDLE_ID,
       versionCode: BUILD_NUMBER,
       edgeToEdgeEnabled: true,
       adaptiveIcon: {
@@ -49,12 +51,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
         monochromeImage: './src/assets/images/icon-android-monochrome.png',
         backgroundColor: '#ffffff',
       },
-      permissions: [
-        'android.permission.CAMERA',
-        'android.permission.RECORD_AUDIO',
-        'android.permission.ACCESS_COARSE_LOCATION',
-        'android.permission.ACCESS_FINE_LOCATION',
-      ],
+      permissions: [],
       // Add intentFilters for App Links
       intentFilters: [
         {
@@ -63,7 +60,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
           data: [
             {
               scheme: 'https',
-              host: 'dashboard.bebaskirim.com',
+              host: 'dashboard.bebaschat.com',
               pathPrefix: '/auth/reset-password',
             },
           ],
@@ -91,10 +88,10 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
           image: './src/assets/images/icon.png',
           imageWidth: 200,
           resizeMode: 'contain',
-          backgroundColor: '#FAF9F5',
+          backgroundColor: '#F2F2F2',
           dark: {
             image: './src/assets/images/icon.png',
-            backgroundColor: '#262624',
+            backgroundColor: '#121212',
           },
         },
       ],
@@ -127,16 +124,17 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
   };
 
   if (VARIANT === 'dev') {
-    config.name = 'App Dev';
-    config.ios!.bundleIdentifier = 'com.lobataros.app.dev';
+    config.name = 'Bebaschat Dev';
+    config.ios!.bundleIdentifier = `${BUNDLE_ID}.dev`;
+    config.android!.package = `${BUNDLE_ID}.dev`;
+
     config.ios!.icon = './src/assets/images/icon-ios-dev.icon';
-    config.android!.package = 'com.lobataros.app';
     config.android!.adaptiveIcon!.foregroundImage =
       './src/assets/images/icon-android-dev.png';
   } else if (VARIANT === 'preview') {
-    config.name = 'App Preview';
-    config.ios!.bundleIdentifier = 'com.lobataros.app.preview';
-    config.android!.package = 'com.lobataros.app.preview';
+    config.name = 'Bebaschat Preview';
+    config.ios!.bundleIdentifier = `${BUNDLE_ID}.preview`;
+    config.android!.package = `${BUNDLE_ID}.preview`;
   }
 
   return config;

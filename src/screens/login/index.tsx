@@ -4,15 +4,16 @@ import { Keyboard, TextInput, View } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
+import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useCSSVariable } from 'uniwind';
+import { useCSSVariable, withUniwind } from 'uniwind';
 import { z } from 'zod';
 
 import { ErrorResponse } from '@/@types/api';
-import { BottomSheet, Container, Icon, InputField, Text } from '@/components';
+import { BottomSheet, Container, InputField, Text } from '@/components';
 import { BottomSheetModal } from '@/components/bottom-sheet';
 import { Button } from '@/components/button';
 import { snackbar } from '@/components/snackbar';
@@ -20,6 +21,8 @@ import { AUTH_ENDPOINTS } from '@/constants/endpoints';
 import { AuthService } from '@/services';
 import { useAuthStore } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
+
+const Image = withUniwind(ExpoImage);
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getLoginSchema = (t: (key: string) => string) =>
@@ -148,7 +151,7 @@ function LoginScreen(): JSX.Element {
   }, [status]);
 
   return (
-    <Container className="flex-1 pt-0">
+    <Container className="bg-surface flex-1 pt-0">
       <Container.Scroll
         className="p-lg flex-1"
         contentContainerClassName="justify-end"
@@ -156,9 +159,11 @@ function LoginScreen(): JSX.Element {
       >
         <View className="p-lg gap-lg w-full">
           <View className="gap-md items-start">
-            <View className="p-md bg-accent-soft rounded-md">
-              <Icon name="user" size={36} className="text-accent" />
-            </View>
+            <Image
+              source={require('@/assets/images/icon.png')}
+              className="size-30"
+              contentFit="contain"
+            />
             <Text variant="headingL">{t('login.title')}</Text>
           </View>
 

@@ -164,11 +164,7 @@ function App(): React.ReactNode {
                     opacity: splashFinished ? 1 : 0,
                   }}
                 >
-                  <Stack
-                    initialRouteName={
-                      status === 'loggedIn' ? '(tabs)' : '(auth)'
-                    }
-                  >
+                  <Stack>
                     <Stack.Protected
                       guard={status === 'loggedOut' && !hasCompletedOnboarding}
                     >

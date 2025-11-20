@@ -22,7 +22,7 @@
     "products": "Products"
   },
   "login": {
-    "title": "Log in\nto your account",
+    "title": "Log in to your account",
     "description": "Please enter your credentials to continue",
     "form": {
       "email": "Email Address",

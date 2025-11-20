@@ -28,7 +28,7 @@
       --color-foreground-inverted: #f2f2f2;
       --color-surface: #ffffff;
 
-      --color-accent: #1a1a1a;
+      --color-accent: #203864;
       --color-accent-soft: color-mix(
         in oklab,
         var(--color-accent) 15%,

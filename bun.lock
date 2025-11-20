@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "app-mobile",
+      "name": "bebaschat-app",
       "dependencies": {
         "@expo-google-fonts/plus-jakarta-sans": "0.4.2",
         "@gorhom/bottom-sheet": "5.2.6",
