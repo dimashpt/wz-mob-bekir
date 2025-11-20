@@ -50,7 +50,7 @@ export function Skeleton({
 
   return (
     <Animated.View
-      className={twMerge('bg-subtle overflow-hidden', className)}
+      className={twMerge('bg-muted overflow-hidden', className)}
       style={[
         {
           width,

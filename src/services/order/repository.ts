@@ -1,5 +1,9 @@
 import {
   DefinedInitialDataOptions,
+  InfiniteData,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   useQuery,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -33,6 +37,52 @@ export function useOrderQuery<TData = OrderResponse>(
     ...params,
     queryKey: [ORDER_ENDPOINTS.LIST_ORDERS, requestParams],
     queryFn: () => OrderService.getOrders(requestParams),
+  });
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch orders with infinite scrolling/pagination.
+ * @param params - Optional parameters for the query, including select for data transformation.
+ * @param requestParams - Query parameters for filtering orders (excluding page, which is handled by infinite query).
+ * @returns The infinite query object containing paginated order information.
+ * @template TData - The type of data returned after selection (defaults to OrderResponse).
+ */
+export function useOrderInfiniteQuery<TData = InfiniteData<OrderResponse>>(
+  params: Omit<
+    UseInfiniteQueryOptions<
+      OrderResponse,
+      Error,
+      TData,
+      readonly unknown[],
+      number
+    >,
+    'queryKey' | 'queryFn' | 'initialPageParam' | 'getNextPageParam'
+  > = {},
+  requestParams: Omit<OrderRequestParams, 'page'> = {
+    per_page: 10,
+  },
+): UseInfiniteQueryResult<TData, Error> {
+  const query = useInfiniteQuery<
+    OrderResponse,
+    Error,
+    TData,
+    readonly unknown[],
+    number
+  >({
+    ...params,
+    queryKey: [ORDER_ENDPOINTS.LIST_ORDERS, 'infinite', requestParams],
+    queryFn: ({ pageParam }) =>
+      OrderService.getOrders({
+        ...requestParams,
+        page: pageParam,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { current_page, total_pages } = lastPage.page_info;
+      return current_page < total_pages ? current_page + 1 : undefined;
+    },
   });
 
   return query;

@@ -29,6 +29,7 @@
     "@expo-google-fonts/plus-jakarta-sans": "0.4.2",
     "@gorhom/bottom-sheet": "5.2.6",
     "@hookform/resolvers": "5.2.2",
+    "@legendapp/list": "2.0.15",
     "@react-buoy/core": "1.5.12",
     "@react-buoy/debug-borders": "1.5.12",
     "@react-buoy/env": "1.5.12",

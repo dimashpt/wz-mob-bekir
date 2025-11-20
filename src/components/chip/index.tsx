@@ -18,7 +18,7 @@ const chipVariants = tv({
   base: 'flex-row justify-center items-center rounded-full py-xs px-sm gap-xs border self-start',
   variants: {
     variant: {
-      blue: 'bg-accent-soft text-accent border-primary',
+      blue: 'bg-accent-soft text-accent border-accent',
       gray: 'bg-muted text-muted-foreground border-border',
       yellow: 'bg-warning-soft text-warning border-warning',
       red: 'bg-danger-soft text-danger border-danger',
