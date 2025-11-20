@@ -5,6 +5,7 @@ export * from './clickable';
 export * from './container';
 export * from './divider';
 export * from './devtools';
+export * from './filter-group';
 export * from './floating-action-button';
 export * from './header';
 export * from './icon';
