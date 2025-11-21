@@ -5,9 +5,15 @@ import { twMerge } from 'tailwind-merge';
 
 import { Icon } from '@/components/icon';
 import { Clickable } from '../clickable';
-import { DateFilter, DateFilterRef } from './date-filter';
+import {
+  DateFilter,
+  DateFilterRef,
+  DateRangeFilter,
+  DateRangeFilterRef,
+} from './date-filter';
 import {
   isDateFilter,
+  isDateRangeFilter,
   isOptionFilter,
   isToggleFilter,
 } from './helpers/filter-helpers';
@@ -24,7 +30,14 @@ export function FilterGroup({
 }: FilterGroupProps): React.ReactNode {
   // Refs for each filter component to enable clear-all functionality
   const filterRefs = useRef<
-    Record<string, ToggleFilterRef | OptionFilterRef | DateFilterRef | null>
+    Record<
+      string,
+      | ToggleFilterRef
+      | OptionFilterRef
+      | DateFilterRef
+      | DateRangeFilterRef
+      | null
+    >
   >({});
 
   // Track active state for each filter
@@ -115,6 +128,21 @@ export function FilterGroup({
             if (isDateFilter(filter)) {
               return (
                 <DateFilter
+                  key={filter.name}
+                  ref={(ref) => {
+                    filterRefs.current[filter.name] = ref;
+                  }}
+                  filter={filter}
+                  onActiveChange={(isActive) =>
+                    handleActiveChange(filter.name, isActive)
+                  }
+                />
+              );
+            }
+
+            if (isDateRangeFilter(filter)) {
+              return (
+                <DateRangeFilter
                   key={filter.name}
                   ref={(ref) => {
                     filterRefs.current[filter.name] = ref;

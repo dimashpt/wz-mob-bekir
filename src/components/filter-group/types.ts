@@ -23,13 +23,19 @@ export interface OptionFilter extends BaseFilter {
 
 export interface DateFilter extends BaseFilter {
   type: 'date';
-  value?: Dayjs | null | { start: Dayjs; end: Dayjs };
-  onChange?: (value: Dayjs | null | { start: Dayjs; end: Dayjs }) => void;
-  mode?: 'calendar' | 'calendar-range' | 'wheel' | 'time';
+  value?: Dayjs | null;
+  onChange?: (value: Dayjs | null) => void;
   disabledDate?: (date: Dayjs) => boolean;
 }
 
-export type Filter = ToggleFilter | OptionFilter | DateFilter;
+export interface DateRangeFilter extends BaseFilter {
+  type: 'date-range';
+  value?: { start: Dayjs; end: Dayjs } | null;
+  onChange?: (value: { start: Dayjs; end: Dayjs } | null) => void;
+  disabledDate?: (date: Dayjs) => boolean;
+}
+
+export type Filter = ToggleFilter | OptionFilter | DateFilter | DateRangeFilter;
 
 export interface FilterGroupProps {
   filters: Filter[];

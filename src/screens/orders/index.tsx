@@ -162,10 +162,12 @@ export default function OrdersScreen(): JSX.Element {
               value: filters.status,
               onChange: (value) =>
                 setFilters({ status: value as OrderInternalStatus[] }),
-              options: Object.values(ORDER_INTERNAL_STATUS).map((value) => ({
-                label: value,
-                value,
-              })),
+              options: Object.entries(ORDER_INTERNAL_STATUS).map(
+                ([key, value]) => ({
+                  label: value,
+                  value: key,
+                }),
+              ),
             },
             {
               type: 'options',
@@ -196,10 +198,9 @@ export default function OrdersScreen(): JSX.Element {
               })),
             },
             {
-              type: 'date',
+              type: 'date-range',
               name: 'period',
               label: t('orders.period'),
-              mode: 'calendar-range',
               value: filters.period,
               onChange: (value) =>
                 setFilters({
