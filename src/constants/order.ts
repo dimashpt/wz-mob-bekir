@@ -38,13 +38,13 @@ export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   'Cancelled Order': i18n.t('orders.status.cancelled_order'),
 };
 
-export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
+export const ORDER_PAYMENT_METHODS: Record<PaymentMethod, string> = {
   COD: 'COD',
   'NON COD': 'NON COD',
   DFOD: 'DFOD',
 };
 
-export const STORE_PLATFORMS: Record<
+export const ORDER_STORE_PLATFORMS: Record<
   StorePlatform,
   { label: string; value: StorePlatform }
 > = {
@@ -73,3 +73,9 @@ export const STORE_PLATFORMS: Record<
     value: 'other',
   },
 };
+
+export const ORDER_FILTER_FIELDS = {
+  order_code: i18n.t('orders.filter.order_code'),
+  tracking_number: i18n.t('orders.filter.tracking_number'),
+  buyer_name: i18n.t('orders.filter.buyer_name'),
+} as const;

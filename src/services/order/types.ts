@@ -1,12 +1,19 @@
 import { PaginationResponse } from '@/@types/api';
 
-export interface OrderRequestParams {
+export type OrderRequestSearchKey =
+  | 'order_code'
+  | 'buyer_name'
+  | 'tracking_number';
+
+export type OrderRequestParams = {
   page?: number;
   per_page?: number;
   status?: OrderInternalStatus[];
   channel?: StorePlatform[];
   payment_method?: PaymentMethod[];
-}
+} & {
+  [K in OrderRequestSearchKey as `search[${K}]`]?: string;
+};
 
 export interface OrderResponse {
   orders: Order[];

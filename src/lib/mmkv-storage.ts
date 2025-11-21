@@ -1,5 +1,6 @@
 import type { MMKV } from 'react-native-mmkv';
 
+import { applicationId } from 'expo-application';
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
@@ -24,8 +25,10 @@ let encryptedStorage: MMKV | null = null;
 export function getMmkvStorage(): MMKV {
   if (storage) return storage;
 
+  const uniqueStorageId = `${applicationId}_mmkv_storage`;
+
   storage = createMMKV({
-    id: 'mmkv_storage',
+    id: uniqueStorageId,
   });
 
   return storage;
@@ -35,8 +38,10 @@ export function getMmkvEncryptedStorage(): MMKV {
   if (encryptedStorage) return encryptedStorage;
 
   const encryptionKey = generateEncryptionKey('mmkv_encryption_key');
+  const uniqueEncryptedStorageId = `${applicationId}_mmkv_encrypted_storage`;
+
   encryptedStorage = createMMKV({
-    id: 'mmkv_encrypted_storage',
+    id: uniqueEncryptedStorageId,
     encryptionKey,
   });
 

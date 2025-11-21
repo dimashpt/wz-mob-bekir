@@ -161,7 +161,12 @@
       "cancelled_order": "Cancelled"
     },
     "payment_method": "Payment Method",
-    "channel": "Channel"
+    "channel": "Channel",
+    "filter": {
+      "order_code": "Order Code",
+      "tracking_number": "Tracking Number",
+      "buyer_name": "Buyer Name"
+    }
   },
   "products": {
     "title": "Products"

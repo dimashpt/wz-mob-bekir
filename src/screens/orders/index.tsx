@@ -16,9 +16,10 @@ import {
 } from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import {
+  ORDER_FILTER_FIELDS,
   ORDER_INTERNAL_STATUS,
-  PAYMENT_METHODS,
-  STORE_PLATFORMS,
+  ORDER_PAYMENT_METHODS,
+  ORDER_STORE_PLATFORMS,
 } from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
@@ -27,6 +28,7 @@ import { useOrderInfiniteQuery } from '@/services/order/repository';
 import {
   Order,
   OrderInternalStatus,
+  OrderRequestSearchKey,
   PaymentMethod,
   StorePlatform,
 } from '@/services/order/types';
@@ -43,6 +45,8 @@ interface OrderFilters {
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const [searchKey, setSearchKey] =
+    useState<OrderRequestSearchKey>('order_code');
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
     useDebounce();
   const [filters, _setFilters] = useState<OrderFilters>({
@@ -61,6 +65,7 @@ export default function OrdersScreen(): JSX.Element {
   } = useOrderInfiniteQuery(
     {},
     {
+      [`search[${searchKey}]`]: debouncedSearch,
       per_page: 10,
       status: filters.status,
       channel: filters.channel,
@@ -72,27 +77,6 @@ export default function OrdersScreen(): JSX.Element {
     () => data?.pages.flatMap((page) => page?.orders ?? []) ?? [],
     [data],
   );
-
-  const filteredOrders = useMemo(() => {
-    let result = orders;
-
-    // Apply search query filter
-    if (debouncedSearch.trim()) {
-      const query = debouncedSearch.toLowerCase();
-      result = result.filter((order) => {
-        const searchableFields = [
-          order.order_header_id?.toString(),
-          order.store_name,
-        ];
-
-        return searchableFields.some(
-          (field) => field && field.toString().toLowerCase().includes(query),
-        );
-      });
-    }
-
-    return result;
-  }, [orders, debouncedSearch]);
 
   function handleRefresh(): void {
     // Set the query data to only contain the first page
@@ -123,16 +107,41 @@ export default function OrdersScreen(): JSX.Element {
         {t('orders.title')}
       </Text>
       <View className="gap-sm mb-sm">
-        <InputField
-          placeholder={t('orders.searchPlaceholder')}
-          value={search}
-          onChangeText={setSearch}
-          autoCapitalize="none"
-          autoCorrect={false}
-          left={<Icon name="search" size="lg" className="text-muted" />}
-          className="bg-surface min-h-10 rounded-full"
-          loading={isSearchDebouncing}
-        />
+        <View className="gap-sm flex-row">
+          <FilterGroup
+            scrollViewProps={{
+              scrollEnabled: false,
+            }}
+            hideClearAll={true}
+            filters={[
+              {
+                name: 'status',
+                label: t('orders.status.title'),
+                value: searchKey,
+                onChange: (value) =>
+                  setSearchKey(value as OrderRequestSearchKey),
+                options: Object.entries(ORDER_FILTER_FIELDS).map(
+                  ([key, value]) => ({
+                    label: value,
+                    value: key,
+                  }),
+                ),
+              },
+            ]}
+          />
+          <View className="flex-1">
+            <InputField
+              placeholder={t('orders.searchPlaceholder')}
+              value={search}
+              onChangeText={setSearch}
+              autoCapitalize="none"
+              autoCorrect={false}
+              left={<Icon name="search" size="lg" className="text-muted" />}
+              className="bg-surface min-h-10 rounded-full"
+              loading={isSearchDebouncing || isRefetching}
+            />
+          </View>
+        </View>
         <FilterGroup
           scrollViewProps={{
             contentContainerClassName: 'px-lg',
@@ -158,10 +167,12 @@ export default function OrdersScreen(): JSX.Element {
               value: filters.channel,
               onChange: (value) =>
                 setFilters({ channel: value as StorePlatform[] }),
-              options: Object.entries(STORE_PLATFORMS).map(([, value]) => ({
-                label: value.label,
-                value: value.value,
-              })),
+              options: Object.entries(ORDER_STORE_PLATFORMS).map(
+                ([, value]) => ({
+                  label: value.label,
+                  value: value.value,
+                }),
+              ),
             },
             {
               name: 'payment_method',
@@ -170,7 +181,7 @@ export default function OrdersScreen(): JSX.Element {
               value: filters.paymentMethod,
               onChange: (value) =>
                 setFilters({ paymentMethod: value as PaymentMethod[] }),
-              options: Object.values(PAYMENT_METHODS).map((value) => ({
+              options: Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
                 label: value,
                 value,
               })),
@@ -179,7 +190,7 @@ export default function OrdersScreen(): JSX.Element {
         />
       </View>
       <List
-        data={filteredOrders}
+        data={orders}
         contentContainerClassName="gap-sm"
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,

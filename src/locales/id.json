@@ -160,7 +160,12 @@
       "title": "Status"
     },
     "payment_method": "Metode Pembayaran",
-    "channel": "Kanal"
+    "channel": "Kanal",
+    "filter": {
+      "order_code": "No. Order",
+      "tracking_number": "No. Resi",
+      "buyer_name": "Nama Pembeli"
+    }
   },
   "products": {
     "title": "Produk"
