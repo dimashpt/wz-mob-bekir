@@ -1,4 +1,3 @@
-import { i18n } from '@/lib/i18n';
 import {
   OrderInternalStatus,
   PaymentMethod,
@@ -7,35 +6,35 @@ import {
 
 export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   // Draft
-  Unpaid: i18n.t('orders.status.unpaid'),
-  Draft: i18n.t('orders.status.draft'),
+  Unpaid: 'orders.status.unpaid',
+  Draft: 'orders.status.draft',
 
   // Fulfillment
-  'To Process': i18n.t('orders.status.to_process'),
-  'In Process': i18n.t('orders.status.in_process'),
-  'Ready To Print': i18n.t('orders.status.ready_to_print'),
-  Packed: i18n.t('orders.status.packed'),
+  'To Process': 'orders.status.to_process',
+  'In Process': 'orders.status.in_process',
+  'Ready To Print': 'orders.status.ready_to_print',
+  Packed: 'orders.status.packed',
 
   // Shipping
-  'Ready For Pickup': i18n.t('orders.status.ready_for_pickup'),
-  'Shipped Order': i18n.t('orders.status.shipped_order'),
-  'Shipping Completed Order': i18n.t('orders.status.shipping_completed_order'),
+  'Ready For Pickup': 'orders.status.ready_for_pickup',
+  'Shipped Order': 'orders.status.shipped_order',
+  'Shipping Completed Order': 'orders.status.shipping_completed_order',
 
   // Completed
-  'Completed Order': i18n.t('orders.status.completed_order'),
-  'In Return': i18n.t('orders.status.in_return'),
-  'Return Order': i18n.t('orders.status.return_order'),
+  'Completed Order': 'orders.status.completed_order',
+  'In Return': 'orders.status.in_return',
+  'Return Order': 'orders.status.return_order',
 
   // Problems
-  'Out Of Stock': i18n.t('orders.status.out_of_stock'),
-  'Unmapping Product': i18n.t('orders.status.unmapping_product'),
-  'Unmapping Location': i18n.t('orders.status.unmapping_location'),
-  'Unmapping Delivery': i18n.t('orders.status.unmapping_delivery'),
-  'Undefined Status': i18n.t('orders.status.undefined_status'),
+  'Out Of Stock': 'orders.status.out_of_stock',
+  'Unmapping Product': 'orders.status.unmapping_product',
+  'Unmapping Location': 'orders.status.unmapping_location',
+  'Unmapping Delivery': 'orders.status.unmapping_delivery',
+  'Undefined Status': 'orders.status.undefined_status',
 
   // Cancelation
-  'In Cancel': i18n.t('orders.status.in_cancel'),
-  'Cancelled Order': i18n.t('orders.status.cancelled_order'),
+  'In Cancel': 'orders.status.in_cancel',
+  'Cancelled Order': 'orders.status.cancelled_order',
 };
 
 export const ORDER_PAYMENT_METHODS: Record<PaymentMethod, string> = {
@@ -75,7 +74,7 @@ export const ORDER_STORE_PLATFORMS: Record<
 };
 
 export const ORDER_FILTER_FIELDS = {
-  order_code: i18n.t('orders.filter.order_code'),
-  tracking_number: i18n.t('orders.filter.tracking_number'),
-  buyer_name: i18n.t('orders.filter.buyer_name'),
+  order_code: 'orders.filter.order_code',
+  tracking_number: 'orders.filter.tracking_number',
+  buyer_name: 'orders.filter.buyer_name',
 } as const;

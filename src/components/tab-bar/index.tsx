@@ -33,6 +33,7 @@ interface TabItemProps {
 interface TabItemPropsWithLayout extends TabItemProps {
   onLayout: (event: LayoutChangeEvent) => void;
   totalRoutes: number;
+  maxWidth: number;
 }
 
 export const TabBar = ({
@@ -67,6 +68,9 @@ export const TabBar = ({
       }
     };
   }
+
+  // Calculate max width for each tab item
+  const tabItemMaxWidth = (screenWidth - spacingLg * 2) / 5;
 
   // Animate dot when active tab changes
   useEffect(() => {
@@ -127,6 +131,7 @@ export const TabBar = ({
               navigation={navigation}
               onLayout={handleTabLayout(index)}
               totalRoutes={state.routes.length}
+              maxWidth={tabItemMaxWidth}
             />
           );
         })}
@@ -142,6 +147,7 @@ const TabItem = ({
   navigation,
   onLayout,
   totalRoutes,
+  maxWidth,
 }: TabItemPropsWithLayout): JSX.Element => {
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
@@ -184,12 +190,13 @@ const TabItem = ({
     }
   };
 
-  // Use flex: 1 only when there are many items (5+), otherwise let items size naturally
+  // Use flex: 1 when there are many items (5+) to distribute space evenly
   const shouldFlex = totalRoutes >= 5;
 
   return (
     <View
       className={twMerge('min-w-0 shrink', shouldFlex ? 'flex-1' : '')}
+      style={{ maxWidth }}
       onLayout={onLayout}
     >
       <Clickable

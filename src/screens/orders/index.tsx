@@ -120,7 +120,7 @@ export default function OrdersScreen(): JSX.Element {
             onChange={(value) => setSearchKey(value as OrderRequestSearchKey)}
             options={Object.entries(ORDER_FILTER_FIELDS).map(
               ([key, value]) => ({
-                label: value,
+                label: t(value),
                 value: key,
               }),
             )}
@@ -154,7 +154,7 @@ export default function OrdersScreen(): JSX.Element {
             }
             options={Object.entries(ORDER_INTERNAL_STATUS).map(
               ([key, value]) => ({
-                label: value,
+                label: t(value),
                 value: key,
               }),
             )}
