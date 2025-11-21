@@ -9,6 +9,7 @@ import close from './close.svg';
 import dev from './dev.svg';
 import eyeSlash from './eye-slash.svg';
 import eye from './eye.svg';
+import filter from './filter.svg';
 import gear from './gear.svg';
 import home from './home.svg';
 import info from './info.svg';
@@ -42,6 +43,7 @@ export const Icons = {
   dev,
   eye,
   eyeSlash,
+  filter,
   gear,
   home,
   info,

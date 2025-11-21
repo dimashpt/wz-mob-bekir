@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
 
 import {
+  Button,
   Container,
   Filter,
   FloatingActionButton,
@@ -51,6 +52,7 @@ export default function OrdersScreen(): JSX.Element {
     useState<OrderRequestSearchKey>('order_code');
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
     useDebounce();
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<OrderFilters>({
     status: [],
     channel: [],
@@ -108,9 +110,16 @@ export default function OrdersScreen(): JSX.Element {
         paddingTop: insets.top + 20,
       }}
     >
-      <Text variant="headingL" className="mb-lg">
-        {t('orders.title')}
-      </Text>
+      <View className="flex-row items-center justify-between">
+        <Text variant="headingL" className="mb-lg">
+          {t('orders.title')}
+        </Text>
+        <Button
+          icon={showFilters ? 'close' : 'filter'}
+          variant="ghost"
+          onPress={() => setShowFilters(!showFilters)}
+        />
+      </View>
       <View className="gap-sm mb-sm">
         <View className="gap-sm flex-row">
           <Filter.Options
@@ -138,66 +147,70 @@ export default function OrdersScreen(): JSX.Element {
             />
           </View>
         </View>
-        <Filter
-          scrollViewProps={{
-            contentContainerClassName: 'px-lg',
-            className: '-mx-lg',
-          }}
-        >
-          <Filter.Options
-            name="status"
-            label={t('orders.status.title')}
-            multiple={true}
-            value={filters.status}
-            onChange={(value) =>
-              setFilters({ status: value as OrderInternalStatus[] })
-            }
-            options={Object.entries(ORDER_INTERNAL_STATUS).map(
-              ([key, value]) => ({
-                label: t(value),
-                value: key,
-              }),
-            )}
-          />
-          <Filter.Options
-            name="channel"
-            label={t('orders.channel')}
-            multiple={true}
-            value={filters.channel}
-            onChange={(value) =>
-              setFilters({ channel: value as StorePlatform[] })
-            }
-            options={Object.entries(ORDER_STORE_PLATFORMS).map(([, value]) => ({
-              label: value.label,
-              value: value.value,
-            }))}
-          />
-          <Filter.Options
-            name="payment_method"
-            label={t('orders.payment_method')}
-            multiple={true}
-            value={filters.paymentMethod}
-            onChange={(value) =>
-              setFilters({ paymentMethod: value as PaymentMethod[] })
-            }
-            options={Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
-              label: value,
-              value,
-            }))}
-          />
-          <Filter.Date
-            name="period"
-            label={t('orders.period')}
-            mode="range"
-            value={filters.period}
-            onChange={(value) =>
-              setFilters({
-                period: value as { start: Dayjs; end: Dayjs } | null,
-              })
-            }
-            disabledDate={(date) => date.isAfter(dayjs())}
-          />
-        </Filter>
+        {showFilters && (
+          <Filter
+            scrollViewProps={{
+              contentContainerClassName: 'px-lg',
+              className: '-mx-lg',
+            }}
+          >
+            <Filter.Options
+              name="status"
+              label={t('orders.status.title')}
+              multiple={true}
+              value={filters.status}
+              onChange={(value) =>
+                setFilters({ status: value as OrderInternalStatus[] })
+              }
+              options={Object.entries(ORDER_INTERNAL_STATUS).map(
+                ([key, value]) => ({
+                  label: t(value),
+                  value: key,
+                }),
+              )}
+            />
+            <Filter.Options
+              name="channel"
+              label={t('orders.channel')}
+              multiple={true}
+              value={filters.channel}
+              onChange={(value) =>
+                setFilters({ channel: value as StorePlatform[] })
+              }
+              options={Object.entries(ORDER_STORE_PLATFORMS).map(
+                ([, value]) => ({
+                  label: value.label,
+                  value: value.value,
+                }),
+              )}
+            />
+            <Filter.Options
+              name="payment_method"
+              label={t('orders.payment_method')}
+              multiple={true}
+              value={filters.paymentMethod}
+              onChange={(value) =>
+                setFilters({ paymentMethod: value as PaymentMethod[] })
+              }
+              options={Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
+                label: value,
+                value,
+              }))}
+            />
+            <Filter.Date
+              name="period"
+              label={t('orders.period')}
+              mode="range"
+              value={filters.period}
+              onChange={(value) =>
+                setFilters({
+                  period: value as { start: Dayjs; end: Dayjs } | null,
+                })
+              }
+              disabledDate={(date) => date.isAfter(dayjs())}
+            />
+          </Filter>
+        )}
       </View>
       <List
         data={orders}
