@@ -175,6 +175,12 @@ export function initializeAuthInterceptors(
 
       // Handle 401 unauthorized errors
       if (error.response?.status === 401 && !originalRequest._retry) {
+        logout();
+        handleMutationError(error);
+
+        // Disable refresh token logic, due to unavailable refresh token endpoint
+        return Promise.reject(error);
+
         originalRequest._retry = true;
 
         if (errorResponse?.data?.force_logout) {
@@ -211,7 +217,7 @@ export function initializeAuthInterceptors(
 
           if (token?.accessToken && originalRequest.headers) {
             originalRequest.headers['Authorization'] =
-              `Bearer ${token.accessToken}`;
+              `Bearer ${token?.accessToken ?? ''}`;
           }
 
           return API(originalRequest);
