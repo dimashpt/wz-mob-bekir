@@ -1,8 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { ScrollView, ScrollViewProps, View } from 'react-native';
 
+import dayjs, { Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
+import {
+  DatePickerModal,
+  DatePickerModalRef,
+} from '@/components/date-time-picker/datepicker-modal';
 import { Icon } from '@/components/icon';
 import {
   Option,
@@ -10,6 +15,7 @@ import {
   OptionBottomSheetRef,
 } from '@/components/option-bottom-sheet';
 import { Text } from '@/components/text';
+import { formatSmartDateRange } from '@/utils/date';
 import { Clickable } from '../clickable';
 
 interface BaseFilter {
@@ -18,20 +24,28 @@ interface BaseFilter {
 }
 
 interface ToggleFilter extends BaseFilter {
+  type?: 'toggle';
   value?: boolean;
   onChange?: (value: boolean) => void;
-  options?: never;
-  multiple?: never;
 }
 
 interface OptionFilter extends BaseFilter {
+  type: 'options';
   value?: string | string[];
   onChange?: (value: string | string[]) => void;
   options: Option[];
   multiple?: boolean;
 }
 
-export type Filter = ToggleFilter | OptionFilter;
+interface DateFilter extends BaseFilter {
+  type: 'date';
+  value?: Dayjs | null | { start: Dayjs; end: Dayjs };
+  onChange?: (value: Dayjs | null | { start: Dayjs; end: Dayjs }) => void;
+  mode?: 'calendar' | 'calendar-range' | 'wheel' | 'time';
+  disabledDate?: (date: Dayjs) => boolean;
+}
+
+export type Filter = ToggleFilter | OptionFilter | DateFilter;
 
 export interface FilterGroupProps {
   filters: Filter[];
@@ -46,28 +60,54 @@ export function FilterGroup({
 }: FilterGroupProps): React.ReactNode {
   // Store internal state for uncontrolled filters
   const [internalStates, setInternalStates] = useState<
-    Record<string, boolean | string | string[]>
+    Record<
+      string,
+      boolean | string | string[] | Dayjs | null | { start: Dayjs; end: Dayjs }
+    >
   >({});
-  const [scrollViewWidth, setScrollViewWidth] = useState(0);
 
   // Refs for option bottom sheets
   const optionSheetRefs = useRef<Record<string, OptionBottomSheetRef | null>>(
     {},
   );
 
+  // Refs for date picker modals
+  const datePickerRefs = useRef<Record<string, DatePickerModalRef | null>>({});
+
   // Ref for scroll view
   const scrollViewRef = useRef<ScrollView>(null);
 
   function isToggleFilter(filter: Filter): filter is ToggleFilter {
-    return !filter.options;
+    return filter.type !== 'options' && filter.type !== 'date';
   }
 
-  function getFilterValue(filter: Filter): boolean | string | string[] {
+  function isOptionFilter(filter: Filter): filter is OptionFilter {
+    return filter.type === 'options';
+  }
+
+  function isDateFilter(filter: Filter): filter is DateFilter {
+    return filter.type === 'date';
+  }
+
+  function isDateRangeFilter(filter: Filter): filter is DateFilter {
+    return isDateFilter(filter) && filter.mode === 'calendar-range';
+  }
+
+  function getFilterValue(
+    filter: Filter,
+  ): boolean | string | string[] | Dayjs | null | { start: Dayjs; end: Dayjs } {
     // Use controlled value if provided, otherwise use internal state
     if (filter.value !== undefined) {
       return filter.value;
     }
-    return internalStates[filter.name] ?? (isToggleFilter(filter) ? false : '');
+
+    const defaultValue = isToggleFilter(filter)
+      ? false
+      : isDateFilter(filter)
+        ? null
+        : '';
+
+    return internalStates[filter.name] ?? defaultValue;
   }
 
   function handleTogglePress(filter: ToggleFilter): void {
@@ -110,6 +150,35 @@ export function FilterGroup({
     filter?.onChange?.(newValue);
   }
 
+  function handleDatePress(filter: DateFilter): void {
+    datePickerRefs.current[filter.name]?.present();
+  }
+
+  function handleDateSelect(filter: DateFilter, date: Dayjs | null): void {
+    // Update internal state
+    setInternalStates((prev) => ({
+      ...prev,
+      [filter.name]: date,
+    }));
+
+    // Call onChange callback
+    filter?.onChange?.(date);
+  }
+
+  function handleDateRangeSelect(
+    filter: DateFilter,
+    range: { start: Dayjs; end: Dayjs },
+  ): void {
+    // Update internal state
+    setInternalStates((prev) => ({
+      ...prev,
+      [filter.name]: range,
+    }));
+
+    // Call onChange callback
+    filter?.onChange?.(range);
+  }
+
   function getSelectedOption(filter: OptionFilter): Option | null {
     const value = getFilterValue(filter);
     if (!value || Array.isArray(value)) return null;
@@ -124,6 +193,40 @@ export function FilterGroup({
 
   function getDisplayLabel(filter: Filter): string {
     if (isToggleFilter(filter)) {
+      return filter.label;
+    }
+
+    if (isDateFilter(filter)) {
+      const value = getFilterValue(filter) as
+        | Dayjs
+        | null
+        | { start: Dayjs; end: Dayjs };
+
+      if (!value) return filter.label;
+
+      // Handle range case
+      if (
+        filter.mode === 'calendar-range' &&
+        typeof value === 'object' &&
+        'start' in value &&
+        'end' in value
+      ) {
+        return formatSmartDateRange([value.start, value.end]);
+      }
+
+      // Handle single date case (check if it's a Dayjs object)
+      if (dayjs.isDayjs(value)) {
+        // Format date based on mode
+        const format =
+          filter.mode === 'time'
+            ? 'HH:mm'
+            : filter.mode === 'wheel'
+              ? 'DD MMM YYYY'
+              : 'DD MMM YYYY';
+
+        return value.format(format);
+      }
+
       return filter.label;
     }
 
@@ -143,12 +246,18 @@ export function FilterGroup({
   }
 
   function handleClearAll(): void {
-    const clearedStates: Record<string, boolean | string | string[]> = {};
+    const clearedStates: Record<
+      string,
+      boolean | string | string[] | Dayjs | null | { start: Dayjs; end: Dayjs }
+    > = {};
 
     filters.forEach((filter) => {
       if (isToggleFilter(filter)) {
         clearedStates[filter.name] = false;
         filter?.onChange?.(false);
+      } else if (isDateFilter(filter)) {
+        clearedStates[filter.name] = null;
+        filter?.onChange?.(null);
       } else {
         const optionFilter = filter as OptionFilter;
         const defaultValue = optionFilter.multiple ? [] : '';
@@ -190,16 +299,15 @@ export function FilterGroup({
         horizontal
         showsHorizontalScrollIndicator={false}
         {...scrollViewProps}
-        style={[{ width: scrollViewWidth }, scrollViewProps?.style]}
         contentContainerClassName={twMerge(
           scrollViewProps?.contentContainerClassName,
         )}
       >
         <View
-          className={twMerge('gap-sm flex-row', hideClearAll ? '' : 'pr-14')}
-          onLayout={({ nativeEvent }) => {
-            setScrollViewWidth(nativeEvent.layout.width);
-          }}
+          className={twMerge(
+            'gap-sm flex-row',
+            hideClearAll || !hasActiveFilters() ? '' : 'pr-12',
+          )}
         >
           {filters.map((filter) => {
             const isToggle = isToggleFilter(filter);
@@ -225,6 +333,8 @@ export function FilterGroup({
                   onPress={() => {
                     if (isToggle) {
                       handleTogglePress(filter);
+                    } else if (isDateFilter(filter)) {
+                      handleDatePress(filter);
                     } else {
                       handleOptionPress(filter as OptionFilter);
                     }
@@ -255,34 +365,51 @@ export function FilterGroup({
                   )}
                 </Clickable>
 
-                {!isToggle && (
+                {isOptionFilter(filter) && (
                   <OptionBottomSheet
                     ref={(ref) => {
                       optionSheetRefs.current[filter.name] = ref;
                     }}
                     title={filter.label}
-                    options={(filter as OptionFilter).options}
-                    {...((filter as OptionFilter).multiple
+                    options={filter.options}
+                    {...(filter.multiple
                       ? {
                           multiselect: true as const,
-                          selectedValues: getSelectedOptions(
-                            filter as OptionFilter,
-                          ),
+                          selectedValues: getSelectedOptions(filter),
                           onSelect: (selected: Option[]) =>
-                            handleOptionSelect(
-                              filter as OptionFilter,
-                              selected,
-                            ),
+                            handleOptionSelect(filter, selected),
                         }
                       : {
-                          selectedValue: getSelectedOption(
-                            filter as OptionFilter,
-                          ),
+                          selectedValue: getSelectedOption(filter),
                           onSelect: (selected: Option) =>
-                            handleOptionSelect(
-                              filter as OptionFilter,
-                              selected,
-                            ),
+                            handleOptionSelect(filter, selected),
+                        })}
+                  />
+                )}
+
+                {isDateFilter(filter) && (
+                  <DatePickerModal
+                    ref={(ref) => {
+                      datePickerRefs.current[filter.name] = ref;
+                    }}
+                    title={filter.label}
+                    value={
+                      isDateRangeFilter(filter)
+                        ? null
+                        : (getFilterValue(filter) as Dayjs | null)
+                    }
+                    mode={filter.mode}
+                    disabledDate={filter.disabledDate}
+                    {...(isDateRangeFilter(filter)
+                      ? {
+                          onRangeSelect: (range: {
+                            start: Dayjs;
+                            end: Dayjs;
+                          }) => handleDateRangeSelect(filter, range),
+                        }
+                      : {
+                          onSelect: (date: Dayjs | null) =>
+                            handleDateSelect(filter, date),
                         })}
                   />
                 )}

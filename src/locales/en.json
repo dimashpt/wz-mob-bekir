@@ -13,13 +13,20 @@
       "something_went_wrong": "Something went wrong",
       "unexpected_error": "Unexpected error occured",
       "session_expired": "Session expired"
-    }
+    },
+    "done": "Done"
   },
   "tab": {
     "home": "Home",
     "settings": "Settings",
     "orders": "Orders",
     "products": "Products"
+  },
+  "date_time_picker": {
+    "pick_range": "Pick Range",
+    "select_date": "Select Date",
+    "range_instruction_start": "Select start date",
+    "range_instruction_end": "Select end date"
   },
   "login": {
     "title": "Log in to\nyour account",
@@ -166,7 +173,8 @@
       "order_code": "Order Code",
       "tracking_number": "Tracking Number",
       "buyer_name": "Buyer Name"
-    }
+    },
+    "period": "Period"
   },
   "products": {
     "title": "Products"

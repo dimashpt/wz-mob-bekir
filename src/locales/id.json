@@ -13,13 +13,20 @@
       "something_went_wrong": "Terjadi kesalahan",
       "unexpected_error": "Ada kesalahan terjadi",
       "session_expired": "Sesi berakhir"
-    }
+    },
+    "done": "Selesai"
   },
   "tab": {
     "home": "Home",
     "settings": "Pengaturan",
     "orders": "Pesanan",
     "products": "Produk"
+  },
+  "date_time_picker": {
+    "pick_range": "Pilih Rentang",
+    "select_date": "Pilih Tanggal",
+    "range_instruction_start": "Pilih tanggal mulai",
+    "range_instruction_end": "Pilih tanggal akhir"
   },
   "login": {
     "title": "Masuk ke akunmu",
@@ -165,7 +172,8 @@
       "order_code": "No. Order",
       "tracking_number": "No. Resi",
       "buyer_name": "Nama Pembeli"
-    }
+    },
+    "period": "Periode"
   },
   "products": {
     "title": "Produk"

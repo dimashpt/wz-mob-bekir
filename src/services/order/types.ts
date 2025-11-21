@@ -11,6 +11,8 @@ export type OrderRequestParams = {
   status?: OrderInternalStatus[];
   channel?: StorePlatform[];
   payment_method?: PaymentMethod[];
+  start_date?: string;
+  end_date?: string;
 } & {
   [K in OrderRequestSearchKey as `search[${K}]`]?: string;
 };

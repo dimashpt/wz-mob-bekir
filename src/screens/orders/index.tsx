@@ -2,6 +2,7 @@ import React, { JSX, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
+import { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
@@ -40,6 +41,7 @@ interface OrderFilters {
   status: OrderInternalStatus[];
   channel: StorePlatform[];
   paymentMethod: PaymentMethod[];
+  period: { start: Dayjs; end: Dayjs } | null;
 }
 
 export default function OrdersScreen(): JSX.Element {
@@ -53,6 +55,7 @@ export default function OrdersScreen(): JSX.Element {
     status: [],
     channel: [],
     paymentMethod: [],
+    period: null,
   });
   const floatingActionButtonRef = useRef<FloatingActionButton>(null);
   const {
@@ -70,6 +73,8 @@ export default function OrdersScreen(): JSX.Element {
       status: filters.status,
       channel: filters.channel,
       payment_method: filters.paymentMethod,
+      start_date: filters.period?.start?.format('YYYY-MM-DD'),
+      end_date: filters.period?.end?.format('YYYY-MM-DD'),
     },
   );
 
@@ -115,6 +120,7 @@ export default function OrdersScreen(): JSX.Element {
             hideClearAll={true}
             filters={[
               {
+                type: 'options',
                 name: 'status',
                 label: t('orders.status.title'),
                 value: searchKey,
@@ -149,6 +155,7 @@ export default function OrdersScreen(): JSX.Element {
           }}
           filters={[
             {
+              type: 'options',
               name: 'status',
               label: t('orders.status.title'),
               multiple: true,
@@ -161,6 +168,7 @@ export default function OrdersScreen(): JSX.Element {
               })),
             },
             {
+              type: 'options',
               name: 'channel',
               label: t('orders.channel'),
               multiple: true,
@@ -175,6 +183,7 @@ export default function OrdersScreen(): JSX.Element {
               ),
             },
             {
+              type: 'options',
               name: 'payment_method',
               label: t('orders.payment_method'),
               multiple: true,
@@ -185,6 +194,17 @@ export default function OrdersScreen(): JSX.Element {
                 label: value,
                 value,
               })),
+            },
+            {
+              type: 'date',
+              name: 'period',
+              label: t('orders.period'),
+              mode: 'calendar-range',
+              value: filters.period,
+              onChange: (value) =>
+                setFilters({
+                  period: value as { start: Dayjs; end: Dayjs } | null,
+                }),
             },
           ]}
         />
