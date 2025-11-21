@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { i18n } from '@/lib/i18n';
 import { mmkvStorage } from '@/lib/mmkv-storage';
-import i18n from '@/locales';
 
 export type ColorScheme = 'light' | 'dark' | 'system';
 

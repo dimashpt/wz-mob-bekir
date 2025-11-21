@@ -6,7 +6,11 @@ import React, {
 } from 'react';
 import { Dimensions, TouchableHighlight, View } from 'react-native';
 
-import { BottomSheetFlatList, BottomSheetFooter } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetFlatList,
+  BottomSheetFooter,
+  BottomSheetHandle,
+} from '@gorhom/bottom-sheet';
 import { twMerge } from 'tailwind-merge';
 
 import { BottomSheet, BottomSheetModal } from '@/components/bottom-sheet';
@@ -159,22 +163,19 @@ export const OptionBottomSheet = forwardRef<
                 </BottomSheetFooter>
               )
         }
+        handleComponent={(props) => (
+          <BottomSheetHandle {...props}>
+            <View className="bg-surface py-sm">
+              <Text variant="labelL" className="text-center">
+                {title}
+              </Text>
+            </View>
+          </BottomSheetHandle>
+        )}
       >
         <BottomSheetFlatList
           data={options}
           enableFooterMarginAdjustment
-          ListHeaderComponent={
-            !title
-              ? undefined
-              : () => (
-                  <View className="bg-surface pb-md">
-                    <Text variant="labelL" className="text-center">
-                      {title}
-                    </Text>
-                  </View>
-                )
-          }
-          stickyHeaderIndices={[0]}
           renderItem={({
             item: option,
             index,
@@ -185,7 +186,10 @@ export const OptionBottomSheet = forwardRef<
             <TouchableHighlight
               onPress={() => handleOptionSelect(option)}
               underlayColor="#00000011"
-              className="w-full flex-row"
+              className={twMerge(
+                'w-full flex-row',
+                isOptionSelected(option) ? 'bg-accent-soft' : '',
+              )}
             >
               <View
                 className={twMerge(

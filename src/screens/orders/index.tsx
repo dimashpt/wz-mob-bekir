@@ -1,4 +1,4 @@
-import React, { JSX, useMemo, useRef, useState } from 'react';
+import React, { JSX, useMemo, useRef } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -15,8 +15,13 @@ import {
   Text,
 } from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
-import { ORDER_INTERNAL_STATUS } from '@/constants/order';
+import {
+  ORDER_INTERNAL_STATUS,
+  PAYMENT_METHODS,
+  STORE_PLATFORMS,
+} from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { useDebounce } from '@/hooks';
 import { queryClient } from '@/lib/react-query';
 import { useOrderInfiniteQuery } from '@/services/order/repository';
 import { Order } from '@/services/order/types';
@@ -27,7 +32,8 @@ const List = withUniwind(LegendList<Order>);
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [search, setSearch, debouncedSearch, isSearchDebouncing] =
+    useDebounce();
   const floatingActionButtonRef = useRef<FloatingActionButton>(null);
   const {
     data,
@@ -39,7 +45,7 @@ export default function OrdersScreen(): JSX.Element {
   } = useOrderInfiniteQuery();
 
   const orders = useMemo(
-    () => data?.pages.flatMap((page) => page.orders) ?? [],
+    () => data?.pages.flatMap((page) => page?.orders ?? []) ?? [],
     [data],
   );
 
@@ -47,8 +53,8 @@ export default function OrdersScreen(): JSX.Element {
     let result = orders;
 
     // Apply search query filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+    if (debouncedSearch.trim()) {
+      const query = debouncedSearch.toLowerCase();
       result = result.filter((order) => {
         const searchableFields = [
           order.order_header_id?.toString(),
@@ -62,14 +68,14 @@ export default function OrdersScreen(): JSX.Element {
     }
 
     return result;
-  }, [orders, searchQuery]);
+  }, [orders, debouncedSearch]);
 
   function handleRefresh(): void {
     // Set the query data to only contain the first page
     queryClient.setQueryData(
       [ORDER_ENDPOINTS.LIST_ORDERS, 'infinite', { per_page: 10 }],
       {
-        pages: [data?.pages[0]],
+        pages: [data?.pages[0] ?? []],
         pageParams: [1],
       },
     );
@@ -91,12 +97,13 @@ export default function OrdersScreen(): JSX.Element {
       <View className="gap-sm mb-sm">
         <InputField
           placeholder={t('orders.searchPlaceholder')}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
+          value={search}
+          onChangeText={setSearch}
           autoCapitalize="none"
           autoCorrect={false}
           left={<Icon name="search" size="lg" className="text-muted" />}
-          className="bg-surface rounded-full"
+          className="bg-surface min-h-10 rounded-full"
+          loading={isSearchDebouncing}
         />
         <FilterGroup
           scrollViewProps={{
@@ -105,32 +112,28 @@ export default function OrdersScreen(): JSX.Element {
           }}
           filters={[
             {
-              name: 'payment_method',
-              label: 'Delivery Status',
+              name: 'status',
+              label: t('orders.status.title'),
               multiple: true,
-              options: ['COD', 'NON COD', 'DFOD'].map((value) => ({
+              options: Object.values(ORDER_INTERNAL_STATUS).map((value) => ({
                 label: value,
                 value,
               })),
             },
             {
               name: 'channel',
-              label: 'Channel',
+              label: t('orders.channel'),
               multiple: true,
-              options: [
-                'shopee',
-                'lazada',
-                'tiktok',
-                'tokopedia',
-                'shopify',
-                'other',
-              ].map((value) => ({ label: value, value })),
+              options: Object.entries(STORE_PLATFORMS).map(([, value]) => ({
+                label: value.label,
+                value: value.value,
+              })),
             },
             {
-              name: 'status',
-              label: 'Status',
+              name: 'payment_method',
+              label: t('orders.payment_method'),
               multiple: true,
-              options: Object.values(ORDER_INTERNAL_STATUS).map((value) => ({
+              options: Object.values(PAYMENT_METHODS).map((value) => ({
                 label: value,
                 value,
               })),
@@ -167,9 +170,7 @@ export default function OrdersScreen(): JSX.Element {
       />
       <FloatingActionButton
         ref={floatingActionButtonRef}
-        onPress={() => {
-          console.log('onPress');
-        }}
+        onPress={() => {}}
         position={{
           bottom: TAB_BAR_HEIGHT + 20,
           right: 20,

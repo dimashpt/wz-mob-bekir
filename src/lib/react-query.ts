@@ -1,5 +1,3 @@
-import '@/locales'; // Import i18n configuration
-
 import {
   keepPreviousData,
   QueryCache,

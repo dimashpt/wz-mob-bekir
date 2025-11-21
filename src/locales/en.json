@@ -139,6 +139,7 @@
     "searchPlaceholder": "Search orders...",
     "total_items": "{{count}} products",
     "status": {
+      "title": "Status",
       "unpaid": "Unpaid",
       "draft": "Draft",
       "to_process": "Paid",
@@ -158,7 +159,9 @@
       "undefined_status": "Pack Failed",
       "in_cancel": "Awaiting Cancel Approval",
       "cancelled_order": "Cancelled"
-    }
+    },
+    "payment_method": "Payment Method",
+    "channel": "Channel"
   },
   "products": {
     "title": "Products"

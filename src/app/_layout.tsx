@@ -11,7 +11,7 @@ import Animated from 'react-native-reanimated';
 
 import { UpdateButton } from '@/components';
 
-import '@/locales'; // Import i18n configuration
+import '@/lib/i18n'; // Import i18n configuration
 import '../theme/global.css';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';

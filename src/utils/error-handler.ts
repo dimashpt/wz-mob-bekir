@@ -3,7 +3,7 @@ import { FieldPath, FieldValues, UseFormReturn } from 'react-hook-form';
 
 import { ErrorResponse } from '@/@types/api';
 import { snackbar } from '@/components/snackbar';
-import i18n from '@/locales';
+import { i18n } from '@/lib/i18n';
 
 function getStandarizedErrorMessage(
   error: AxiosError<ErrorResponse>,

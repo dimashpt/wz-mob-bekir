@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ScrollView, ScrollViewProps } from 'react-native';
+import { ScrollView, ScrollViewProps, View } from 'react-native';
 
 import { twMerge } from 'tailwind-merge';
 
@@ -51,6 +51,9 @@ export function FilterGroup({
   const optionSheetRefs = useRef<Record<string, OptionBottomSheetRef | null>>(
     {},
   );
+
+  // Ref for scroll view
+  const scrollViewRef = useRef<ScrollView>(null);
 
   function isToggleFilter(filter: Filter): filter is ToggleFilter {
     return !filter.options;
@@ -152,6 +155,9 @@ export function FilterGroup({
     });
 
     setInternalStates(clearedStates);
+
+    // Scroll to start smoothly
+    scrollViewRef.current?.scrollTo({ x: 0, animated: true });
   }
 
   function hasActiveFilters(): boolean {
@@ -167,103 +173,108 @@ export function FilterGroup({
   }
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      {...scrollViewProps}
-      contentContainerClassName={twMerge(
-        'gap-sm',
-        scrollViewProps?.contentContainerClassName,
-      )}
-    >
+    <View className="relative">
       {hasActiveFilters() && (
         <Clickable
           onPress={handleClearAll}
-          className="p-sm bg-surface border-border self-center rounded-full border"
+          className="p-sm bg-surface border-border absolute top-0 right-0 z-1 self-center rounded-full border"
         >
-          <Icon name="close" size="sm" className="text-foreground" />
+          <Icon name="close" size="base" className="text-foreground" />
         </Clickable>
       )}
-      {filters.map((filter) => {
-        const isToggle = isToggleFilter(filter);
-        const filterValue = getFilterValue(filter);
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        {...scrollViewProps}
+        contentContainerClassName={twMerge(
+          'gap-sm pr-14',
+          scrollViewProps?.contentContainerClassName,
+        )}
+      >
+        {filters.map((filter) => {
+          const isToggle = isToggleFilter(filter);
+          const filterValue = getFilterValue(filter);
 
-        // For toggle: active when true
-        // For option: active when value is set (single select) or has items (multi-select)
-        const isActive = isToggle
-          ? Boolean(filterValue)
-          : Array.isArray(filterValue)
-            ? filterValue.length > 0
-            : !!filterValue;
+          // For toggle: active when true
+          // For option: active when value is set (single select) or has items (multi-select)
+          const isActive = isToggle
+            ? Boolean(filterValue)
+            : Array.isArray(filterValue)
+              ? filterValue.length > 0
+              : !!filterValue;
 
-        return (
-          <React.Fragment key={filter.name}>
-            <Clickable
-              className={twMerge(
-                'gap-xs px-md py-sm flex-row items-center rounded-full border',
-                isActive
-                  ? 'bg-accent border-accent'
-                  : 'bg-surface border-border',
-              )}
-              onPress={() => {
-                if (isToggle) {
-                  handleTogglePress(filter);
-                } else {
-                  handleOptionPress(filter as OptionFilter);
-                }
-              }}
-            >
-              <Text
-                variant="bodyS"
+          return (
+            <React.Fragment key={filter.name}>
+              <Clickable
                 className={twMerge(
-                  'text-foreground font-medium',
+                  'gap-xs px-md py-sm flex-row items-center rounded-full border',
                   isActive
-                    ? 'text-foreground-inverted dark:text-foreground-inverted'
-                    : 'dark:text-foreground',
+                    ? 'bg-accent border-accent'
+                    : 'bg-surface border-border',
                 )}
+                onPress={() => {
+                  if (isToggle) {
+                    handleTogglePress(filter);
+                  } else {
+                    handleOptionPress(filter as OptionFilter);
+                  }
+                }}
               >
-                {getDisplayLabel(filter)}
-              </Text>
-              {!isToggle && (
-                <Icon
-                  name="chevron"
-                  size="sm"
+                <Text
+                  variant="bodyS"
                   className={twMerge(
-                    'text-foreground',
+                    'text-foreground font-medium',
                     isActive
                       ? 'text-foreground-inverted dark:text-foreground-inverted'
                       : 'dark:text-foreground',
                   )}
+                >
+                  {getDisplayLabel(filter)}
+                </Text>
+                {!isToggle && (
+                  <Icon
+                    name="chevron"
+                    size="sm"
+                    className={twMerge(
+                      'text-foreground',
+                      isActive
+                        ? 'text-foreground-inverted dark:text-foreground-inverted'
+                        : 'dark:text-foreground',
+                    )}
+                  />
+                )}
+              </Clickable>
+
+              {!isToggle && (
+                <OptionBottomSheet
+                  ref={(ref) => {
+                    optionSheetRefs.current[filter.name] = ref;
+                  }}
+                  title={filter.label}
+                  options={(filter as OptionFilter).options}
+                  {...((filter as OptionFilter).multiple
+                    ? {
+                        multiselect: true as const,
+                        selectedValues: getSelectedOptions(
+                          filter as OptionFilter,
+                        ),
+                        onSelect: (selected: Option[]) =>
+                          handleOptionSelect(filter as OptionFilter, selected),
+                      }
+                    : {
+                        selectedValue: getSelectedOption(
+                          filter as OptionFilter,
+                        ),
+                        onSelect: (selected: Option) =>
+                          handleOptionSelect(filter as OptionFilter, selected),
+                      })}
                 />
               )}
-            </Clickable>
-
-            {!isToggle && (
-              <OptionBottomSheet
-                ref={(ref) => {
-                  optionSheetRefs.current[filter.name] = ref;
-                }}
-                title={filter.label}
-                options={(filter as OptionFilter).options}
-                {...((filter as OptionFilter).multiple
-                  ? {
-                      multiselect: true as const,
-                      selectedValues: getSelectedOptions(
-                        filter as OptionFilter,
-                      ),
-                      onSelect: (selected: Option[]) =>
-                        handleOptionSelect(filter as OptionFilter, selected),
-                    }
-                  : {
-                      selectedValue: getSelectedOption(filter as OptionFilter),
-                      onSelect: (selected: Option) =>
-                        handleOptionSelect(filter as OptionFilter, selected),
-                    })}
-              />
-            )}
-          </React.Fragment>
-        );
-      })}
-    </ScrollView>
+            </React.Fragment>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

@@ -156,8 +156,11 @@
       "unmapping_delivery": "Delivery Belum Di Mapping",
       "undefined_status": "Gagal Packed",
       "in_cancel": "Menunggu Persetujuan Cancel",
-      "cancelled_order": "Order Dibatalkan"
-    }
+      "cancelled_order": "Order Dibatalkan",
+      "title": "Status"
+    },
+    "payment_method": "Metode Pembayaran",
+    "channel": "Kanal"
   },
   "products": {
     "title": "Produk"

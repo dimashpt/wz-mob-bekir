@@ -80,8 +80,10 @@ export function useOrderInfiniteQuery<TData = InfiniteData<OrderResponse>>(
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const { current_page, total_pages } = lastPage.page_info;
-      return current_page < total_pages ? current_page + 1 : undefined;
+      const currentPage = lastPage?.page_info?.current_page;
+      const totalPages = lastPage?.page_info?.total_pages;
+
+      return currentPage < totalPages ? currentPage + 1 : undefined;
     },
   });
 
