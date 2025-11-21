@@ -2,14 +2,14 @@ import React, { JSX, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
 
 import {
   Container,
-  FilterGroup,
+  Filter,
   FloatingActionButton,
   Icon,
   InputField,
@@ -113,28 +113,25 @@ export default function OrdersScreen(): JSX.Element {
       </Text>
       <View className="gap-sm mb-sm">
         <View className="gap-sm flex-row">
-          <FilterGroup
+          <Filter
             scrollViewProps={{
               scrollEnabled: false,
             }}
             hideClearAll={true}
-            filters={[
-              {
-                type: 'options',
-                name: 'status',
-                label: t('orders.status.title'),
-                value: searchKey,
-                onChange: (value) =>
-                  setSearchKey(value as OrderRequestSearchKey),
-                options: Object.entries(ORDER_FILTER_FIELDS).map(
-                  ([key, value]) => ({
-                    label: value,
-                    value: key,
-                  }),
-                ),
-              },
-            ]}
-          />
+          >
+            <Filter.Options
+              name="searchKey"
+              label={t('orders.status.title')}
+              value={searchKey}
+              onChange={(value) => setSearchKey(value as OrderRequestSearchKey)}
+              options={Object.entries(ORDER_FILTER_FIELDS).map(
+                ([key, value]) => ({
+                  label: value,
+                  value: key,
+                }),
+              )}
+            />
+          </Filter>
           <View className="flex-1">
             <InputField
               placeholder={t('orders.searchPlaceholder')}
@@ -148,67 +145,66 @@ export default function OrdersScreen(): JSX.Element {
             />
           </View>
         </View>
-        <FilterGroup
+        <Filter
           scrollViewProps={{
             contentContainerClassName: 'px-lg',
             className: '-mx-lg',
           }}
-          filters={[
-            {
-              type: 'options',
-              name: 'status',
-              label: t('orders.status.title'),
-              multiple: true,
-              value: filters.status,
-              onChange: (value) =>
-                setFilters({ status: value as OrderInternalStatus[] }),
-              options: Object.entries(ORDER_INTERNAL_STATUS).map(
-                ([key, value]) => ({
-                  label: value,
-                  value: key,
-                }),
-              ),
-            },
-            {
-              type: 'options',
-              name: 'channel',
-              label: t('orders.channel'),
-              multiple: true,
-              value: filters.channel,
-              onChange: (value) =>
-                setFilters({ channel: value as StorePlatform[] }),
-              options: Object.entries(ORDER_STORE_PLATFORMS).map(
-                ([, value]) => ({
-                  label: value.label,
-                  value: value.value,
-                }),
-              ),
-            },
-            {
-              type: 'options',
-              name: 'payment_method',
-              label: t('orders.payment_method'),
-              multiple: true,
-              value: filters.paymentMethod,
-              onChange: (value) =>
-                setFilters({ paymentMethod: value as PaymentMethod[] }),
-              options: Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
+        >
+          <Filter.Options
+            name="status"
+            label={t('orders.status.title')}
+            multiple={true}
+            value={filters.status}
+            onChange={(value) =>
+              setFilters({ status: value as OrderInternalStatus[] })
+            }
+            options={Object.entries(ORDER_INTERNAL_STATUS).map(
+              ([key, value]) => ({
                 label: value,
-                value,
-              })),
-            },
-            {
-              type: 'date-range',
-              name: 'period',
-              label: t('orders.period'),
-              value: filters.period,
-              onChange: (value) =>
-                setFilters({
-                  period: value as { start: Dayjs; end: Dayjs } | null,
-                }),
-            },
-          ]}
-        />
+                value: key,
+              }),
+            )}
+          />
+          <Filter.Options
+            name="channel"
+            label={t('orders.channel')}
+            multiple={true}
+            value={filters.channel}
+            onChange={(value) =>
+              setFilters({ channel: value as StorePlatform[] })
+            }
+            options={Object.entries(ORDER_STORE_PLATFORMS).map(([, value]) => ({
+              label: value.label,
+              value: value.value,
+            }))}
+          />
+          <Filter.Options
+            name="payment_method"
+            label={t('orders.payment_method')}
+            multiple={true}
+            value={filters.paymentMethod}
+            onChange={(value) =>
+              setFilters({ paymentMethod: value as PaymentMethod[] })
+            }
+            options={Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
+              label: value,
+              value,
+            }))}
+          />
+          <Filter.Date
+            name="period"
+            label={t('orders.period')}
+            mode="range"
+            value={filters.period}
+            onChange={(value) =>
+              setFilters({
+                period: value as { start: Dayjs; end: Dayjs } | null,
+              })
+            }
+            disabledDate={(date) => date.isAfter(dayjs())}
+          />
+        </Filter>
       </View>
       <List
         data={orders}
