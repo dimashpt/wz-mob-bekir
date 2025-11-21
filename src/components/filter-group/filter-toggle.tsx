@@ -17,8 +17,7 @@ export function FilterToggle({
   onChange,
 }: FilterToggleProps): React.ReactNode {
   const [internalValue, setInternalValue] = useState<boolean>(false);
-  const { registerFilter, unregisterFilter, updateActiveState } =
-    useFilterContext();
+  const context = useFilterContext();
   const registrationRef = useRef<{
     clear: () => void;
     isActive: () => boolean;
@@ -28,8 +27,10 @@ export function FilterToggle({
   const value = isControlled ? controlledValue : internalValue;
   const isActive = Boolean(value);
 
+  const updateActiveState = context?.updateActiveState;
+
   useEffect(() => {
-    updateActiveState(name, isActive);
+    updateActiveState?.(name, isActive);
   }, [name, isActive, updateActiveState]);
 
   function clear(): void {
@@ -38,7 +39,7 @@ export function FilterToggle({
       setInternalValue(newValue);
     }
     onChange?.(newValue);
-    updateActiveState(name, false);
+    updateActiveState?.(name, false);
   }
 
   function isActiveValue(): boolean {
@@ -51,7 +52,12 @@ export function FilterToggle({
     isActive: isActiveValue,
   };
 
+  const registerFilter = context?.registerFilter;
+  const unregisterFilter = context?.unregisterFilter;
+
   useEffect(() => {
+    if (!registerFilter || !unregisterFilter) return;
+
     registerFilter(name, {
       clear: () => registrationRef.current?.clear(),
       isActive: () => registrationRef.current?.isActive() ?? false,
@@ -68,7 +74,7 @@ export function FilterToggle({
       setInternalValue(newValue);
     }
     onChange?.(newValue);
-    updateActiveState(name, newValue);
+    updateActiveState?.(name, newValue);
   }
 
   return (

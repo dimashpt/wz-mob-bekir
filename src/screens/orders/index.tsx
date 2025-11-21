@@ -113,25 +113,18 @@ export default function OrdersScreen(): JSX.Element {
       </Text>
       <View className="gap-sm mb-sm">
         <View className="gap-sm flex-row">
-          <Filter
-            scrollViewProps={{
-              scrollEnabled: false,
-            }}
-            hideClearAll={true}
-          >
-            <Filter.Options
-              name="searchKey"
-              label={t('orders.status.title')}
-              value={searchKey}
-              onChange={(value) => setSearchKey(value as OrderRequestSearchKey)}
-              options={Object.entries(ORDER_FILTER_FIELDS).map(
-                ([key, value]) => ({
-                  label: value,
-                  value: key,
-                }),
-              )}
-            />
-          </Filter>
+          <Filter.Options
+            name="searchKey"
+            label={t('orders.status.title')}
+            value={searchKey}
+            onChange={(value) => setSearchKey(value as OrderRequestSearchKey)}
+            options={Object.entries(ORDER_FILTER_FIELDS).map(
+              ([key, value]) => ({
+                label: value,
+                value: key,
+              }),
+            )}
+          />
           <View className="flex-1">
             <InputField
               placeholder={t('orders.searchPlaceholder')}

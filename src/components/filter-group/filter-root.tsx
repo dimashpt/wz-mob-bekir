@@ -24,7 +24,12 @@ function FilterContent({
   hideClearAll: boolean;
   scrollViewRef: React.RefObject<ScrollView | null>;
 }): React.ReactNode {
-  const { clearAll, hasActiveFilters } = useFilterContext();
+  const context = useFilterContext();
+  // Context is always available here since FilterContent is only used inside FilterProvider
+  if (!context) {
+    throw new Error('FilterContent must be used inside FilterProvider');
+  }
+  const { clearAll, hasActiveFilters } = context;
 
   const { children: _, ...restScrollViewProps } = scrollViewProps || {};
 

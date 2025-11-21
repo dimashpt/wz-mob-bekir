@@ -31,8 +31,7 @@ export function FilterDate({
     Dayjs | { start: Dayjs; end: Dayjs } | null
   >(null);
   const datePickerRef = useRef<DatePickerModalRef>(null);
-  const { registerFilter, unregisterFilter, updateActiveState } =
-    useFilterContext();
+  const context = useFilterContext();
 
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : internalValue;
@@ -42,8 +41,10 @@ export function FilterDate({
     isActive: () => boolean;
   }>(null);
 
+  const updateActiveState = context?.updateActiveState;
+
   useEffect(() => {
-    updateActiveState(name, isActive);
+    updateActiveState?.(name, isActive);
   }, [name, isActive, updateActiveState]);
 
   function clear(): void {
@@ -52,7 +53,7 @@ export function FilterDate({
       setInternalValue(newValue);
     }
     onChange?.(newValue);
-    updateActiveState(name, false);
+    updateActiveState?.(name, false);
   }
 
   function isActiveValue(): boolean {
@@ -65,7 +66,12 @@ export function FilterDate({
     isActive: isActiveValue,
   };
 
+  const registerFilter = context?.registerFilter;
+  const unregisterFilter = context?.unregisterFilter;
+
   useEffect(() => {
+    if (!registerFilter || !unregisterFilter) return;
+
     registerFilter(name, {
       clear: () => registrationRef.current?.clear(),
       isActive: () => registrationRef.current?.isActive() ?? false,
@@ -85,7 +91,7 @@ export function FilterDate({
       setInternalValue(date);
     }
     onChange?.(date);
-    updateActiveState(name, Boolean(date));
+    updateActiveState?.(name, Boolean(date));
   }
 
   function handleDateRangeSelect(range: { start: Dayjs; end: Dayjs }): void {
@@ -93,7 +99,7 @@ export function FilterDate({
       setInternalValue(range);
     }
     onChange?.(range);
-    updateActiveState(name, true);
+    updateActiveState?.(name, true);
   }
 
   function getDisplayLabel(): string {

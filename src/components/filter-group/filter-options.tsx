@@ -33,8 +33,7 @@ export function FilterOptions({
     multiple ? [] : '',
   );
   const optionSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { registerFilter, unregisterFilter, updateActiveState } =
-    useFilterContext();
+  const context = useFilterContext();
 
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : internalValue;
@@ -44,8 +43,10 @@ export function FilterOptions({
     isActive: () => boolean;
   }>(null);
 
+  const updateActiveState = context?.updateActiveState;
+
   useEffect(() => {
-    updateActiveState(name, isActive);
+    updateActiveState?.(name, isActive);
   }, [name, isActive, updateActiveState]);
 
   function clear(): void {
@@ -54,7 +55,7 @@ export function FilterOptions({
       setInternalValue(defaultValue);
     }
     onChange?.(defaultValue);
-    updateActiveState(name, false);
+    updateActiveState?.(name, false);
   }
 
   function isActiveValue(): boolean {
@@ -67,7 +68,12 @@ export function FilterOptions({
     isActive: isActiveValue,
   };
 
+  const registerFilter = context?.registerFilter;
+  const unregisterFilter = context?.unregisterFilter;
+
   useEffect(() => {
+    if (!registerFilter || !unregisterFilter) return;
+
     registerFilter(name, {
       clear: () => registrationRef.current?.clear(),
       isActive: () => registrationRef.current?.isActive() ?? false,
@@ -98,7 +104,7 @@ export function FilterOptions({
     const newIsActive = Array.isArray(newValue)
       ? newValue.length > 0
       : Boolean(newValue);
-    updateActiveState(name, newIsActive);
+    updateActiveState?.(name, newIsActive);
   }
 
   function getDisplayLabel(): string {

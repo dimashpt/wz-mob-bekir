@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ScrollView } from 'react-native';
 
 export interface FilterRegistration {
@@ -16,14 +23,8 @@ interface FilterContextValue {
 
 const FilterContext = createContext<FilterContextValue | null>(null);
 
-export function useFilterContext(): FilterContextValue {
-  const context = useContext(FilterContext);
-  if (!context) {
-    throw new Error(
-      'Filter child components must be used within Filter component',
-    );
-  }
-  return context;
+export function useFilterContext(): FilterContextValue | null {
+  return useContext(FilterContext);
 }
 
 export function FilterProvider({
@@ -36,55 +37,71 @@ export function FilterProvider({
   const filterRegistrations = useRef<Record<string, FilterRegistration>>({});
   const [activeStates, setActiveStates] = useState<Record<string, boolean>>({});
 
-  function registerFilter(
-    name: string,
-    registration: FilterRegistration,
-  ): void {
-    filterRegistrations.current[name] = registration;
-    // Initialize active state
-    setActiveStates((prev) => ({
-      ...prev,
-      [name]: registration.isActive(),
-    }));
-  }
+  const registerFilter = useCallback(
+    (name: string, registration: FilterRegistration): void => {
+      filterRegistrations.current[name] = registration;
+      // Initialize active state
+      setActiveStates((prev) => ({
+        ...prev,
+        [name]: registration.isActive(),
+      }));
+    },
+    [],
+  );
 
-  function unregisterFilter(name: string): void {
+  const unregisterFilter = useCallback((name: string): void => {
     delete filterRegistrations.current[name];
     setActiveStates((prev) => {
       const newState = { ...prev };
       delete newState[name];
       return newState;
     });
-  }
+  }, []);
 
-  function updateActiveState(name: string, isActive: boolean): void {
-    setActiveStates((prev) => ({
-      ...prev,
-      [name]: isActive,
-    }));
-  }
+  const updateActiveState = useCallback(
+    (name: string, isActive: boolean): void => {
+      setActiveStates((prev) => {
+        // Only update if the value actually changed
+        if (prev[name] === isActive) return prev;
+        return {
+          ...prev,
+          [name]: isActive,
+        };
+      });
+    },
+    [],
+  );
 
-  function clearAll(): void {
+  const clearAll = useCallback((): void => {
     Object.values(filterRegistrations.current).forEach((registration) => {
       registration.clear();
     });
     scrollViewRef.current?.scrollTo({ x: 0, animated: true });
-  }
+  }, [scrollViewRef]);
 
-  function hasActiveFilters(): boolean {
+  const hasActiveFilters = useCallback((): boolean => {
     return Object.values(activeStates).some((isActive) => isActive);
-  }
+  }, [activeStates]);
+
+  const contextValue = useMemo<FilterContextValue>(
+    () => ({
+      registerFilter,
+      unregisterFilter,
+      updateActiveState,
+      clearAll,
+      hasActiveFilters,
+    }),
+    [
+      registerFilter,
+      unregisterFilter,
+      updateActiveState,
+      clearAll,
+      hasActiveFilters,
+    ],
+  );
 
   return (
-    <FilterContext.Provider
-      value={{
-        registerFilter,
-        unregisterFilter,
-        updateActiveState,
-        clearAll,
-        hasActiveFilters,
-      }}
-    >
+    <FilterContext.Provider value={contextValue}>
       {children}
     </FilterContext.Provider>
   );
