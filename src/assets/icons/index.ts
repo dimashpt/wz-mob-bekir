@@ -1,6 +1,7 @@
 import appearance from './appearance.svg';
 import arrow from './arrow.svg';
 import attachment from './attachment.svg';
+import chat from './chat.svg';
 import chevronCircle from './chevron-circle.svg';
 import chevron from './chevron.svg';
 import cleanup from './cleanup.svg';
@@ -35,6 +36,7 @@ export const Icons = {
   appearance,
   arrow,
   attachment,
+  chat,
   chevron,
   chevronCircle,
   cleanup,

@@ -20,7 +20,8 @@
     "home": "Home",
     "settings": "Settings",
     "orders": "Orders",
-    "products": "Products"
+    "products": "Products",
+    "chat": "Chat"
   },
   "date_time_picker": {
     "pick_range": "Pick Range",
@@ -184,5 +185,8 @@
   },
   "settings": {
     "title": "Settings"
+  },
+  "chat": {
+    "title": "Chat"
   }
 }

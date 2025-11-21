@@ -20,7 +20,8 @@
     "home": "Home",
     "settings": "Pengaturan",
     "orders": "Pesanan",
-    "products": "Produk"
+    "products": "Produk",
+    "chat": "Percakapan"
   },
   "date_time_picker": {
     "pick_range": "Pilih Rentang",
@@ -189,5 +190,8 @@
   },
   "settings": {
     "title": "Pengaturan"
+  },
+  "chat": {
+    "title": "Percakapan"
   }
 }
