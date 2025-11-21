@@ -1,4 +1,4 @@
-import React, { JSX, useMemo, useRef } from 'react';
+import React, { JSX, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
@@ -24,16 +24,32 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
 import { queryClient } from '@/lib/react-query';
 import { useOrderInfiniteQuery } from '@/services/order/repository';
-import { Order } from '@/services/order/types';
+import {
+  Order,
+  OrderInternalStatus,
+  PaymentMethod,
+  StorePlatform,
+} from '@/services/order/types';
 import OrderListItem from './components/order-list-item';
 
 const List = withUniwind(LegendList<Order>);
+
+interface OrderFilters {
+  status: OrderInternalStatus[];
+  channel: StorePlatform[];
+  paymentMethod: PaymentMethod[];
+}
 
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
     useDebounce();
+  const [filters, _setFilters] = useState<OrderFilters>({
+    status: [],
+    channel: [],
+    paymentMethod: [],
+  });
   const floatingActionButtonRef = useRef<FloatingActionButton>(null);
   const {
     data,
@@ -42,7 +58,15 @@ export default function OrdersScreen(): JSX.Element {
     isFetchingNextPage,
     isRefetching,
     refetch,
-  } = useOrderInfiniteQuery();
+  } = useOrderInfiniteQuery(
+    {},
+    {
+      per_page: 10,
+      status: filters.status,
+      channel: filters.channel,
+      payment_method: filters.paymentMethod,
+    },
+  );
 
   const orders = useMemo(
     () => data?.pages.flatMap((page) => page?.orders ?? []) ?? [],
@@ -84,6 +108,10 @@ export default function OrdersScreen(): JSX.Element {
     refetch();
   }
 
+  function setFilters(newFilters: Partial<OrderFilters>): void {
+    _setFilters((prev) => ({ ...prev, ...newFilters }));
+  }
+
   return (
     <Container
       className="bg-background p-lg flex-1"
@@ -115,6 +143,9 @@ export default function OrdersScreen(): JSX.Element {
               name: 'status',
               label: t('orders.status.title'),
               multiple: true,
+              value: filters.status,
+              onChange: (value) =>
+                setFilters({ status: value as OrderInternalStatus[] }),
               options: Object.values(ORDER_INTERNAL_STATUS).map((value) => ({
                 label: value,
                 value,
@@ -124,6 +155,9 @@ export default function OrdersScreen(): JSX.Element {
               name: 'channel',
               label: t('orders.channel'),
               multiple: true,
+              value: filters.channel,
+              onChange: (value) =>
+                setFilters({ channel: value as StorePlatform[] }),
               options: Object.entries(STORE_PLATFORMS).map(([, value]) => ({
                 label: value.label,
                 value: value.value,
@@ -133,6 +167,9 @@ export default function OrdersScreen(): JSX.Element {
               name: 'payment_method',
               label: t('orders.payment_method'),
               multiple: true,
+              value: filters.paymentMethod,
+              onChange: (value) =>
+                setFilters({ paymentMethod: value as PaymentMethod[] }),
               options: Object.values(PAYMENT_METHODS).map((value) => ({
                 label: value,
                 value,

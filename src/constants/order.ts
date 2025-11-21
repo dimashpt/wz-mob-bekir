@@ -1,5 +1,9 @@
 import { i18n } from '@/lib/i18n';
-import { OrderInternalStatus, StorePlatform } from '@/services/order';
+import {
+  OrderInternalStatus,
+  PaymentMethod,
+  StorePlatform,
+} from '@/services/order';
 
 export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   // Draft
@@ -34,7 +38,7 @@ export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   'Cancelled Order': i18n.t('orders.status.cancelled_order'),
 };
 
-export const PAYMENT_METHODS: Record<string, string> = {
+export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
   COD: 'COD',
   'NON COD': 'NON COD',
   DFOD: 'DFOD',

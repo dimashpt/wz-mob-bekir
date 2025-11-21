@@ -182,30 +182,35 @@ export const OptionBottomSheet = forwardRef<
           }: {
             item: Option;
             index: number;
-          }) => (
-            <TouchableHighlight
-              onPress={() => handleOptionSelect(option)}
-              underlayColor="#00000011"
-              className={twMerge(
-                'w-full flex-row',
-                isOptionSelected(option) ? 'bg-accent-soft' : '',
-              )}
-            >
-              <View
+          }) => {
+            const isLastItem = index === options.length - 1;
+
+            return (
+              <TouchableHighlight
+                onPress={() => handleOptionSelect(option)}
+                underlayColor="#00000011"
                 className={twMerge(
-                  'py-md px-md w-full flex-row items-center',
-                  options.length !== index + 1 && 'border-border border-b',
+                  'w-full flex-row',
+                  isOptionSelected(option) ? 'bg-accent-soft' : '',
+                  isLastItem ? 'rounded-b-lg' : '',
                 )}
               >
-                <Text variant="bodyS">{option.label}</Text>
-                {option.detail && <Text>{option.detail}</Text>}
-                <View className="flex-1" />
-                {isOptionSelected(option) && (
-                  <Icon name="tickCircle" size="lg" className="text-accent" />
-                )}
-              </View>
-            </TouchableHighlight>
-          )}
+                <View
+                  className={twMerge(
+                    'py-md px-md w-full flex-row items-center',
+                    options.length !== index + 1 && 'border-border border-b',
+                  )}
+                >
+                  <Text variant="bodyS">{option.label}</Text>
+                  {option.detail && <Text>{option.detail}</Text>}
+                  <View className="flex-1" />
+                  {isOptionSelected(option) && (
+                    <Icon name="tickCircle" size="lg" className="text-accent" />
+                  )}
+                </View>
+              </TouchableHighlight>
+            );
+          }}
           style={{ flex: 1 }}
           contentContainerStyle={{
             paddingBottom: multiselect ? 0 : undefined,

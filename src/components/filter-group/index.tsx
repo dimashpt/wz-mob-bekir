@@ -36,11 +36,13 @@ export type Filter = ToggleFilter | OptionFilter;
 export interface FilterGroupProps {
   filters: Filter[];
   scrollViewProps?: ScrollViewProps;
+  hideClearAll?: boolean;
 }
 
 export function FilterGroup({
   filters,
   scrollViewProps,
+  hideClearAll = false,
 }: FilterGroupProps): React.ReactNode {
   // Store internal state for uncontrolled filters
   const [internalStates, setInternalStates] = useState<
@@ -174,7 +176,7 @@ export function FilterGroup({
 
   return (
     <View className="relative">
-      {hasActiveFilters() && (
+      {!hideClearAll && hasActiveFilters() && (
         <Clickable
           onPress={handleClearAll}
           className="p-sm bg-surface border-border absolute top-0 right-0 z-1 self-center rounded-full border"

@@ -3,6 +3,9 @@ import { PaginationResponse } from '@/@types/api';
 export interface OrderRequestParams {
   page?: number;
   per_page?: number;
+  status?: OrderInternalStatus[];
+  channel?: StorePlatform[];
+  payment_method?: PaymentMethod[];
 }
 
 export interface OrderResponse {
@@ -64,7 +67,7 @@ export interface Order {
   cancel_sla_at: number;
   is_fake: boolean;
   pod_url: string | null;
-  payment_method: string;
+  payment_method: PaymentMethod;
   shipping_label_url: string;
   created_at: string;
   updated_at: string;
@@ -87,6 +90,8 @@ export interface Orderitem {
   is_oos: boolean;
   is_child: boolean;
 }
+
+export type PaymentMethod = 'COD' | 'NON COD' | 'DFOD';
 
 export type StorePlatform =
   | 'shopee'
