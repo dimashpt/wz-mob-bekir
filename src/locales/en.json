@@ -224,6 +224,7 @@
     "length_cm": "Length (cm)",
     "width_cm": "Width (cm)",
     "weight_g": "Weight (g)",
-    "chargeable_weight_g": "Chargeable Weight (g)"
+    "chargeable_weight_g": "Chargeable Weight (g)",
+    "activity_history": "Order Activity"
   }
 }

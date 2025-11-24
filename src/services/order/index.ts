@@ -3,6 +3,8 @@ import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import { API } from '@/lib/axios';
 import {
   OrderDetailsResponse,
+  OrderHistoryParams,
+  OrderHistoryResponse,
   OrderRequestParams,
   OrderResponse,
 } from './types';
@@ -33,6 +35,23 @@ export async function getOrderDetails(
 ): Promise<OrderDetailsResponse> {
   const response = await API.get<SuccessResponse<OrderDetailsResponse>>(
     ORDER_ENDPOINTS.GET_ORDER_DETAILS.replace(':id', id),
+  );
+
+  return response.data.data;
+}
+
+/**
+ * Fetches order histories from the API.
+ * @param id - The ID of the order.
+ * @returns A promise that resolves to the order histories.
+ */
+export async function getOrderHistories(
+  id: string,
+  params: OrderHistoryParams,
+): Promise<OrderHistoryResponse> {
+  const response = await API.get<SuccessResponse<OrderHistoryResponse>>(
+    ORDER_ENDPOINTS.GET_ORDER_HISTORIES.replace(':id', id),
+    { params },
   );
 
   return response.data.data;

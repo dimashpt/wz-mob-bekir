@@ -12,6 +12,7 @@ import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import * as OrderService from './index';
 import {
   OrderDetailsResponse,
+  OrderHistoryResponse,
   OrderRequestParams,
   OrderResponse,
 } from './types';
@@ -82,6 +83,32 @@ export function useOrderDetailsQuery<T = OrderDetailsResponse>(
     ...params,
     queryKey: [ORDER_ENDPOINTS.GET_ORDER_DETAILS, id],
     queryFn: () => OrderService.getOrderDetails(id),
+  });
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch order histories.
+ * @param id - The ID of the order.
+ * @returns The query object containing order histories.
+ * @template T - The type of data returned after selection (defaults to OrderHistoryResponse).
+ */
+export function useOrderHistoriesQuery<T = OrderHistoryResponse>(
+  params: Omit<
+    UseQueryOptions<OrderHistoryResponse, Error, T>,
+    'queryKey' | 'queryFn'
+  >,
+  id: string,
+): UseQueryResult<T, Error> {
+  const query = useQuery<OrderHistoryResponse, Error, T>({
+    ...params,
+    queryKey: [ORDER_ENDPOINTS.GET_ORDER_HISTORIES, id],
+    queryFn: () =>
+      OrderService.getOrderHistories(id, {
+        page: 1,
+        per_page: 10,
+      }),
   });
 
   return query;

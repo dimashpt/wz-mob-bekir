@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { FlatList, View } from 'react-native';
+import { FlatList, RefreshControl, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import { Image as ExpoImage } from 'expo-image';
@@ -9,13 +9,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { twMerge } from 'tailwind-merge';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
-import { Chip, Container, Divider, Header, Text } from '@/components';
+import { Chip, Container, Divider, Header, Text, Timeline } from '@/components';
 import {
   ORDER_STATUS_CHIP_VARIANTS,
   ORDER_STORE_PLATFORMS,
   ORDER_STORE_PLATFORMS_LOGOS,
 } from '@/constants/order';
-import { useOrderDetailsQuery } from '@/services/order/repository';
+import {
+  useOrderDetailsQuery,
+  useOrderHistoriesQuery,
+} from '@/services/order/repository';
 import { formatCurrency } from '@/utils/formatter';
 import { statusToTranslationKey } from './helpers/order-helpers';
 
@@ -44,14 +47,23 @@ export default function OrderDetailsScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
   const { id } = useLocalSearchParams<Params>();
-  const { data } = useOrderDetailsQuery({ select: (data) => data.order }, id);
-
+  const { data, isRefetching, refetch } = useOrderDetailsQuery(
+    { select: (data) => data.order },
+    id,
+  );
+  const { data: historiesData } = useOrderHistoriesQuery(
+    { select: (data) => data.histories },
+    id,
+  );
   return (
     <Container className="bg-background flex-1">
       <Header title={t('order_details.title')} />
       <Container.Scroll
         contentContainerClassName="p-lg rounded-md gap-sm"
         contentContainerStyle={{ paddingBottom: insets.bottom || spacingLg }}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
       >
         <Card className="flex-row items-center justify-between">
           <View className="gap-sm flex-row items-center">
@@ -281,6 +293,21 @@ export default function OrderDetailsScreen(): JSX.Element {
             </Text>
             <Text variant="labelS">{data?.chargeable_weight}</Text>
           </View>
+        </Card>
+        <Card>
+          <Text variant="labelM">{t('order_details.activity_history')}</Text>
+          <Timeline
+            items={
+              historiesData?.map((history) => ({
+                status: 'pending',
+                title: history.activity,
+                subtitle: history.remarks,
+                timestamp: dayjs(history.created_at).format(
+                  'DD MMMM YYYY, HH:mm',
+                ),
+              })) ?? []
+            }
+          />
         </Card>
       </Container.Scroll>
     </Container>

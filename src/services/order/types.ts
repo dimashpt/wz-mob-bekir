@@ -245,3 +245,29 @@ interface OrderProduct {
   sub_total_product_price: string;
   product_clasification: string;
 }
+
+export interface OrderHistoryParams {
+  page?: number;
+  per_page?: number;
+}
+
+export interface OrderHistoryResponse {
+  histories: OrderHistory[];
+  page_info: PaginationResponse;
+}
+
+export interface OrderHistory {
+  order_history_id: number;
+  order_header_id: number;
+  status: string;
+  channel_status: string;
+  activity: string;
+  full_name: string;
+  remarks: string | null;
+  file_url: string | null;
+  created_by: string;
+  updated_by: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}

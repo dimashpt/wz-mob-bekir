@@ -23,6 +23,7 @@ export * from './skeleton';
 export * from './snackbar';
 export * from './tab-bar';
 export * from './text';
+export * from './timeline';
 export * from './toggle-switch';
 export * from './update-button';
 export * from './wheel-picker';

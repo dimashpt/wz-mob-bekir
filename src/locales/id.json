@@ -228,6 +228,7 @@
     "length_cm": "Panjang (cm)",
     "width_cm": "Lebar (cm)",
     "weight_g": "Berat (g)",
-    "chargeable_weight_g": "Berat Dikenakan Biaya (g)"
+    "chargeable_weight_g": "Berat Dikenakan Biaya (g)",
+    "activity_history": "Aktivitas Order"
   }
 }
