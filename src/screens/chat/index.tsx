@@ -13,9 +13,7 @@ export default function ChatScreen(): JSX.Element {
   return (
     <Container
       className="bg-background p-lg flex-1"
-      style={{
-        paddingTop: insets.top + 20,
-      }}
+      style={{ paddingTop: insets.top + 20 }}
     >
       <Text variant="headingL" className="mb-lg">
         {t('chat.title')}

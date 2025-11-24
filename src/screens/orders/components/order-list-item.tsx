@@ -2,6 +2,7 @@ import React, { JSX } from 'react';
 import { View } from 'react-native';
 
 import { Image as ExpoImage } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { withUniwind } from 'uniwind';
 
@@ -24,6 +25,7 @@ const Image = withUniwind(ExpoImage);
 
 export default function OrderListItem({ item }: { item: Order }): JSX.Element {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const statusToTranslationKey = (status: OrderInternalStatus): string => {
     return status
@@ -76,7 +78,9 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
   return (
     <Clickable
       className="bg-surface border-border p-md gap-xs rounded-md border"
-      onPress={() => {}}
+      onPress={() => {
+        router.navigate(`/order-details?id=${item.order_header_id}`);
+      }}
     >
       <View className="flex-row items-end justify-between">
         <View className="gap-xs flex-row items-center">

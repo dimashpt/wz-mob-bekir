@@ -14,7 +14,9 @@
       "unexpected_error": "Ada kesalahan terjadi",
       "session_expired": "Sesi berakhir"
     },
-    "done": "Selesai"
+    "done": "Selesai",
+    "no_data_description": "Tidak ada data yang tersedia saat ini",
+    "no_data_found": "Tidak ada hasil yang ditemukan untuk '{{search}}'"
   },
   "tab": {
     "home": "Home",

@@ -13,6 +13,11 @@ export default function GuardLayout(): JSX.Element {
       title: t('storybook.title'),
       headerShown: true,
     },
+    {
+      path: '(orders)/order-details',
+      title: t('order_details.title'),
+      headerShown: false,
+    },
   ];
 
   return (

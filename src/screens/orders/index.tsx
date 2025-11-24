@@ -5,8 +5,9 @@ import { LegendList } from '@legendapp/list';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { withUniwind } from 'uniwind';
+import { useCSSVariable, withUniwind } from 'uniwind';
 
+import { Illustrations } from '@/assets/illustrations';
 import {
   Button,
   Container,
@@ -14,6 +15,7 @@ import {
   FloatingActionButton,
   Icon,
   InputField,
+  Skeleton,
   Text,
 } from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
@@ -24,7 +26,7 @@ import {
   ORDER_STORE_PLATFORMS,
 } from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
-import { useDebounce } from '@/hooks';
+import { screenHeight, screenWidth, useDebounce } from '@/hooks';
 import { queryClient } from '@/lib/react-query';
 import { useOrderInfiniteQuery } from '@/services/order/repository';
 import {
@@ -48,6 +50,8 @@ interface OrderFilters {
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const accentColor = useCSSVariable('--color-accent') as string;
+
   const [searchKey, setSearchKey] =
     useState<OrderRequestSearchKey>('order_code');
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
@@ -66,6 +70,7 @@ export default function OrdersScreen(): JSX.Element {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
+    isLoading,
     refetch,
   } = useOrderInfiniteQuery(
     {},
@@ -214,10 +219,11 @@ export default function OrdersScreen(): JSX.Element {
       </View>
       <List
         data={orders}
-        contentContainerClassName="gap-sm"
+        contentContainerClassName="gap-sm flex-1"
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,
         }}
+        scrollEnabled={!isLoading}
         onScroll={floatingActionButtonRef.current?.onScroll}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.order_header_id.toString()}
@@ -227,6 +233,36 @@ export default function OrdersScreen(): JSX.Element {
             fetchNextPage();
           }
         }}
+        ListEmptyComponent={() => (
+          <View className="gap-sm flex-1 items-center justify-center">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} height={100} />
+              ))
+            ) : (
+              <>
+                {debouncedSearch ? (
+                  <Illustrations.SearchNotFound
+                    color={accentColor}
+                    width={screenWidth / 3}
+                    height={screenHeight / 3}
+                  />
+                ) : (
+                  <Illustrations.NoData
+                    color={accentColor}
+                    width={screenWidth / 3}
+                    height={screenHeight / 3}
+                  />
+                )}
+                <Text variant="bodyM" className="text-center">
+                  {debouncedSearch
+                    ? t('general.no_data_found', { search: debouncedSearch })
+                    : t('general.no_data_description')}
+                </Text>
+              </>
+            )}
+          </View>
+        )}
         onEndReachedThreshold={0.5}
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
