@@ -28,6 +28,7 @@ import tickCircle from './tick-circle.svg';
 import tick from './tick.svg';
 import translate from './translate.svg';
 import trash from './trash.svg';
+import truck from './truck.svg';
 import userSettings from './user-settings.svg';
 import user from './user.svg';
 import warning from './warning.svg';
@@ -63,6 +64,7 @@ export const Icons = {
   tickCircle,
   translate,
   trash,
+  truck,
   user,
   userSettings,
   warning,

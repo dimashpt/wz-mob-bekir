@@ -219,7 +219,8 @@ export default function OrdersScreen(): JSX.Element {
       </View>
       <List
         data={orders}
-        contentContainerClassName="gap-sm flex-1"
+        className="flex-1"
+        contentContainerClassName="gap-sm"
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,
         }}

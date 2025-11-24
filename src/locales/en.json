@@ -193,6 +193,37 @@
     "title": "Chat"
   },
   "order_details": {
-    "title": "Order Details"
+    "title": "Order Details",
+    "customer": "Customer",
+    "order_summary": "Order Summary",
+    "origin_warehouse": "Origin/Warehouse",
+    "payment_method": "Payment Method",
+    "payment_type": "Payment Type",
+    "courier": "Courier",
+    "actual_weight": "Actual Weight",
+    "actual_price": "Actual Price",
+    "delivery_attempt": "Delivery Attempt",
+    "tracking_number": "Tracking Number",
+    "products": "Products",
+    "canceled": "Canceled",
+    "sku": "SKU",
+    "fees": "Fees",
+    "subtotal": "Subtotal",
+    "shipping_fee": "Shipping Fee",
+    "other_fee": "Other Fee",
+    "total_discount": "Total Discount",
+    "cod_fee": "COD Fee",
+    "seller_discount": "Seller Discount",
+    "shipping_discount": "Shipping Discount",
+    "packing_fee": "Packing Fee",
+    "insurance_fee": "Insurance Fee",
+    "grand_total": "Grand Total",
+    "shipping_address": "Shipping Address",
+    "package_information": "Package Information",
+    "height_cm": "Height (cm)",
+    "length_cm": "Length (cm)",
+    "width_cm": "Width (cm)",
+    "weight_g": "Weight (g)",
+    "chargeable_weight_g": "Chargeable Weight (g)"
   }
 }

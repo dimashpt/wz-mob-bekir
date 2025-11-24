@@ -8,7 +8,7 @@ import { Text, TextProps } from '../text';
 
 type DetailItemProps = {
   label: string;
-  value: string;
+  value?: string;
   icon?: IconNames;
   className?: string;
   style?: ViewStyle;
@@ -27,10 +27,7 @@ export default function DetailItem({
 }: DetailItemProps): JSX.Element {
   return (
     <View
-      className={twMerge(
-        'gap-md flex-1 flex-row items-center self-start',
-        className,
-      )}
+      className={twMerge('gap-md flex-row items-center self-start', className)}
       style={style}
     >
       {icon ? (

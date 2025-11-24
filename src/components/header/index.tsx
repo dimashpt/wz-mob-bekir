@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
 import { Clickable } from '@/components/clickable';
-import { Icon } from '@/components/icon';
+import { Icon, IconNames } from '@/components/icon';
 import { Text } from '@/components/text';
 
 export type HeaderRef = {
@@ -28,8 +28,10 @@ interface HeaderProps {
   children?: React.ReactNode;
   onPressBack?: () => void;
   title?: string;
-  suffix?: ReactNode;
+  suffixIcon?: IconNames;
+  onPressSuffix?: () => void;
   nativeProps?: NativeStackHeaderProps;
+  renderTitle?: () => ReactNode;
 }
 
 const headerVariants = tv({
@@ -52,11 +54,13 @@ export function Header({
   ref: _ref,
   children,
   onPressBack,
-  suffix,
+  suffixIcon,
+  onPressSuffix,
   className,
   style,
   title,
   nativeProps,
+  renderTitle,
 }: HeaderProps): React.JSX.Element {
   const { back } = useRouter();
   const insets = useSafeAreaInsets();
@@ -75,7 +79,7 @@ export function Header({
       className={twMerge(headerVariants(), className)}
       style={[{ paddingTop: insets.top }, style]}
     >
-      <View className="py-sm px-lg relative min-h-[48px] flex-row items-center justify-between">
+      <View className="py-sm px-lg relative min-h-[48px] flex-row items-center">
         <Clickable
           className="h-6 w-6 items-center justify-center"
           onPress={handleBackPress}
@@ -87,14 +91,26 @@ export function Header({
             transform={[{ rotate: '90deg' }]}
           />
         </Clickable>
-        <View className="absolute top-0 right-0 bottom-0 left-0 items-center justify-center">
-          {(title || nativeProps?.options?.title) && (
+        {renderTitle?.() ?? (
+          <View className="flex-1 items-center justify-center">
             <Text variant="labelXL" numberOfLines={1}>
               {title ?? nativeProps?.options?.title}
             </Text>
+          </View>
+        )}
+        <Clickable
+          className="h-6 w-6 items-center justify-center"
+          onPress={onPressSuffix}
+        >
+          {suffixIcon && (
+            <Icon
+              name={suffixIcon}
+              size="lg"
+              className="text-foreground"
+              transform={[{ rotate: '90deg' }]}
+            />
           )}
-        </View>
-        {suffix}
+        </Clickable>
       </View>
       {children && <View className="w-full">{children}</View>}
     </View>

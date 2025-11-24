@@ -1,3 +1,4 @@
+import { ChipVariant } from '@/components';
 import {
   OrderInternalStatus,
   PaymentMethod,
@@ -78,3 +79,49 @@ export const ORDER_FILTER_FIELDS = {
   tracking_number: 'orders.filter.tracking_number',
   buyer_name: 'orders.filter.buyer_name',
 } as const;
+
+export const ORDER_STATUS_CHIP_VARIANTS: Record<
+  OrderInternalStatus,
+  { variant: ChipVariant }
+> = {
+  // Draft
+  Unpaid: { variant: 'gray' },
+  Draft: { variant: 'gray' },
+
+  // Fulfillment
+  'To Process': { variant: 'blue' },
+  'In Process': { variant: 'blue' },
+  'Ready To Print': { variant: 'blue' },
+  Packed: { variant: 'blue' },
+
+  // Shipping
+  'Ready For Pickup': { variant: 'blue' },
+  'Shipped Order': { variant: 'blue' },
+  'Shipping Completed Order': { variant: 'green' },
+
+  // Completed
+  'Completed Order': { variant: 'green' },
+  'In Return': { variant: 'red' },
+  'Return Order': { variant: 'red' },
+
+  // Problems
+  'Out Of Stock': { variant: 'red' },
+  'Unmapping Product': { variant: 'red' },
+  'Unmapping Location': { variant: 'red' },
+  'Unmapping Delivery': { variant: 'red' },
+  'Undefined Status': { variant: 'red' },
+
+  // Cancelation
+  'In Cancel': { variant: 'red' },
+  'Cancelled Order': { variant: 'red' },
+};
+
+export const ORDER_STORE_PLATFORMS_LOGOS: Partial<
+  Record<StorePlatform, string>
+> = {
+  shopee: require('@/assets/images/brands/shopee.webp'),
+  lazada: require('@/assets/images/brands/lazada.webp'),
+  tiktok: require('@/assets/images/brands/tiktok.webp'),
+  tokopedia: require('@/assets/images/brands/tokopedia.webp'),
+  shopify: require('@/assets/images/brands/shopify.webp'),
+};

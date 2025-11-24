@@ -21,6 +21,7 @@ const ENDPOINTS = {
   // Order endpoints
   ORDER_ENDPOINTS: {
     LIST_ORDERS: '/tenant/orders',
+    GET_ORDER_DETAILS: '/tenant/orders/:id',
   },
 } as const;
 

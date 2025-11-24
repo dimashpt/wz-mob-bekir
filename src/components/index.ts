@@ -1,3 +1,4 @@
+export * from './accordion';
 export * from './banner';
 export * from './bottom-sheet';
 export * from './button';
