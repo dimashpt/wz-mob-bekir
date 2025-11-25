@@ -31,15 +31,15 @@ export const Timeline = React.memo(({ items }: TimelineProps) => {
           <View
             className={twMerge(
               'rounded-full',
-              status !== 'success' && 'bg-accent-soft',
+              status !== 'success' && 'bg-accent',
             )}
           >
             {status === 'success' ? (
               <Icon name="tickCircle" size="sm" className="text-accent" />
-            ) : status === 'pending' ? (
-              <Icon name="chevron" size="sm" className="text-accent" />
+            ) : status === 'error' ? (
+              <Icon name="closeCircle" size="sm" className="text-danger" />
             ) : (
-              <Icon name="warning" size="sm" className="text-danger" />
+              <Icon name="tick" size="sm" className="text-accent" />
             )}
           </View>
         </View>
@@ -64,7 +64,7 @@ export const Timeline = React.memo(({ items }: TimelineProps) => {
 
   return (
     <View className="gap-6">
-      <View className="my-lg w-xxs bg-primary absolute top-0 bottom-[10px] left-[9px]" />
+      <View className="my-lg w-xxs bg-accent absolute top-0 bottom-[10px] left-[10px]" />
       {renderedItems}
     </View>
   );
