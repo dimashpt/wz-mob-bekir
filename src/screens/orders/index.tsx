@@ -3,6 +3,7 @@ import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
 import { LegendList } from '@legendapp/list';
 import dayjs, { Dayjs } from 'dayjs';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable, withUniwind } from 'uniwind';
@@ -278,7 +279,7 @@ export default function OrdersScreen(): JSX.Element {
       />
       <FloatingActionButton
         ref={floatingActionButtonRef}
-        onPress={() => {}}
+        onPress={() => router.navigate('/order-form')}
         position={{
           bottom: TAB_BAR_HEIGHT + 20,
           right: 20,

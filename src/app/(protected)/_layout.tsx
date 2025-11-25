@@ -18,6 +18,11 @@ export default function GuardLayout(): JSX.Element {
       title: t('order_details.title'),
       headerShown: false,
     },
+    {
+      path: '(orders)/order-form',
+      title: t('order_form.title'),
+      headerShown: false,
+    },
   ];
 
   return (

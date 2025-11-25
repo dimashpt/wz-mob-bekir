@@ -226,5 +226,18 @@
     "weight_g": "Weight (g)",
     "chargeable_weight_g": "Chargeable Weight (g)",
     "activity_history": "Order Activity"
+  },
+  "order_form": {
+    "title": "Create Order",
+    "steps": {
+      "customer_info": "Customer Info",
+      "order_details": "Order Details",
+      "review": "Review & Submit"
+    },
+    "navigation": {
+      "next": "Next",
+      "previous": "Previous",
+      "submit": "Submit Order"
+    }
   }
 }

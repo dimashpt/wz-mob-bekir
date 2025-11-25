@@ -230,5 +230,18 @@
     "weight_g": "Berat (g)",
     "chargeable_weight_g": "Berat Dikenakan Biaya (g)",
     "activity_history": "Aktivitas Order"
+  },
+  "order_form": {
+    "title": "Buat Pesanan",
+    "steps": {
+      "customer_info": "Info Pelanggan",
+      "order_details": "Detail Pesanan",
+      "review": "Tinjau & Kirim"
+    },
+    "navigation": {
+      "next": "Selanjutnya",
+      "previous": "Sebelumnya",
+      "submit": "Kirim Pesanan"
+    }
   }
 }

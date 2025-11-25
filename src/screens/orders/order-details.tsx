@@ -28,20 +28,6 @@ type Params = {
   id: string;
 };
 
-function Card({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}): JSX.Element {
-  return (
-    <View className={twMerge('bg-surface p-md gap-md rounded-md', className)}>
-      {children}
-    </View>
-  );
-}
-
 export default function OrderDetailsScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -64,7 +50,7 @@ export default function OrderDetailsScreen(): JSX.Element {
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       >
-        <Card className="flex-row items-center justify-between">
+        <Container.Card className="flex-row items-center justify-between">
           <View className="gap-sm flex-row items-center">
             {data?.store_platform && !isLoading && (
               <Image
@@ -97,8 +83,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               }
             />
           )}
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.customer')}
           </Text>
@@ -112,8 +98,8 @@ export default function OrderDetailsScreen(): JSX.Element {
             )}
             <Text loading={isLoading}>{data?.buyer_name}</Text>
           </View>
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.order_summary')}
           </Text>
@@ -167,8 +153,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               </Text>
             </View>
           </View>
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.products')}
           </Text>
@@ -189,7 +175,7 @@ export default function OrderDetailsScreen(): JSX.Element {
                 )}
               >
                 {item?.is_cancel && (
-                  <View className="bg-danger py-xs px-sm absolute top-0 right-0 rounded-tr-sm rounded-bl-md">
+                  <View className="bg-danger py-xs px-sm absolute top-0 right-0 z-1 rounded-tr-sm rounded-bl-md">
                     <Text variant="labelXS" color="light">
                       {t('order_details.canceled')}
                     </Text>
@@ -227,8 +213,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               </View>
             )}
           />
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.fees')}
           </Text>
@@ -297,8 +283,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               </Text>
             </View>
           </View>
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.shipping_address')}
           </Text>
@@ -316,8 +302,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               {data?.recipient_full_address}
             </Text>
           </View>
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading}>
             {t('order_details.package_information')}
           </Text>
@@ -355,8 +341,8 @@ export default function OrderDetailsScreen(): JSX.Element {
               </Text>
             </View>
           </View>
-        </Card>
-        <Card>
+        </Container.Card>
+        <Container.Card>
           <Text variant="labelM" loading={isLoading || isHistoriesLoading}>
             {t('order_details.activity_history')}
           </Text>
@@ -372,7 +358,7 @@ export default function OrderDetailsScreen(): JSX.Element {
               })) ?? []
             }
           />
-        </Card>
+        </Container.Card>
       </Container.Scroll>
     </Container>
   );

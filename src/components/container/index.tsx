@@ -80,7 +80,22 @@ function ContainerScroll({
   );
 }
 
+function ContainerCard({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}): React.ReactElement {
+  return (
+    <View className={twMerge('bg-surface p-md gap-md rounded-md', className)}>
+      {children}
+    </View>
+  );
+}
+
 // Compound component
 export const Container = Object.assign(ContainerComponent, {
   Scroll: ContainerScroll,
+  Card: ContainerCard,
 });
