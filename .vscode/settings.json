@@ -34,9 +34,5 @@
     "ListFooterComponentClassName",
     "ListHeaderComponentClassName"
   ],
-  "tailwindCSS.classFunctions": ["useResolveClassNames"],
-  "workbench.editor.customLabels.enabled": true,
-  "workbench.editor.customLabels.patterns": {
-    "**/index.*": "(${dirname}).${extname}"
-  }
+  "tailwindCSS.classFunctions": ["useResolveClassNames"]
 }

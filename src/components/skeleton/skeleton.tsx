@@ -1,21 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, DimensionValue, ViewStyle } from 'react-native';
+import { Animated, ViewStyle } from 'react-native';
 
 import { twMerge } from 'tailwind-merge';
 
 export interface SkeletonProps {
-  width?: DimensionValue;
-  height?: DimensionValue;
-  borderRadius?: number;
   style?: ViewStyle;
   animationSpeed?: number; // Duration in milliseconds
   className?: string;
 }
 
 export function Skeleton({
-  width = '100%',
-  height = 20,
-  borderRadius = 4,
   style,
   animationSpeed = 1500,
   className,
@@ -50,16 +44,11 @@ export function Skeleton({
 
   return (
     <Animated.View
-      className={twMerge('bg-muted overflow-hidden', className)}
-      style={[
-        {
-          width,
-          height,
-          borderRadius,
-          opacity: pulseAnim,
-        },
-        style,
-      ]}
+      className={twMerge(
+        'bg-muted h-5 w-full overflow-hidden rounded-md',
+        className,
+      )}
+      style={[{ opacity: pulseAnim }, style]}
     />
   );
 }

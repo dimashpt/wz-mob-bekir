@@ -1,12 +1,7 @@
 import type { IconNames } from '@/components/icon';
 
-import React, { useEffect } from 'react';
-import {
-  ActivityIndicator,
-  PressableProps,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 import {
   interpolateColor,
@@ -24,8 +19,17 @@ import { Text, TextProps } from '@/components/text';
 
 type IconProp = IconNames | React.ReactElement;
 
+const ASYNC_STATES = {
+  INIT: 'init',
+  PENDING: 'pending',
+  ERROR: 'error',
+  SUCCESS: 'success',
+} as const;
+
+type AsyncState = (typeof ASYNC_STATES)[keyof typeof ASYNC_STATES];
+
 const buttonVariants = tv({
-  base: 'rounded-md items-center justify-center flex-row',
+  base: 'rounded-full items-center justify-center flex-row',
   variants: {
     variant: {
       filled: 'border-0',
@@ -70,7 +74,7 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
   text?: string;
   children?: React.ReactNode;
   textProps?: TextProps;
-  onPress?: () => void;
+  onPress?: () => void | Promise<void>;
   variant?: 'filled' | 'outlined' | 'ghost';
   color?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success';
   size?: 'small' | 'medium' | 'large';
@@ -81,6 +85,26 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
   suffixIcon?: IconProp;
   style?: StyleProp<ViewStyle>;
   className?: string;
+  /**
+   * Props to override default props when `onPress` async function throws.
+   * @default {}
+   */
+  errorConfig?: Partial<ButtonProps>;
+  /**
+   * Props to override default props when button has been clicked but `onPress` function did not yet resolve.
+   * @default {}
+   */
+  pendingConfig?: Partial<ButtonProps>;
+  /**
+   * Props to override default props when `onPress` async function resolves.
+   * @default {}
+   */
+  successConfig?: Partial<ButtonProps>;
+  /**
+   * Time in milliseconds after which Button should stop using `errorConfig` / `successConfig` overrides.
+   * @default 2000
+   */
+  resetTimeout?: number;
 }
 
 export function Button({
@@ -98,13 +122,31 @@ export function Button({
   onPress,
   style,
   className,
+  errorConfig,
+  pendingConfig,
+  successConfig,
+  resetTimeout = 2000,
   ...props
 }: ButtonProps): React.JSX.Element {
-  const isDisabled = disabled || loading;
+  const [asyncState, setAsyncState] = useState<AsyncState>(ASYNC_STATES.INIT);
+  const cancellablePromiseRef = useRef<{ cancelled: boolean } | undefined>(
+    undefined,
+  );
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+
+  // Determine if button should show loading state
+  // Manual loading prop takes precedence over async state
+  const isAsyncPending = asyncState === ASYNC_STATES.PENDING && !loading;
+  const isDisabled = disabled || loading || isAsyncPending;
 
   // Get CSS variables for colors
   const primaryColor = useCSSVariable('--color-accent') as string;
-  const subtleColor = useCSSVariable('--color-muted') as string;
+  const mutedColor = useCSSVariable('--color-muted') as string;
+  const mutedForegroundColor = useCSSVariable(
+    '--color-muted-foreground',
+  ) as string;
   const errorColor = useCSSVariable('--color-danger') as string;
   const warningColor = useCSSVariable('--color-warning') as string;
   const successColor = useCSSVariable('--color-success') as string;
@@ -119,6 +161,27 @@ export function Button({
 
   // Animation shared values
   const disabledValue = useSharedValue(isDisabled ? 1 : 0);
+  const asyncStateValue = useSharedValue(
+    asyncState === ASYNC_STATES.PENDING
+      ? 1
+      : asyncState === ASYNC_STATES.ERROR
+        ? 2
+        : asyncState === ASYNC_STATES.SUCCESS
+          ? 3
+          : 0,
+  );
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (cancellablePromiseRef.current) {
+        cancellablePromiseRef.current.cancelled = true;
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   // Update disabled animation when disabled state changes
   useEffect(() => {
@@ -127,10 +190,25 @@ export function Button({
     });
   }, [isDisabled, disabledValue]);
 
+  // Update async state animation
+  useEffect(() => {
+    const stateValue =
+      asyncState === ASYNC_STATES.PENDING
+        ? 1
+        : asyncState === ASYNC_STATES.ERROR
+          ? 2
+          : asyncState === ASYNC_STATES.SUCCESS
+            ? 3
+            : 0;
+    asyncStateValue.value = withTiming(stateValue, {
+      duration: 200,
+    });
+  }, [asyncState, asyncStateValue]);
+
   // Calculate colors outside of animated callbacks
   const backgroundColorMap: Record<string, string> = {
     primary: primaryColor,
-    secondary: subtleColor,
+    secondary: mutedColor,
     danger: errorColor,
     warning: warningColor,
     success: successColor,
@@ -165,6 +243,97 @@ export function Button({
       ? foregroundInvertedColor
       : textColorMap[color] || textColorMap.primary;
 
+  // Handle async onPress
+  const handleAsyncPress = useCallback((): void => {
+    if (!onPress) {
+      return;
+    }
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = undefined;
+    }
+
+    // Cancel previous promise if exists
+    if (cancellablePromiseRef.current) {
+      cancellablePromiseRef.current.cancelled = true;
+    }
+
+    // Create new cancellation ref
+    const cancellationRef = { cancelled: false };
+    cancellablePromiseRef.current = cancellationRef;
+
+    const onSuccess = (): void => {
+      if (cancellationRef.cancelled) {
+        return;
+      }
+      setAsyncState(ASYNC_STATES.SUCCESS);
+    };
+
+    const onError = (): void => {
+      if (cancellationRef.cancelled) {
+        return;
+      }
+      setAsyncState(ASYNC_STATES.ERROR);
+    };
+
+    const finallyCallback = (): void => {
+      if (cancellationRef.cancelled) {
+        return;
+      }
+      timeoutRef.current = setTimeout(() => {
+        if (!cancellationRef.cancelled) {
+          setAsyncState(ASYNC_STATES.INIT);
+        }
+      }, resetTimeout);
+    };
+
+    try {
+      const result = onPress();
+      setAsyncState(ASYNC_STATES.PENDING);
+
+      if (result instanceof Promise) {
+        result.then(onSuccess).catch(onError).finally(finallyCallback);
+      } else {
+        onSuccess();
+        finallyCallback();
+      }
+    } catch {
+      onError();
+      finallyCallback();
+    }
+  }, [onPress, resetTimeout]);
+
+  // Merge props based on async state
+  const getMergedProps = (): Partial<ButtonProps> => {
+    const stateConfig =
+      asyncState === ASYNC_STATES.ERROR
+        ? errorConfig
+        : asyncState === ASYNC_STATES.PENDING
+          ? pendingConfig
+          : asyncState === ASYNC_STATES.SUCCESS
+            ? successConfig
+            : null;
+
+    if (!stateConfig) {
+      return {};
+    }
+
+    return stateConfig;
+  };
+
+  const mergedProps = getMergedProps();
+  const finalText = mergedProps.text ?? text;
+  const finalIcon = mergedProps.icon ?? icon;
+  const finalPrefixIcon = mergedProps.prefixIcon ?? prefixIcon;
+  const finalSuffixIcon = mergedProps.suffixIcon ?? suffixIcon;
+  const finalChildren = mergedProps.children ?? children;
+  const finalClassName = mergedProps.className
+    ? twMerge(className, mergedProps.className)
+    : className;
+  const finalStyle = mergedProps.style ? [style, mergedProps.style] : style;
+
   // Animated styles
   const animatedButtonStyle = useAnimatedStyle(() => {
     // Ghost variant always has transparent background
@@ -193,7 +362,7 @@ export function Button({
     const textColor = interpolateColor(
       disabledValue.value,
       [0, 1],
-      [enabledTextColor, foregroundMuted],
+      [enabledTextColor, mutedForegroundColor],
     );
 
     return {
@@ -205,9 +374,9 @@ export function Button({
     buttonVariants({
       variant,
       size,
-      iconOnly: !!icon,
+      iconOnly: !!finalIcon,
     }),
-    className,
+    finalClassName,
   );
 
   const textVariant =
@@ -253,40 +422,31 @@ export function Button({
   return (
     <Clickable
       {...props}
-      onPress={isDisabled ? undefined : onPress}
+      onPress={isDisabled ? undefined : handleAsyncPress}
       disabled={isDisabled}
       className={buttonClassName}
-      style={[animatedButtonStyle, style]}
+      style={[animatedButtonStyle, finalStyle]}
     >
-      {children ? (
-        children
-      ) : loading ? (
-        <ActivityIndicator
-          size="small"
-          color={
-            variant === 'filled'
-              ? foregroundInvertedColor
-              : textColorMap[color] || textColorMap.primary
-          }
-          style={{ marginHorizontal: 8 }}
-        />
-      ) : icon ? (
+      {finalChildren ? (
+        finalChildren
+      ) : finalIcon ? (
         // Icon-only button
-        renderIcon(icon)
+        renderIcon(finalIcon)
       ) : (
         // Text button with optional prefix/suffix icons
         <>
-          {prefixIcon && renderIcon(prefixIcon, { marginRight: 8 })}
-          {text && (
+          {finalPrefixIcon && renderIcon(finalPrefixIcon, { marginRight: 8 })}
+          {finalText && (
             <Text
               variant={textVariant}
               style={animatedTextStyle}
               {...textProps}
+              {...mergedProps.textProps}
             >
-              {text}
+              {finalText}
             </Text>
           )}
-          {suffixIcon && renderIcon(suffixIcon, { marginLeft: 8 })}
+          {finalSuffixIcon && renderIcon(finalSuffixIcon, { marginLeft: 8 })}
         </>
       )}
     </Clickable>

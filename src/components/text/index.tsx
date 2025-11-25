@@ -156,12 +156,12 @@ const SkeletonText = ({
 
   return (
     <Skeleton
-      width={defaultDimensions.width}
-      height={defaultDimensions.height}
       style={{
         // Ensure skeleton doesn't overflow in flex containers
         maxWidth: '100%',
         flexShrink: 1,
+        width: defaultDimensions.width,
+        height: defaultDimensions.height,
         ...skeletonProps?.style,
       }}
       {...skeletonProps}

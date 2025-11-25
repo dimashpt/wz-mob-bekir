@@ -74,7 +74,7 @@
       --color-field-disabled: #dedede;
 
       --color-muted: #797979;
-      --color-muted-foreground: #737373;
+      --color-muted-foreground: #dedede;
       --color-border: #efefef;
       --color-focus: var(--color-accent);
     }
