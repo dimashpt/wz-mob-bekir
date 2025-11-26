@@ -147,7 +147,13 @@ export default function OrdersScreen(): JSX.Element {
               onChangeText={setSearch}
               autoCapitalize="none"
               autoCorrect={false}
-              left={<Icon name="search" size="lg" className="text-muted" />}
+              left={
+                <Icon
+                  name="search"
+                  size="lg"
+                  className="text-muted-foreground"
+                />
+              }
               className="bg-surface min-h-10 rounded-full"
               loading={isSearchDebouncing || isRefetching}
             />

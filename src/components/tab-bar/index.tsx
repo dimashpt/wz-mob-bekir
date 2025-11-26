@@ -151,7 +151,7 @@ const TabItem = ({
 }: TabItemPropsWithLayout): JSX.Element => {
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
-  const textColorMuted = useCSSVariable('--color-muted') as string;
+  const textColorMuted = useCSSVariable('--color-muted-foreground') as string;
 
   const label =
     options.tabBarLabel !== undefined

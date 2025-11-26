@@ -73,8 +73,8 @@
       --color-field-border: #eeeeee;
       --color-field-disabled: #dedede;
 
-      --color-muted: #797979;
-      --color-muted-foreground: #dedede;
+      --color-muted: #dedede;
+      --color-muted-foreground: #797979;
       --color-border: #efefef;
       --color-focus: var(--color-accent);
     }
@@ -133,7 +133,7 @@
       --color-field-disabled: #2a2a2a;
 
       /* Muted & Borders */
-      --color-muted: #9b9b9b;
+      --color-muted: #2c2c2c;
       --color-muted-foreground: #b3b3b3;
       --color-border: #2c2c2c;
 

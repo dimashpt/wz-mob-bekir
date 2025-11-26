@@ -41,7 +41,7 @@ const textVariants = tv({
       default: 'text-foreground',
       light: 'text-white',
       dark: 'text-black',
-      muted: 'text-muted',
+      muted: 'text-muted-foreground',
       accent: 'text-accent',
       success: 'text-success',
       warning: 'text-warning',

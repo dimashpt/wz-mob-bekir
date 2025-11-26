@@ -126,14 +126,14 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
             {label ? (
               <View className="gap-sm flex-row items-center justify-between">
                 <Text
-                  variant="labelL"
+                  variant="labelM"
                   color="placeholder"
                   className="font-medium"
                 >
                   {label}
                   {mandatory ? (
                     <Text
-                      variant="labelL"
+                      variant="labelM"
                       color="danger"
                       className="font-medium"
                     >
