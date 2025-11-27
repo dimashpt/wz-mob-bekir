@@ -230,7 +230,10 @@
   "order_form": {
     "title": "Create Order",
     "steps": {
-      "customer_info": "Customer Info",
+      "recipient_info": "Recipient Info",
+      "item": "Item",
+      "shipment": "Shipment",
+      "summary": "Summary",
       "order_details": "Order Details",
       "review": "Review & Submit"
     },

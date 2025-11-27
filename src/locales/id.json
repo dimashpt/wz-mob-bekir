@@ -234,7 +234,10 @@
   "order_form": {
     "title": "Buat Pesanan",
     "steps": {
-      "customer_info": "Info Pelanggan",
+      "recipient_info": "Info Penerima",
+      "item": "Item",
+      "shipment": "Pengiriman",
+      "summary": "Ringkasan",
       "order_details": "Detail Pesanan",
       "review": "Tinjau & Kirim"
     },

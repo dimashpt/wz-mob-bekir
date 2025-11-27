@@ -14,7 +14,11 @@ import {
 import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Button, Container, Header } from '@/components';
-import { FormStepCustomer, FormStepOrder, FormStepReview } from './components';
+import { FormStepItem } from './components/form-step-item';
+import { FormStepOrder } from './components/form-step-order';
+import { FormStepRecipient } from './components/form-step-recipient';
+import { FormStepShipment } from './components/form-step-shipment';
+import { FormStepSummary } from './components/form-step-summary';
 
 const TabBar = withUniwind(RNTabBar);
 
@@ -24,9 +28,11 @@ type TabRoute = Route & {
 };
 
 const renderScene = SceneMap({
-  customer: FormStepCustomer,
   order: FormStepOrder,
-  review: FormStepReview,
+  recipient: FormStepRecipient,
+  item: FormStepItem,
+  shipment: FormStepShipment,
+  summary: FormStepSummary,
 });
 
 export default function OrderFormScreen(): JSX.Element {
@@ -39,9 +45,11 @@ export default function OrderFormScreen(): JSX.Element {
 
   const [index, setIndex] = useState(0);
   const [routes] = useState<TabRoute[]>([
-    { key: 'customer', title: t('order_form.steps.customer_info') },
     { key: 'order', title: t('order_form.steps.order_details') },
-    { key: 'review', title: t('order_form.steps.review') },
+    { key: 'recipient', title: t('order_form.steps.recipient_info') },
+    { key: 'item', title: t('order_form.steps.item') },
+    { key: 'shipment', title: t('order_form.steps.shipment') },
+    { key: 'summary', title: t('order_form.steps.summary') },
   ]);
 
   function handleNext(): void {
