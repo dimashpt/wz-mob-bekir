@@ -30,6 +30,7 @@ export const orderFormSchema = z.object({
   is_dropship: z.boolean(),
   is_draft: z.boolean(),
   is_unpaid: z.boolean(),
+  is_same_as_recipient: z.boolean(),
   recipient: z.object({
     name: z.string(),
     phone: z.string(),

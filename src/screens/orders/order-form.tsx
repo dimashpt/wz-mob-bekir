@@ -77,6 +77,7 @@ export default function OrderFormScreen(): JSX.Element {
       is_dropship: false,
       is_draft: false,
       is_unpaid: false,
+      is_same_as_recipient: false,
       recipient: {
         name: '',
         phone: '',

@@ -3,7 +3,7 @@ import React, { JSX } from 'react';
 import dayjs from 'dayjs';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
-import { Container, InputField, SelectDateTime } from '@/components';
+import { Container, InputField, SelectDateTime, Text } from '@/components';
 import SelectInput from '@/components/select-input';
 import { ORDER_PAYMENT_TYPES, ORDER_PAYMENT_VIA } from '@/constants/order';
 import { OrderFormValues } from '../helpers/order-form';
@@ -30,6 +30,7 @@ export function FormStepOrder(): JSX.Element {
 
   return (
     <Container.Scroll contentContainerClassName="p-lg gap-md">
+      <Text variant="labelL">Order Information</Text>
       <Container.Card className="p-md gap-sm">
         <Controller
           control={control}
