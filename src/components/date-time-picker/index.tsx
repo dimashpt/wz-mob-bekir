@@ -142,3 +142,4 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
 export * from './calendar';
 export * from './wheel-date-picker';
 export * from './wheel-time-picker';
+export * from './select-datetime';

@@ -1,10 +1,12 @@
 import appearance from './appearance.svg';
 import arrow from './arrow.svg';
 import attachment from './attachment.svg';
+import calendar from './calendar.svg';
 import chat from './chat.svg';
 import chevronCircle from './chevron-circle.svg';
 import chevron from './chevron.svg';
 import cleanup from './cleanup.svg';
+import clock from './clock.svg';
 import closeCircle from './close-circle.svg';
 import close from './close.svg';
 import dev from './dev.svg';
@@ -37,6 +39,8 @@ export const Icons = {
   appearance,
   arrow,
   attachment,
+  calendar,
+  clock,
   chat,
   chevron,
   chevronCircle,

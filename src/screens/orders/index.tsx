@@ -23,7 +23,7 @@ import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import {
   ORDER_FILTER_FIELDS,
   ORDER_INTERNAL_STATUS,
-  ORDER_PAYMENT_METHODS,
+  ORDER_PAYMENT_TYPES,
   ORDER_STORE_PLATFORMS,
 } from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
@@ -204,7 +204,7 @@ export default function OrdersScreen(): JSX.Element {
               onChange={(value) =>
                 setFilters({ paymentMethod: value as PaymentMethod[] })
               }
-              options={Object.values(ORDER_PAYMENT_METHODS).map((value) => ({
+              options={Object.values(ORDER_PAYMENT_TYPES).map((value) => ({
                 label: value,
                 value,
               }))}

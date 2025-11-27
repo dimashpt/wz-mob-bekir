@@ -38,10 +38,19 @@ export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   'Cancelled Order': 'orders.status.cancelled_order',
 };
 
-export const ORDER_PAYMENT_METHODS: Record<PaymentMethod, string> = {
+export const ORDER_PAYMENT_TYPES: Record<PaymentMethod, string> = {
   COD: 'COD',
   'NON COD': 'NON COD',
   DFOD: 'DFOD',
+};
+
+export const ORDER_PAYMENT_VIA: Record<
+  keyof typeof ORDER_PAYMENT_TYPES,
+  string[]
+> = {
+  'NON COD': ['Bank Transfer', 'Prepaid/E-Wallet', 'Virtual Account', 'QRIS'],
+  COD: ['Tunai ke Kurir', 'Digital ke Kurir'],
+  DFOD: ['Bayar Ongkir saat Terima'],
 };
 
 export const ORDER_STORE_PLATFORMS: Record<

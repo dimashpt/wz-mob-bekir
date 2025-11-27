@@ -92,8 +92,8 @@ export const SelectInput = forwardRef<SelectInputRef, SelectInputProps>(
                 right={
                   <Icon
                     name="chevron"
-                    size={20}
-                    className="text-foreground-muted"
+                    size="base"
+                    className="text-field-placeholder"
                   />
                 }
                 {...props}
@@ -107,7 +107,7 @@ export const SelectInput = forwardRef<SelectInputRef, SelectInputProps>(
           options={options}
           onSelect={handleOptionSelect}
           selectedValue={selectedValue}
-          title={title ?? (label as string)}
+          title={title ?? placeholder ?? label}
         />
       </View>
     );
