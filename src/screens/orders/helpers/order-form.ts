@@ -90,6 +90,8 @@ export const orderFormSchema = z.object({
     discount_shipping: z.number(),
     packing_price: z.number(),
     insurance_price: z.number(),
+    is_shipping_cost_covered_by_seller: z.boolean(),
+    is_using_insurance: z.boolean(),
   }),
 });
 
