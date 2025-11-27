@@ -75,7 +75,7 @@ export default function OrderFormScreen(): JSX.Element {
       cod_percentage: 0,
       insurance_percentage: 0,
       dropshipper_name: '',
-      dropshipper_phone: null,
+      dropshipper_phone: '',
       dropshipper_email: '',
       dropshipper_full_address: '',
       is_dropship: false,

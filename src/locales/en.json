@@ -231,7 +231,7 @@
     "title": "Create Order",
     "steps": {
       "recipient_info": "Recipient Info",
-      "item": "Item",
+      "item": "Item & Package",
       "shipment": "Shipment",
       "summary": "Summary",
       "order_details": "Order Details",

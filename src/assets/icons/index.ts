@@ -20,6 +20,7 @@ import logout from './logout.svg';
 import notification from './notification.svg';
 import order from './order.svg';
 import plus from './plus.svg';
+import productAdd from './product-add.svg';
 import product from './product.svg';
 import refresh from './refresh.svg';
 import search from './search.svg';
@@ -59,6 +60,7 @@ export const Icons = {
   order,
   plus,
   product,
+  productAdd,
   refresh,
   search,
   shortcut,

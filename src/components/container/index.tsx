@@ -84,7 +84,7 @@ function ContainerCard({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
 }): React.ReactElement {
   return (

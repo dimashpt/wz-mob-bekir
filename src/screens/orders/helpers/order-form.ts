@@ -24,7 +24,7 @@ export const orderFormSchema = z.object({
   cod_percentage: z.number().min(0),
   insurance_percentage: z.number().min(0),
   dropshipper_name: z.string(),
-  dropshipper_phone: z.string().nullable(),
+  dropshipper_phone: z.string(),
   dropshipper_email: z.string(),
   dropshipper_full_address: z.string(),
   is_dropship: z.boolean(),
@@ -53,6 +53,8 @@ export const orderFormSchema = z.object({
     full_address: z.string(),
   }),
   delivery: z.object({
+    is_self_delivery: z.boolean(),
+    logistic_name: z.string(),
     logistic: z.string(),
     delivery_method: z.string(),
     logistic_provider_name: z.string(),

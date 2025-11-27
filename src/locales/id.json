@@ -235,7 +235,7 @@
     "title": "Buat Pesanan",
     "steps": {
       "recipient_info": "Info Penerima",
-      "item": "Item",
+      "item": "Produk & Paket",
       "shipment": "Pengiriman",
       "summary": "Ringkasan",
       "order_details": "Detail Pesanan",
