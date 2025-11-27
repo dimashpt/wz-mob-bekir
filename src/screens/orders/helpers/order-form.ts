@@ -14,8 +14,14 @@ export const orderFormSchema = z.object({
       label: z.string(),
     })
     .nullable(),
-  store_id: z.string(),
-  location_id: z.string(),
+  store_id: z.object({
+    value: z.string(),
+    label: z.string(),
+  }),
+  location_id: z.object({
+    value: z.string(),
+    label: z.string(),
+  }),
   checkout_at: z.string(),
   sales_pic: z.string(),
   remarks: z.string(),

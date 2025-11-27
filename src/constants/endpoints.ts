@@ -25,9 +25,24 @@ const ENDPOINTS = {
     GET_ORDER_HISTORIES: '/tenant/orders/:id/order-histories',
     GET_ORDER_HISTORY_DETAILS: '/tenant/orders/:id/order-histories',
   },
+
+  // Store endpoints
+  STORE_ENDPOINTS: {
+    LIST_STORES: '/tenant/store',
+  },
+
+  WAREHOUSE_ENDPOINTS: {
+    LIST_WAREHOUSES: '/tenant/location',
+  },
 } as const;
 
 export default ENDPOINTS;
 
 // Export individual service endpoints for convenience
-export const { AUTH_ENDPOINTS, USER_ENDPOINTS, ORDER_ENDPOINTS } = ENDPOINTS;
+export const {
+  AUTH_ENDPOINTS,
+  USER_ENDPOINTS,
+  ORDER_ENDPOINTS,
+  STORE_ENDPOINTS,
+  WAREHOUSE_ENDPOINTS,
+} = ENDPOINTS;

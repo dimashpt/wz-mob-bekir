@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useMemo } from 'react';
 
 import dayjs from 'dayjs';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
@@ -7,9 +7,36 @@ import { Container, InputField, SelectDateTime, Text } from '@/components';
 import SelectInput from '@/components/select-input';
 import { ORDER_PAYMENT_TYPES, ORDER_PAYMENT_VIA } from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { useStoresInfiniteQuery } from '@/services/store/repository';
+import { useWarehousesInfiniteQuery } from '@/services/warehouse/repository';
 import { OrderFormValues } from '../helpers/order-form';
 
 export function FormStepOrder(): JSX.Element {
+  const { data: stores } = useStoresInfiniteQuery();
+  const { data: warehouses } = useWarehousesInfiniteQuery();
+
+  const storeOptions = useMemo(
+    () =>
+      stores?.pages
+        .flatMap((page) => page?.stores ?? [])
+        .map((store) => ({
+          label: store.alias,
+          value: store.store_id.toString(),
+        })) ?? [],
+    [stores],
+  );
+
+  const warehouseOptions = useMemo(
+    () =>
+      warehouses?.pages
+        .flatMap((page) => page?.locations ?? [])
+        .map((warehouse) => ({
+          label: warehouse.name,
+          value: warehouse.id.toString(),
+        })) ?? [],
+    [warehouses],
+  );
+
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchPaymentMethodType = useWatch({
     control,
@@ -45,7 +72,6 @@ export function FormStepOrder(): JSX.Element {
           }) => (
             <InputField
               label="No. Order"
-              mandatory
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -63,6 +89,7 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <SelectInput
+              mandatory
               label="Payment Method"
               onSelect={(value) => {
                 onChange(value);
@@ -85,6 +112,7 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <SelectInput
+              mandatory
               label="Payment Via"
               onSelect={onChange}
               disabled={!watchPaymentMethodType}
@@ -105,10 +133,11 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <SelectInput
+              mandatory
               label="Toko"
               onSelect={onChange}
-              options={[].map((method) => ({ label: method, value: method }))}
-              value={value}
+              options={storeOptions}
+              value={value.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
@@ -124,10 +153,11 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <SelectInput
+              mandatory
               label="Dikirim dari"
               onSelect={onChange}
-              options={[].map((method) => ({ label: method, value: method }))}
-              value={value}
+              options={warehouseOptions}
+              value={value.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}

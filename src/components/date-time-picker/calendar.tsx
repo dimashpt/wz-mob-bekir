@@ -162,7 +162,9 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
             name="chevron"
             size={24}
             transform={[{ rotate: '90deg' }]}
-            className={isPrevMonthDisabled ? 'text-muted' : 'text-foreground'}
+            className={
+              isPrevMonthDisabled ? 'text-muted-foreground' : 'text-foreground'
+            }
           />
         </TouchableOpacity>
         <Text variant="labelXL">{currentMonth.format('MMMM YYYY')}</Text>
@@ -178,7 +180,9 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
             name="chevron"
             size={24}
             transform={[{ rotate: '270deg' }]}
-            className={isNextMonthDisabled ? 'text-muted' : 'text-foreground'}
+            className={
+              isNextMonthDisabled ? 'text-muted-foreground' : 'text-foreground'
+            }
           />
         </TouchableOpacity>
       </View>
@@ -282,7 +286,9 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
                       ? 'danger'
                       : 'default'
                   }
-                  className={twMerge(isSelectedOrInRange && 'text-white')}
+                  className={twMerge(
+                    isSelectedOrInRange && 'dark:text-background text-white',
+                  )}
                   style={Platform.OS === 'ios' ? undefined : { lineHeight: 24 }}
                 >
                   {thisDate.date()}
