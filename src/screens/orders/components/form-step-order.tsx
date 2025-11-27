@@ -6,6 +6,7 @@ import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { Container, InputField, SelectDateTime, Text } from '@/components';
 import SelectInput from '@/components/select-input';
 import { ORDER_PAYMENT_TYPES, ORDER_PAYMENT_VIA } from '@/constants/order';
+import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { OrderFormValues } from '../helpers/order-form';
 
 export function FormStepOrder(): JSX.Element {
@@ -29,7 +30,10 @@ export function FormStepOrder(): JSX.Element {
   ).map((method) => ({ label: method, value: method }));
 
   return (
-    <Container.Scroll contentContainerClassName="p-lg gap-md">
+    <Container.Scroll
+      contentContainerClassName="p-lg gap-md"
+      contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
+    >
       <Text variant="labelL">Order Information</Text>
       <Container.Card className="p-md gap-sm">
         <Controller

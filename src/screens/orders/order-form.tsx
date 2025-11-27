@@ -2,6 +2,7 @@ import React, { JSX, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { LinearGradient } from 'expo-linear-gradient';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,6 +17,7 @@ import {
 import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Button, Container, Header } from '@/components';
+import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { FormStepItem } from './components/form-step-item';
 import { FormStepOrder } from './components/form-step-order';
 import { FormStepRecipient } from './components/form-step-recipient';
@@ -24,6 +26,7 @@ import { FormStepSummary } from './components/form-step-summary';
 import { orderFormSchema, OrderFormValues } from './helpers/order-form';
 
 const TabBar = withUniwind(RNTabBar);
+const MappedLinearGradient = withUniwind(LinearGradient);
 
 type TabRoute = Route & {
   key: string;
@@ -45,6 +48,7 @@ export default function OrderFormScreen(): JSX.Element {
   const layout = useWindowDimensions();
   const accentColor = useCSSVariable('--color-accent') as string;
   const mutedColor = useCSSVariable('--color-muted') as string;
+  const backgroundColor = useCSSVariable('--color-background') as string;
 
   const [index, setIndex] = useState(0);
   const [routes] = useState<TabRoute[]>([
@@ -176,28 +180,42 @@ export default function OrderFormScreen(): JSX.Element {
           swipeEnabled
           lazy
         />
-        <View
-          className="gap-md p-lg border-border flex-row border-t"
-          style={{ paddingBottom: insets.bottom || spacingLg }}
+        <MappedLinearGradient
+          colors={[
+            backgroundColor + '00',
+            backgroundColor,
+            backgroundColor,
+            backgroundColor,
+          ]}
+          className="absolute right-0 bottom-0 left-0 items-center"
+          style={{
+            paddingBottom: insets.bottom || spacingLg,
+            height: TAB_BAR_HEIGHT + 20,
+          }}
         >
-          <Button
-            variant="outlined"
-            className="flex-1"
-            onPress={handlePrevious}
-            disabled={isFirstStep}
-            text={t('order_form.navigation.previous')}
-          />
-          <Button
-            variant="filled"
-            className="flex-1"
-            onPress={isLastStep ? handleSubmit : handleNext}
-            text={
-              isLastStep
-                ? t('order_form.navigation.submit')
-                : t('order_form.navigation.next')
-            }
-          />
-        </View>
+          <View
+            className="gap-md p-lg absolute right-0 bottom-0 left-0 flex-row"
+            style={{ paddingBottom: insets.bottom || spacingLg }}
+          >
+            <Button
+              variant="outlined"
+              className="flex-1"
+              onPress={handlePrevious}
+              disabled={isFirstStep}
+              text={t('order_form.navigation.previous')}
+            />
+            <Button
+              variant="filled"
+              className="flex-1"
+              onPress={isLastStep ? handleSubmit : handleNext}
+              text={
+                isLastStep
+                  ? t('order_form.navigation.submit')
+                  : t('order_form.navigation.next')
+              }
+            />
+          </View>
+        </MappedLinearGradient>
       </Container>
     </FormProvider>
   );

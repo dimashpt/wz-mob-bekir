@@ -4,6 +4,7 @@ import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import { Container, InputField, Text, ToggleSwitch } from '@/components';
 import SelectInput from '@/components/select-input';
+import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { OrderFormValues } from '../helpers/order-form';
 
 export function FormStepRecipient(): JSX.Element {
@@ -14,7 +15,10 @@ export function FormStepRecipient(): JSX.Element {
   });
 
   return (
-    <Container.Scroll contentContainerClassName="p-lg gap-md">
+    <Container.Scroll
+      contentContainerClassName="p-lg gap-md"
+      contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
+    >
       <Text variant="labelL">Informasi Penerima</Text>
       <Container.Card className="p-lg gap-md">
         <Controller
