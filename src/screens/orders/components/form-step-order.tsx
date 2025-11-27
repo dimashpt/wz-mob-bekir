@@ -1,15 +1,31 @@
 import React, { JSX, useMemo } from 'react';
+import { View } from 'react-native';
 
 import dayjs from 'dayjs';
+import { Image as ExpoImage } from 'expo-image';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { twMerge } from 'tailwind-merge';
+import { withUniwind } from 'uniwind';
 
-import { Container, InputField, SelectDateTime, Text } from '@/components';
+import {
+  Container,
+  Icon,
+  InputField,
+  SelectDateTime,
+  Text,
+} from '@/components';
 import SelectInput from '@/components/select-input';
-import { ORDER_PAYMENT_TYPES, ORDER_PAYMENT_VIA } from '@/constants/order';
+import {
+  ORDER_PAYMENT_TYPES,
+  ORDER_PAYMENT_VIA,
+  ORDER_STORE_PLATFORMS_LOGOS,
+} from '@/constants/order';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useStoresInfiniteQuery } from '@/services/store/repository';
 import { useWarehousesInfiniteQuery } from '@/services/warehouse/repository';
 import { OrderFormValues } from '../helpers/order-form';
+
+const Image = withUniwind(ExpoImage);
 
 export function FormStepOrder(): JSX.Element {
   const { data: stores } = useStoresInfiniteQuery();
@@ -22,6 +38,7 @@ export function FormStepOrder(): JSX.Element {
         .map((store) => ({
           label: store.alias,
           value: store.store_id.toString(),
+          data: store,
         })) ?? [],
     [stores],
   );
@@ -137,11 +154,36 @@ export function FormStepOrder(): JSX.Element {
               label="Toko"
               onSelect={onChange}
               options={storeOptions}
-              value={value.label}
+              value={value?.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
               placeholder="Pilih toko"
+              renderItem={(props) => (
+                <View
+                  className={twMerge(
+                    'p-md gap-sm w-full flex-row items-center',
+                    storeOptions.length !== props.index + 1 &&
+                      'border-border border-b',
+                  )}
+                >
+                  {props.item.data?.channel && (
+                    <Image
+                      source={
+                        ORDER_STORE_PLATFORMS_LOGOS[props.item.data?.channel]
+                      }
+                      className="size-6"
+                      contentFit="contain"
+                    />
+                  )}
+                  <Text variant="bodyS" className="flex-1">
+                    {props.item.data?.alias}
+                  </Text>
+                  {props.isSelected && (
+                    <Icon name="tickCircle" size="lg" className="text-accent" />
+                  )}
+                </View>
+              )}
             />
           )}
         />
@@ -157,7 +199,7 @@ export function FormStepOrder(): JSX.Element {
               label="Dikirim dari"
               onSelect={onChange}
               options={warehouseOptions}
-              value={value.label}
+              value={value?.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
@@ -179,7 +221,7 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               label="Tanggal Checkout"
               placeholder="Pilih tanggal checkout"
-              mode="calendar"
+              mode="datetime"
               error={!!error?.message}
               errors={error?.message ? [error.message] : []}
               disabledDate={(date) => date.isAfter(dayjs())}

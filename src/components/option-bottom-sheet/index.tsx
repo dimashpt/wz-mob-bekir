@@ -18,34 +18,44 @@ import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
 import { Button } from '../button';
 
-export interface Option {
+export interface Option<TData = unknown> {
   value: string;
   label: string;
-  detail?: string;
+  data?: TData;
 }
 
-type BaseOptionBottomSheetProps = {
-  options: Option[];
+export type RenderItemProps<TData = unknown> = {
+  item: Option<TData>;
+  index: number;
+  isSelected: boolean;
+  onSelect: () => void;
+};
+
+type BaseOptionBottomSheetProps<TData = unknown> = {
+  options: Option<TData>[];
   title?: string;
+  renderItem?: (props: RenderItemProps<TData>) => React.ReactElement;
 };
 
-type SingleSelectOptionBottomSheetProps = BaseOptionBottomSheetProps & {
-  multiselect?: false;
-  onSelect: (value: Option) => void;
-  selectedValue?: Option | null;
-  selectedValues?: never;
-};
+type SingleSelectOptionBottomSheetProps<TData = unknown> =
+  BaseOptionBottomSheetProps<TData> & {
+    multiselect?: false;
+    onSelect: (value: Option<TData>) => void;
+    selectedValue?: Option<TData> | null;
+    selectedValues?: never;
+  };
 
-type MultiSelectOptionBottomSheetProps = BaseOptionBottomSheetProps & {
-  multiselect: true;
-  onSelect: (value: Option[]) => void;
-  selectedValue?: never;
-  selectedValues?: Option[];
-};
+type MultiSelectOptionBottomSheetProps<TData = unknown> =
+  BaseOptionBottomSheetProps<TData> & {
+    multiselect: true;
+    onSelect: (value: Option<TData>[]) => void;
+    selectedValue?: never;
+    selectedValues?: Option<TData>[];
+  };
 
-export type OptionBottomSheetProps =
-  | SingleSelectOptionBottomSheetProps
-  | MultiSelectOptionBottomSheetProps;
+export type OptionBottomSheetProps<TData = unknown> =
+  | SingleSelectOptionBottomSheetProps<TData>
+  | MultiSelectOptionBottomSheetProps<TData>;
 
 export interface OptionBottomSheetRef {
   present: () => void;
@@ -54,147 +64,151 @@ export interface OptionBottomSheetRef {
 
 const { height } = Dimensions.get('window');
 
-export const OptionBottomSheet = forwardRef<
-  OptionBottomSheetRef,
-  OptionBottomSheetProps
->(
-  (
-    {
-      options,
-      onSelect,
-      selectedValue,
-      title,
-      multiselect = false,
-      selectedValues = [],
+function OptionBottomSheetInner<TData = unknown>(
+  {
+    options,
+    onSelect,
+    selectedValue,
+    title,
+    multiselect = false,
+    selectedValues = [],
+    renderItem,
+  }: OptionBottomSheetProps<TData>,
+  ref: React.ForwardedRef<OptionBottomSheetRef>,
+): React.ReactElement {
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const [internalSelectedValues, setInternalSelectedValues] = useState<
+    Option<TData>[]
+  >(selectedValues as Option<TData>[]);
+
+  // Sync internal state with prop when it changes
+  React.useEffect(() => {
+    if (multiselect) {
+      setInternalSelectedValues(selectedValues as Option<TData>[]);
+    }
+  }, [selectedValues, multiselect]);
+
+  function handleOptionSelect(option: Option<TData>): void {
+    if (multiselect) {
+      const isSelected = internalSelectedValues.some(
+        (item) => item.value === option.value,
+      );
+      const newSelectedValues = isSelected
+        ? internalSelectedValues.filter((item) => item.value !== option.value)
+        : [...internalSelectedValues, option];
+      setInternalSelectedValues(newSelectedValues);
+    } else {
+      (onSelect as (value: Option<TData>) => void)(option);
+      bottomSheetModalRef.current?.close();
+    }
+  }
+
+  function handleDone(): void {
+    if (multiselect) {
+      (onSelect as (value: Option<TData>[]) => void)(internalSelectedValues);
+      bottomSheetModalRef.current?.close();
+    }
+  }
+
+  function handleReset(): void {
+    if (multiselect) {
+      setInternalSelectedValues([]);
+    }
+  }
+
+  function isOptionSelected(option: Option<TData>): boolean {
+    if (multiselect) {
+      return internalSelectedValues.some((item) => item.value === option.value);
+    }
+    return option.value === selectedValue?.value;
+  }
+
+  useImperativeHandle(ref, () => ({
+    present: () => {
+      // Reset internal state to match prop values when opening
+      if (multiselect) {
+        setInternalSelectedValues(selectedValues as Option<TData>[]);
+      }
+      bottomSheetModalRef.current?.present();
     },
-    ref,
-  ) => {
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const [internalSelectedValues, setInternalSelectedValues] =
-      useState<Option[]>(selectedValues);
+    close: () => bottomSheetModalRef.current?.close(),
+  }));
 
-    // Sync internal state with prop when it changes
-    React.useEffect(() => {
-      if (multiselect) {
-        setInternalSelectedValues(selectedValues);
-      }
-    }, [selectedValues, multiselect]);
-
-    function handleOptionSelect(option: Option): void {
-      if (multiselect) {
-        const isSelected = internalSelectedValues.some(
-          (item) => item.value === option.value,
-        );
-        const newSelectedValues = isSelected
-          ? internalSelectedValues.filter((item) => item.value !== option.value)
-          : [...internalSelectedValues, option];
-        setInternalSelectedValues(newSelectedValues);
-      } else {
-        (onSelect as (value: Option) => void)(option);
-        bottomSheetModalRef.current?.close();
-      }
+  function handleDismiss(): void {
+    // Reset internal state to match prop values when dismissed without "Done"
+    if (multiselect) {
+      setInternalSelectedValues(selectedValues as Option<TData>[]);
     }
+  }
 
-    function handleDone(): void {
-      if (multiselect) {
-        (onSelect as (value: Option[]) => void)(internalSelectedValues);
-        bottomSheetModalRef.current?.close();
+  return (
+    <BottomSheet.Modal
+      ref={bottomSheetModalRef}
+      maxDynamicContentSize={height / 2}
+      onDismiss={handleDismiss}
+      footerComponent={
+        !multiselect
+          ? undefined
+          : (props) => (
+              <BottomSheetFooter {...props}>
+                <View className="p-md gap-sm border-border bg-surface flex-row rounded-b-lg border-t">
+                  <Button
+                    text="Reset"
+                    variant="outlined"
+                    onPress={handleReset}
+                    className="flex-1"
+                  />
+                  <Button
+                    text="Done"
+                    variant="filled"
+                    color="primary"
+                    onPress={handleDone}
+                    className="flex-1"
+                  />
+                </View>
+              </BottomSheetFooter>
+            )
       }
-    }
+      handleComponent={(props) => (
+        <BottomSheetHandle {...props}>
+          <View className="bg-surface py-sm">
+            <Text variant="labelL" className="text-center">
+              {title}
+            </Text>
+          </View>
+        </BottomSheetHandle>
+      )}
+    >
+      <BottomSheetFlatList
+        data={options}
+        enableFooterMarginAdjustment
+        renderItem={({
+          item: option,
+          index,
+        }: {
+          item: Option<TData>;
+          index: number;
+        }) => {
+          const isLastItem = index === options.length - 1;
 
-    function handleReset(): void {
-      if (multiselect) {
-        setInternalSelectedValues([]);
-      }
-    }
-
-    function isOptionSelected(option: Option): boolean {
-      if (multiselect) {
-        return internalSelectedValues.some(
-          (item) => item.value === option.value,
-        );
-      }
-      return option.value === selectedValue?.value;
-    }
-
-    useImperativeHandle(ref, () => ({
-      present: () => {
-        // Reset internal state to match prop values when opening
-        if (multiselect) {
-          setInternalSelectedValues(selectedValues);
-        }
-        bottomSheetModalRef.current?.present();
-      },
-      close: () => bottomSheetModalRef.current?.close(),
-    }));
-
-    function handleDismiss(): void {
-      // Reset internal state to match prop values when dismissed without "Done"
-      if (multiselect) {
-        setInternalSelectedValues(selectedValues);
-      }
-    }
-
-    return (
-      <BottomSheet.Modal
-        ref={bottomSheetModalRef}
-        maxDynamicContentSize={height / 2}
-        onDismiss={handleDismiss}
-        footerComponent={
-          !multiselect
-            ? undefined
-            : (props) => (
-                <BottomSheetFooter {...props}>
-                  <View className="p-md gap-sm border-border bg-surface flex-row rounded-b-lg border-t">
-                    <Button
-                      text="Reset"
-                      variant="outlined"
-                      onPress={handleReset}
-                      className="flex-1"
-                    />
-                    <Button
-                      text="Done"
-                      variant="filled"
-                      color="primary"
-                      onPress={handleDone}
-                      className="flex-1"
-                    />
-                  </View>
-                </BottomSheetFooter>
-              )
-        }
-        handleComponent={(props) => (
-          <BottomSheetHandle {...props}>
-            <View className="bg-surface py-sm">
-              <Text variant="labelL" className="text-center">
-                {title}
-              </Text>
-            </View>
-          </BottomSheetHandle>
-        )}
-      >
-        <BottomSheetFlatList
-          data={options}
-          enableFooterMarginAdjustment
-          renderItem={({
-            item: option,
-            index,
-          }: {
-            item: Option;
-            index: number;
-          }) => {
-            const isLastItem = index === options.length - 1;
-
-            return (
-              <TouchableHighlight
-                onPress={() => handleOptionSelect(option)}
-                underlayColor="#00000011"
-                className={twMerge(
-                  'w-full flex-row',
-                  isOptionSelected(option) ? 'bg-accent-soft' : '',
-                  isLastItem ? 'rounded-b-lg' : '',
-                )}
-              >
+          return (
+            <TouchableHighlight
+              onPress={() => handleOptionSelect(option)}
+              underlayColor="#00000011"
+              className={twMerge(
+                'w-full flex-row',
+                isOptionSelected(option) ? 'bg-accent-soft' : '',
+                isLastItem ? 'rounded-b-lg' : '',
+              )}
+            >
+              {renderItem ? (
+                renderItem({
+                  item: option,
+                  index,
+                  isSelected: isOptionSelected(option),
+                  onSelect: () => handleOptionSelect(option),
+                })
+              ) : (
                 <View
                   className={twMerge(
                     'py-md px-md w-full flex-row items-center',
@@ -202,22 +216,29 @@ export const OptionBottomSheet = forwardRef<
                   )}
                 >
                   <Text variant="bodyS">{option.label}</Text>
-                  {option.detail && <Text>{option.detail}</Text>}
                   <View className="flex-1" />
                   {isOptionSelected(option) && (
                     <Icon name="tickCircle" size="lg" className="text-accent" />
                   )}
                 </View>
-              </TouchableHighlight>
-            );
-          }}
-          style={{ flex: 1 }}
-          contentContainerStyle={{
-            paddingBottom: multiselect ? 0 : undefined,
-          }}
-          showsVerticalScrollIndicator
-        />
-      </BottomSheet.Modal>
-    );
+              )}
+            </TouchableHighlight>
+          );
+        }}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: multiselect ? 0 : undefined,
+        }}
+        showsVerticalScrollIndicator
+      />
+    </BottomSheet.Modal>
+  );
+}
+
+export const OptionBottomSheet = forwardRef(OptionBottomSheetInner) as <
+  TData = unknown,
+>(
+  props: OptionBottomSheetProps<TData> & {
+    ref?: React.ForwardedRef<OptionBottomSheetRef>;
   },
-);
+) => React.ReactElement;

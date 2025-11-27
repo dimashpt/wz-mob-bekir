@@ -268,7 +268,7 @@ function BottomSheetConfirm({
             <Button
               text={closeButtonProps?.text ?? t('general.close')}
               onPress={handleClose}
-              variant="outlined"
+              variant="ghost"
               color={buttonColor}
               className="flex-1"
               {...closeButtonProps}

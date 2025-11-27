@@ -176,7 +176,7 @@ const ScrollPicker: {
     ) : (
       <Text
         variant={isSelected ? 'labelL' : 'bodyM'}
-        className={isSelected ? 'text-foreground' : 'text-foreground-muted'}
+        className={isSelected ? 'text-foreground' : 'text-field-placeholder'}
         style={isSelected ? props.activeItemTextStyle : props.itemTextStyle}
       >
         {data}

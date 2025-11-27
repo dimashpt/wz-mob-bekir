@@ -16,16 +16,18 @@ import {
   Option,
   OptionBottomSheet,
   OptionBottomSheetRef,
+  RenderItemProps,
 } from '../option-bottom-sheet';
 
-export interface SelectInputProps
+export interface SelectInputProps<TData = unknown>
   extends React.ComponentProps<typeof InputField> {
-  options: Option[];
-  onSelect: (value: Option | null) => void;
-  selected?: Option | null;
+  options: Option<TData>[];
+  onSelect: (value: Option<TData> | null) => void;
+  selected?: Option<TData> | null;
   placeholder?: string;
   title?: string;
   hideTouchable?: boolean;
+  renderItem?: (props: RenderItemProps<TData>) => React.ReactElement;
 }
 
 export interface SelectInputRef {
@@ -33,86 +35,93 @@ export interface SelectInputRef {
   close: () => void;
 }
 
-export const SelectInput = forwardRef<SelectInputRef, SelectInputProps>(
-  (
-    {
-      options,
-      onSelect,
-      placeholder,
-      label,
-      selected = null,
-      mandatory,
-      title,
-      hideTouchable = false,
+function SelectInputInner<TData = unknown>(
+  {
+    options,
+    onSelect,
+    placeholder,
+    label,
+    selected = null,
+    mandatory,
+    title,
+    hideTouchable = false,
+    renderItem,
+    ...props
+  }: SelectInputProps<TData>,
+  ref: React.ForwardedRef<SelectInputRef>,
+): React.ReactElement {
+  const { t } = useTranslation();
+  const [selectedValue, setSelectedValue] = useState<Option<TData> | null>(
+    selected,
+  );
+  const bottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const defaultPlaceholder = placeholder ?? t('select_input.placeholder');
 
-      ...props
-    },
-    ref,
-  ) => {
-    const { t } = useTranslation();
-    const [selectedValue, setSelectedValue] = useState<Option | null>(selected);
-    const bottomSheetRef = useRef<OptionBottomSheetRef>(null);
-    const defaultPlaceholder = placeholder ?? t('select_input.placeholder');
+  function handleOptionSelect(value: Option<TData>): void {
+    setSelectedValue((prevValue) => {
+      const newValue = prevValue === value ? null : value;
+      onSelect(newValue);
+      return newValue;
+    });
+  }
 
-    function handleOptionSelect(value: Option): void {
-      setSelectedValue((prevValue) => {
-        const newValue = prevValue === value ? null : value;
-        onSelect(newValue);
-        return newValue;
-      });
-    }
+  function handlePresentOptionModalPress(): void {
+    Keyboard.dismiss();
+    bottomSheetRef.current?.present();
+  }
 
-    function handlePresentOptionModalPress(): void {
-      Keyboard.dismiss();
-      bottomSheetRef.current?.present();
-    }
+  useImperativeHandle(ref, () => ({
+    present: handlePresentOptionModalPress,
+    close: () => bottomSheetRef.current?.close(),
+  }));
 
-    useImperativeHandle(ref, () => ({
-      present: handlePresentOptionModalPress,
-      close: () => bottomSheetRef.current?.close(),
-    }));
+  useEffect(() => {
+    setSelectedValue(selected);
+  }, [selected]);
 
-    useEffect(() => {
-      setSelectedValue(selected);
-    }, [selected]);
+  return (
+    <View>
+      {hideTouchable ? null : (
+        <TouchableWithoutFeedback
+          onPress={props.disabled ? undefined : handlePresentOptionModalPress}
+        >
+          <View pointerEvents="box-only">
+            <InputField
+              label={label}
+              mandatory={mandatory}
+              value={selectedValue?.label || ''}
+              placeholder={defaultPlaceholder}
+              editable={false}
+              right={
+                <Icon
+                  name="chevron"
+                  size="base"
+                  className="text-field-placeholder"
+                />
+              }
+              {...props}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      )}
 
-    return (
-      <View>
-        {hideTouchable ? null : (
-          <TouchableWithoutFeedback
-            onPress={props.disabled ? undefined : handlePresentOptionModalPress}
-          >
-            <View pointerEvents="box-only">
-              <InputField
-                label={label}
-                mandatory={mandatory}
-                value={selectedValue?.label || ''}
-                placeholder={defaultPlaceholder}
-                editable={false}
-                right={
-                  <Icon
-                    name="chevron"
-                    size="base"
-                    className="text-field-placeholder"
-                  />
-                }
-                {...props}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        )}
+      <OptionBottomSheet
+        ref={bottomSheetRef}
+        options={options}
+        onSelect={handleOptionSelect}
+        selectedValue={selectedValue}
+        title={title ?? placeholder ?? label}
+        renderItem={renderItem}
+      />
+    </View>
+  );
+}
 
-        <OptionBottomSheet
-          ref={bottomSheetRef}
-          options={options}
-          onSelect={handleOptionSelect}
-          selectedValue={selectedValue}
-          title={title ?? placeholder ?? label}
-        />
-      </View>
-    );
+export const SelectInput = forwardRef(SelectInputInner) as <TData = unknown>(
+  props: SelectInputProps<TData> & {
+    ref?: React.ForwardedRef<SelectInputRef>;
   },
-);
+) => React.ReactElement;
 
 export const MemoizedSelectInput = memo(SelectInput);
 export default SelectInput;

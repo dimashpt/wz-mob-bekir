@@ -77,9 +77,9 @@ export const ORDER_STORE_PLATFORMS: Record<
     label: 'Shopify',
     value: 'shopify',
   },
-  other: {
-    label: 'Other',
-    value: 'other',
+  offline: {
+    label: 'Offline',
+    value: 'offline',
   },
 };
 
@@ -133,4 +133,5 @@ export const ORDER_STORE_PLATFORMS_LOGOS: Partial<
   tiktok: require('@/assets/images/brands/tiktok.webp'),
   tokopedia: require('@/assets/images/brands/tokopedia.webp'),
   shopify: require('@/assets/images/brands/shopify.webp'),
+  offline: require('@/assets/images/brands/offline.png'),
 };

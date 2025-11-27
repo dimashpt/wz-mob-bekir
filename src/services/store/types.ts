@@ -1,4 +1,5 @@
 import { PaginationResponse } from '@/@types/api';
+import { StorePlatform } from '../order';
 
 export interface StoreListRequestParams {
   page?: number;
@@ -12,12 +13,12 @@ export interface StoreListResponse {
   page_info: PaginationResponse;
 }
 
-interface Store {
+export interface Store {
   store_id: number;
   store_channel_id: string;
   alias: string;
   code: string;
-  channel: string;
+  channel: StorePlatform;
   connection_status: string;
   sync_product: boolean;
   sync_order: boolean;

@@ -28,7 +28,7 @@ export interface SelectDateTimeProps
   enableRange?: boolean;
   placeholder?: string;
   label?: string;
-  mode?: 'calendar' | 'wheel' | 'time';
+  mode?: 'calendar' | 'wheel' | 'time' | 'datetime';
   mandatory?: boolean;
   hideTouchable?: boolean;
 
@@ -61,10 +61,16 @@ export const SelectDateTime = forwardRef<
       start: Dayjs;
       end: Dayjs;
     } | null>(null);
+    const [pickerKey, setPickerKey] = useState<number>(0);
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-    const format = mode === 'time' ? 'HH : mm' : 'D MMMM YYYY';
+    const format =
+      mode === 'time'
+        ? 'HH : mm'
+        : mode === 'datetime'
+          ? 'D MMMM YYYY, HH:mm'
+          : 'D MMMM YYYY';
 
     useEffect(() => {
       setSelectedValue(value);
@@ -72,6 +78,8 @@ export const SelectDateTime = forwardRef<
 
     function openPicker(): void {
       Keyboard.dismiss();
+      // Increment key to reset DateTimePicker state when picker opens
+      setPickerKey((prev) => prev + 1);
       bottomSheetRef.current?.present();
     }
 
@@ -132,7 +140,7 @@ export const SelectDateTime = forwardRef<
                 placeholder={placeholder}
                 editable={false}
                 right={
-                  mode === 'time' ? (
+                  mode === 'time' || mode === 'datetime' ? (
                     <Icon
                       name="clock"
                       size="base"
@@ -155,6 +163,7 @@ export const SelectDateTime = forwardRef<
         <BottomSheetModal ref={bottomSheetRef}>
           <BottomSheet.View detached>
             <DateTimePicker
+              key={pickerKey}
               date={selectedValue ?? undefined}
               mode={mode}
               enableRange={enableRange}

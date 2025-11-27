@@ -17,7 +17,8 @@
     "done": "Done",
     "no_data": "No data",
     "no_data_description": "Nothing to see here!\nAdd some orders to begin",
-    "no_data_found": "No results found for '{{search}}'"
+    "no_data_found": "No results found for '{{search}}'",
+    "continue": "Continue"
   },
   "tab": {
     "home": "Home",

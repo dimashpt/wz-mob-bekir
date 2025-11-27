@@ -67,7 +67,7 @@ export const WheelTimePicker: React.FC<WheelTimePickerProps> = ({
   return (
     <View className="gap-sm relative flex-row items-center justify-center">
       <View className="absolute z-0 h-full w-full items-center justify-center">
-        <View className="h-5xl bg-primary-light z-0 w-full rounded-sm" />
+        <View className="h-5xl bg-accent-soft z-0 w-full rounded-sm" />
       </View>
       {/* Hours Picker */}
       <View className="w-[65%] flex-row items-center">

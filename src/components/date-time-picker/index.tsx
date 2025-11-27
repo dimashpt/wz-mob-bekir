@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import dayjs, { Dayjs } from 'dayjs';
@@ -11,7 +11,7 @@ import { WheelTimePicker } from '@/components/date-time-picker/wheel-time-picker
 
 interface DateTimePickerProps {
   date?: Dayjs;
-  mode?: 'calendar' | 'calendar-range' | 'wheel' | 'time';
+  mode?: 'calendar' | 'calendar-range' | 'wheel' | 'time' | 'datetime';
   onDateChange?: (date: Dayjs) => void;
   onRangeChange?: (start: Dayjs, end: Dayjs | null) => void;
   enableRange?: boolean;
@@ -37,8 +37,17 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   const [selectedDate, setSelectedDate] = useState<Dayjs>(date || dayjs());
   const [rangeStart, setRangeStart] = useState<Dayjs | null>(null);
   const [rangeEnd, setRangeEnd] = useState<Dayjs | null>(null);
+  const [datetimeStep, setDatetimeStep] = useState<'date' | 'time'>('date');
 
   const enableRange = mode === 'calendar-range';
+  const isDateTimeMode = mode === 'datetime';
+
+  // Reset datetime step when date prop changes (picker reopened)
+  useEffect(() => {
+    if (isDateTimeMode) {
+      setDatetimeStep('date');
+    }
+  }, [date, isDateTimeMode]);
 
   // Get the appropriate instruction message for range selection
   function getRangeInstructionMessage(): string | null {
@@ -55,6 +64,11 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
   function handleDateChange(newDate: Dayjs): void {
     setSelectedDate(newDate);
     onDateChange?.(newDate);
+
+    // If in datetime mode and on date step, automatically switch to time step
+    if (isDateTimeMode && datetimeStep === 'date') {
+      setDatetimeStep('time');
+    }
   }
 
   function handleRangeSelect(start: Dayjs, end: Dayjs | null): void {
@@ -68,6 +82,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       if (rangeStart && rangeEnd) {
         onDone?.({ start: rangeStart, end: rangeEnd });
       }
+    } else if (isDateTimeMode && datetimeStep === 'date') {
+      // If in datetime mode and still on date step, switch to time step
+      setDatetimeStep('time');
     } else {
       onDone?.(selectedDate);
     }
@@ -103,7 +120,9 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         />
       )}
 
-      {(mode === 'calendar' || enableRange) && (
+      {(mode === 'calendar' ||
+        enableRange ||
+        (isDateTimeMode && datetimeStep === 'date')) && (
         <CalendarPicker
           initialDate={selectedDate}
           enableRange={enableRange}
@@ -113,7 +132,7 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
         />
       )}
 
-      {mode === 'time' && (
+      {(mode === 'time' || (isDateTimeMode && datetimeStep === 'time')) && (
         <WheelTimePicker time={selectedDate} onTimeChange={handleDateChange} />
       )}
 
@@ -122,17 +141,26 @@ export const DateTimePicker: React.FC<DateTimePickerProps> = ({
       <View className="gap-md flex-row">
         <Button
           text={t('general.cancel')}
-          variant="outlined"
-          color="secondary"
+          variant="ghost"
           className="flex-1"
           onPress={onCancel}
         />
         <Button
-          text={t('general.done')}
+          text={
+            isDateTimeMode && datetimeStep === 'date'
+              ? t('general.continue')
+              : t('general.done')
+          }
           color="primary"
           className="flex-1"
           onPress={handleDone}
-          disabled={enableRange ? !rangeStart || !rangeEnd : !selectedDate}
+          disabled={
+            enableRange
+              ? !rangeStart || !rangeEnd
+              : isDateTimeMode && datetimeStep === 'date'
+                ? !selectedDate
+                : !selectedDate
+          }
         />
       </View>
     </View>
