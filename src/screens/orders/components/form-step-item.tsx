@@ -1,4 +1,5 @@
-import React, { JSX, useRef } from 'react';
+import React, { JSX, useCallback, useEffect, useRef } from 'react';
+import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
@@ -6,12 +7,14 @@ import {
   BottomSheetModal,
   Button,
   Container,
+  Divider,
   Icon,
   InputField,
   Text,
   ToggleSwitch,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { formatCurrency, formatNumber } from '@/utils/formatter';
 import { OrderFormValues } from '../helpers/order-form';
 import { ProductItem } from './product-item';
 import { ProductSelectSheet } from './product-select-sheet';
@@ -31,6 +34,31 @@ export function FormStepItem(): JSX.Element {
     control,
     name: 'products',
   });
+
+  useEffect(() => {
+    // Update package weight in the form
+    form.setValue('package.weight', handleCalculateWeight());
+  }, [watchProducts]);
+
+  const handleCalculateWeight = useCallback(() => {
+    const totalWeight = watchProducts?.reduce((total, product) => {
+      const productWeight = Number(product.weight) || 0;
+      const quantity = product.quantity || 0;
+      return total + productWeight * quantity;
+    }, 0);
+
+    return totalWeight || 0;
+  }, [watchProducts]);
+
+  const handleCalculatePrice = useCallback(() => {
+    const totalPrice = watchProducts?.reduce((total, product) => {
+      const productPrice = Number(product.published_price) || 0;
+      const quantity = product.quantity || 0;
+      return total + productPrice * quantity;
+    }, 0);
+
+    return totalPrice || 0;
+  }, [watchProducts]);
 
   function onQuantityChange(
     updatedProduct: OrderFormValues['products'][0],
@@ -68,6 +96,24 @@ export function FormStepItem(): JSX.Element {
           className="border-muted-foreground rounded-md border border-dashed"
           onPress={() => productSheetRef.current?.present()}
         />
+        <View className="gap-sm flex-row items-center">
+          <Text variant="labelS" className="text-center">
+            Total Berat
+          </Text>
+          <Divider className="h-px flex-1" />
+          <Text variant="labelS" className="text-center">
+            {formatNumber(handleCalculateWeight())}g
+          </Text>
+        </View>
+        <View className="gap-sm flex-row items-center">
+          <Text variant="labelS" className="text-center">
+            Total Harga
+          </Text>
+          <Divider className="h-px flex-1" />
+          <Text variant="labelS" className="text-center">
+            {formatCurrency(handleCalculatePrice())}
+          </Text>
+        </View>
       </Container.Card>
 
       <Text variant="labelL">Dropshipper Information</Text>

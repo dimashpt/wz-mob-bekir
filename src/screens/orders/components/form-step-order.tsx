@@ -48,7 +48,7 @@ export function FormStepOrder(): JSX.Element {
       warehouses?.pages
         .flatMap((page) => page?.locations ?? [])
         .map((warehouse) => ({
-          label: warehouse.name,
+          label: [warehouse.name, warehouse.city].filter(Boolean).join(' - '),
           value: warehouse.id.toString(),
         })) ?? [],
     [warehouses],

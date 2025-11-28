@@ -13,6 +13,7 @@ import {
 } from '@/constants/order';
 import { Order } from '@/services/order/types';
 import { formatDisplayDate } from '@/utils/date';
+import { formatCurrency } from '@/utils/formatter';
 import { statusToTranslationKey } from '../helpers/order-helpers';
 
 const Image = withUniwind(ExpoImage);
@@ -42,11 +43,7 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
           <Text variant="labelM">{item.store_name}</Text>
         </View>
         <Text variant="labelL" className="font-extrabold">
-          {Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-          }).format(Number(item.grand_total_order_price))}
+          {formatCurrency(item.grand_total_order_price)}
         </Text>
       </View>
       <View className="flex-row items-start justify-between">

@@ -71,7 +71,6 @@ export const ProductSelectSheet = forwardRef<
   }
 
   function handleCloseAndReset(): void {
-    setSelectedProducts([]);
     (ref as React.RefObject<BottomSheetModal | null>).current?.dismiss();
   }
 
