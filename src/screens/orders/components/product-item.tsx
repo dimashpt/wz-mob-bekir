@@ -4,6 +4,7 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { Image as ExpoImage } from 'expo-image';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 import { withUniwind } from 'uniwind';
 
@@ -26,6 +27,7 @@ export function ProductItem({
   onPress,
   onQuantityChange,
 }: ProductItemProps): React.JSX.Element {
+  const { t } = useTranslation();
   function handleQuantityIncrease(): void {
     if (onQuantityChange) {
       onQuantityChange({
@@ -131,7 +133,7 @@ export function ProductItem({
 
           {!product.available && (
             <Chip
-              label="Out of stock"
+              label={t('order_form.out_of_stock')}
               variant="red"
               className="absolute right-1 bottom-1"
             />

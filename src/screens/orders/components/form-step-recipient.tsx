@@ -2,6 +2,7 @@ import React, { JSX, memo } from 'react';
 import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { Container, Icon, InputField, Text, ToggleSwitch } from '@/components';
 import SelectInput from '@/components/select-input';
@@ -15,10 +16,12 @@ const SearchBar = memo(
     search,
     setSearch,
     isSearchDebouncing,
+    placeholder,
   }: {
     search: string;
     setSearch: (value: string) => void;
     isSearchDebouncing: boolean;
+    placeholder: string;
   }) => (
     <View className="px-md pb-sm bg-surface">
       <InputField
@@ -30,13 +33,14 @@ const SearchBar = memo(
         loading={isSearchDebouncing}
         value={search}
         onChangeText={setSearch}
-        placeholder="Masukkan nama kelurahan/desa penerima"
+        placeholder={placeholder}
       />
     </View>
   ),
 );
 
 export function FormStepRecipient(): JSX.Element {
+  const { t } = useTranslation();
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
     useDebounce();
   const { data: addresses } = useAddressQuery(
@@ -81,14 +85,14 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Nama Penerima"
+              label={t('order_form.recipient_name')}
               mandatory
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan nama penerima"
+              placeholder={t('order_form.enter_recipient_name')}
             />
           )}
         />
@@ -101,14 +105,14 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="No. HP Penerima"
+              label={t('order_form.recipient_phone')}
               mandatory
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan no. hp penerima"
+              placeholder={t('order_form.enter_recipient_phone')}
               keyboardType="phone-pad"
             />
           )}
@@ -122,13 +126,13 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Email Penerima"
+              label={t('order_form.recipient_email')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan email penerima"
+              placeholder={t('order_form.enter_recipient_email')}
               keyboardType="email-address"
               autoCapitalize="none"
             />
@@ -143,7 +147,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <SelectInput
-              label="Kelurahan/Desa Penerima"
+              label={t('order_form.recipient_subdistrict')}
               onSelect={(value) => {
                 onChange(value);
 
@@ -161,7 +165,7 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih kelurahan/desa penerima"
+              placeholder={t('order_form.select_subdistrict')}
               flatListProps={{
                 stickyHeaderIndices: [0],
                 ListHeaderComponent: () => (
@@ -169,6 +173,7 @@ export function FormStepRecipient(): JSX.Element {
                     search={search}
                     setSearch={setSearch}
                     isSearchDebouncing={isSearchDebouncing}
+                    placeholder={t('order_form.search_subdistrict')}
                   />
                 ),
               }}
@@ -184,7 +189,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Negara Penerima"
+              label={t('order_form.recipient_country')}
               mandatory
               disabled
               value={value}
@@ -192,7 +197,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan negara penerima"
+              placeholder={t('order_form.recipient_country')}
             />
           )}
         />
@@ -206,7 +211,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Provinsi Penerima"
+              label={t('order_form.recipient_province')}
               mandatory
               disabled
               value={value}
@@ -214,7 +219,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan provinsi penerima"
+              placeholder={t('order_form.recipient_province')}
             />
           )}
         />
@@ -227,7 +232,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Kota Penerima"
+              label={t('order_form.recipient_city')}
               mandatory
               disabled
               value={value}
@@ -235,7 +240,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan kota penerima"
+              placeholder={t('order_form.recipient_city')}
             />
           )}
         />
@@ -248,7 +253,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Kecamatan Penerima"
+              label={t('order_form.recipient_district')}
               mandatory
               disabled
               value={value}
@@ -256,7 +261,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan kecamatan penerima"
+              placeholder={t('order_form.recipient_district')}
             />
           )}
         />
@@ -269,7 +274,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Kode Pos Penerima"
+              label={t('order_form.recipient_postal_code')}
               mandatory
               disabled
               value={value}
@@ -277,7 +282,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan kode pos penerima"
+              placeholder={t('order_form.recipient_postal_code')}
             />
           )}
         />
@@ -291,7 +296,7 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               mandatory
-              label="Alamat Lengkap Penerima"
+              label={t('order_form.recipient_full_address')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -299,7 +304,7 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               multiline
               inputClassName="min-h-20"
-              placeholder="Masukkan alamat lengkap penerima"
+              placeholder={t('order_form.enter_recipient_address')}
             />
           )}
         />
@@ -312,7 +317,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Catatan Penerima"
+              label={t('order_form.recipient_remarks')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -320,16 +325,16 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               multiline
               inputClassName="min-h-20"
-              placeholder="Masukkan catatan penerima"
+              placeholder={t('order_form.enter_recipient_remarks')}
             />
           )}
         />
       </Container.Card>
 
-      <Text variant="labelL">Customer Information</Text>
+      <Text variant="labelL">{t('order_form.customer_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          Samakan dengan penerima
+          {t('order_form.same_as_recipient')}
         </Text>
         <Controller
           control={control}
@@ -351,13 +356,13 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label="Nama Customer"
+                label={t('order_form.customer_name')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan nama customer"
+                placeholder={t('order_form.enter_customer_name')}
               />
             )}
           />
@@ -371,13 +376,13 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label="No. HP Customer"
+                label={t('order_form.customer_phone')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan no. hp customer"
+                placeholder={t('order_form.enter_customer_phone')}
                 keyboardType="phone-pad"
               />
             )}
@@ -392,13 +397,13 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label="Email Customer"
+                label={t('order_form.customer_email')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan email customer"
+                placeholder={t('order_form.enter_customer_email')}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -414,13 +419,13 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label="Alamat Lengkap Customer"
+                label={t('order_form.customer_full_address')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan alamat lengkap customer"
+                placeholder={t('order_form.enter_customer_address')}
                 multiline
                 inputClassName="min-h-20"
               />

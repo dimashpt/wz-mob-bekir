@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import dayjs from 'dayjs';
 import { Image as ExpoImage } from 'expo-image';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 import { withUniwind } from 'uniwind';
 
@@ -28,6 +29,7 @@ import { OrderFormValues } from '../helpers/order-form';
 const Image = withUniwind(ExpoImage);
 
 export function FormStepOrder(): JSX.Element {
+  const { t } = useTranslation();
   const { data: stores } = useStoresInfiniteQuery();
   const { data: warehouses } = useWarehousesInfiniteQuery();
 
@@ -78,7 +80,7 @@ export function FormStepOrder(): JSX.Element {
       contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
-      <Text variant="labelL">Order Information</Text>
+      <Text variant="labelL">{t('order_form.order_information')}</Text>
       <Container.Card className="p-md gap-sm">
         <Controller
           control={control}
@@ -88,13 +90,13 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="No. Order"
+              label={t('order_form.order_number')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder="Masukkan nomor order"
+              placeholder={t('order_form.enter_order_number')}
             />
           )}
         />
@@ -107,7 +109,7 @@ export function FormStepOrder(): JSX.Element {
           }) => (
             <SelectInput
               mandatory
-              label="Payment Method"
+              label={t('order_form.payment_method')}
               onSelect={(value) => {
                 onChange(value);
                 form.setValue('payment_via', null);
@@ -117,7 +119,7 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih metode pembayaran"
+              placeholder={t('order_form.select_payment_method')}
             />
           )}
         />
@@ -130,7 +132,7 @@ export function FormStepOrder(): JSX.Element {
           }) => (
             <SelectInput
               mandatory
-              label="Payment Via"
+              label={t('order_form.payment_via')}
               onSelect={onChange}
               disabled={!watchPaymentMethodType}
               options={PAYMENT_VIA_OPTIONS}
@@ -138,7 +140,7 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih cara pembayaran"
+              placeholder={t('order_form.select_payment_via')}
             />
           )}
         />
@@ -151,14 +153,14 @@ export function FormStepOrder(): JSX.Element {
           }) => (
             <SelectInput
               mandatory
-              label="Toko"
+              label={t('order_form.store')}
               onSelect={onChange}
               options={storeOptions}
               value={value?.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih toko"
+              placeholder={t('order_form.select_store')}
               renderItem={(props) => (
                 <View
                   className={twMerge(
@@ -196,14 +198,14 @@ export function FormStepOrder(): JSX.Element {
           }) => (
             <SelectInput
               mandatory
-              label="Dikirim dari"
+              label={t('order_form.ship_from')}
               onSelect={onChange}
               options={warehouseOptions}
               value={value?.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih lokasi pengiriman"
+              placeholder={t('order_form.select_warehouse')}
             />
           )}
         />
@@ -219,8 +221,8 @@ export function FormStepOrder(): JSX.Element {
               value={value ? dayjs(value) : undefined}
               onSelect={onChange}
               onBlur={onBlur}
-              label="Tanggal Checkout"
-              placeholder="Pilih tanggal checkout"
+              label={t('order_form.checkout_date')}
+              placeholder={t('order_form.select_checkout_date')}
               mode="datetime"
               error={!!error?.message}
               errors={error?.message ? [error.message] : []}
@@ -236,13 +238,13 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Sales Pic"
+              label={t('order_form.sales_pic')}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih sales pic"
+              placeholder={t('order_form.enter_sales_pic')}
             />
           )}
         />
@@ -254,7 +256,7 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label="Remarks"
+              label={t('order_form.remarks')}
               value={value}
               multiline
               inputClassName="min-h-20"
@@ -262,7 +264,7 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Masukkan remarks"
+              placeholder={t('order_form.enter_remarks')}
             />
           )}
         />

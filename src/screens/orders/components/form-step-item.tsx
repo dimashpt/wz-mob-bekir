@@ -2,6 +2,7 @@ import React, { JSX, useCallback, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
   BottomSheetModal,
@@ -20,6 +21,7 @@ import { ProductItem } from './product-item';
 import { ProductSelectSheet } from './product-select-sheet';
 
 export function FormStepItem(): JSX.Element {
+  const { t } = useTranslation();
   const productSheetRef = useRef<BottomSheetModal>(null);
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchIsDropship = useWatch({
@@ -76,7 +78,7 @@ export function FormStepItem(): JSX.Element {
       contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
-      <Text variant="labelL">Item Order</Text>
+      <Text variant="labelL">{t('order_form.item_order')}</Text>
       <Container.Card className="p-lg gap-md">
         {watchProducts && watchProducts.length > 0
           ? watchProducts.map((product, index) => (
@@ -92,13 +94,13 @@ export function FormStepItem(): JSX.Element {
         <Button
           variant="outlined"
           prefixIcon="productAdd"
-          text="Tambah Item"
+          text={t('order_form.add_item')}
           className="border-muted-foreground rounded-md border border-dashed"
           onPress={() => productSheetRef.current?.present()}
         />
         <View className="gap-sm flex-row items-center">
           <Text variant="labelS" className="text-center">
-            Total Berat
+            {t('order_form.total_weight')}
           </Text>
           <Divider className="h-px flex-1" />
           <Text variant="labelS" className="text-center">
@@ -107,7 +109,7 @@ export function FormStepItem(): JSX.Element {
         </View>
         <View className="gap-sm flex-row items-center">
           <Text variant="labelS" className="text-center">
-            Total Harga
+            {t('order_form.total_price')}
           </Text>
           <Divider className="h-px flex-1" />
           <Text variant="labelS" className="text-center">
@@ -116,10 +118,10 @@ export function FormStepItem(): JSX.Element {
         </View>
       </Container.Card>
 
-      <Text variant="labelL">Dropshipper Information</Text>
+      <Text variant="labelL">{t('order_form.dropshipping_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          Pesanan Dropship
+          {t('order_form.dropship_order')}
         </Text>
         <Controller
           control={control}
@@ -130,14 +132,14 @@ export function FormStepItem(): JSX.Element {
         />
       </Container.Card>
 
-      <Text variant="labelL">Package Information</Text>
+      <Text variant="labelL">{t('order_form.package_information')}</Text>
       <Container.Card className="p-lg gap-md">
         <Controller
           control={control}
           name="package.weight"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Berat (gram)"
+              label={t('order_form.weight_gram')}
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
@@ -150,9 +152,7 @@ export function FormStepItem(): JSX.Element {
                   transform="scale(-1,1)"
                 />
               }
-              helpers={[
-                'Berat otomatis dihitung dari total produk. Anda dapat mengubahnya secara manual',
-              ]}
+              helpers={[t('order_form.weight_auto_calculated')]}
               onPressRight={() => {}}
             />
           )}
@@ -162,7 +162,7 @@ export function FormStepItem(): JSX.Element {
           name="package.length"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Panjang (cm)"
+              label={t('order_form.length_cm')}
               placeholder="0"
               value={value?.toString()}
               onChangeText={onChange}
@@ -175,7 +175,7 @@ export function FormStepItem(): JSX.Element {
           name="package.width"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Lebar (cm)"
+              label={t('order_form.width_cm')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -188,7 +188,7 @@ export function FormStepItem(): JSX.Element {
           name="package.height"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Tinggi (cm)"
+              label={t('order_form.height_cm')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -208,13 +208,13 @@ export function FormStepItem(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
-                label="Nama Dropshipper"
+                label={t('order_form.dropshipper_name')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan nama dropshipper"
+                placeholder={t('order_form.enter_dropshipper_name')}
               />
             )}
           />
@@ -227,13 +227,13 @@ export function FormStepItem(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
-                label="No. HP Dropshipper"
+                label={t('order_form.dropshipper_phone')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan no. hp dropshipper"
+                placeholder={t('order_form.enter_dropshipper_phone')}
                 keyboardType="phone-pad"
               />
             )}
@@ -247,13 +247,13 @@ export function FormStepItem(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
-                label="Email Dropshipper"
+                label={t('order_form.dropshipper_email')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan email dropshipper"
+                placeholder={t('order_form.enter_dropshipper_email')}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
@@ -268,13 +268,13 @@ export function FormStepItem(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
-                label="Alamat Lengkap Dropshipper"
+                label={t('order_form.dropshipper_full_address')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                placeholder="Masukkan alamat lengkap dropshipper"
+                placeholder={t('order_form.enter_dropshipper_address')}
                 multiline
                 inputClassName="min-h-20"
               />

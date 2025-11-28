@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { Container, InputField, Text, ToggleSwitch } from '@/components';
 import SelectInput from '@/components/select-input';
@@ -8,6 +9,7 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { OrderFormValues } from '../helpers/order-form';
 
 export function FormStepShipment(): JSX.Element {
+  const { t } = useTranslation();
   const { control } = useFormContext<OrderFormValues>();
 
   const watchIsSelfDelivery = useWatch({
@@ -20,10 +22,10 @@ export function FormStepShipment(): JSX.Element {
       contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
-      <Text variant="labelL">Informasi Pengiriman</Text>
+      <Text variant="labelL">{t('order_form.delivery_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          Pengiriman sendiri
+          {t('order_form.self_delivery')}
         </Text>
         <Controller
           control={control}
@@ -40,13 +42,13 @@ export function FormStepShipment(): JSX.Element {
           name="delivery.logistic"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <SelectInput
-              label="Jasa Pengiriman"
+              label={t('order_form.logistic_service')}
               onSelect={onChange}
               options={[]}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
-              placeholder="Pilih jasa pengiriman"
+              placeholder={t('order_form.select_logistic')}
             />
           )}
         />
@@ -57,12 +59,12 @@ export function FormStepShipment(): JSX.Element {
             name="delivery.logistic_name"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <InputField
-                label="Nama Logistik"
+                label={t('order_form.logistic_name')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
                 onChangeText={onChange}
-                placeholder="Masukkan nama logistik"
+                placeholder={t('order_form.enter_logistic_name')}
               />
             )}
           />
@@ -73,12 +75,12 @@ export function FormStepShipment(): JSX.Element {
           name="delivery.logistic_provider_name"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label="Nama Provider"
+              label={t('order_form.provider_name')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
-              placeholder="Masukkan nama provider"
+              placeholder={t('order_form.enter_provider_name')}
             />
           )}
         />
@@ -88,12 +90,12 @@ export function FormStepShipment(): JSX.Element {
           name="delivery.logistic_service_name"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label="Nama Layanan"
+              label={t('order_form.service_name')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
-              placeholder="Masukkan nama layanan"
+              placeholder={t('order_form.enter_service_name')}
             />
           )}
         />
@@ -103,12 +105,12 @@ export function FormStepShipment(): JSX.Element {
           name="delivery.logistic_carrier"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label="Pengangkut Logistik"
+              label={t('order_form.logistic_carrier')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
-              placeholder="Masukkan pengangkut logistik"
+              placeholder={t('order_form.enter_carrier_name')}
             />
           )}
         />
@@ -118,12 +120,12 @@ export function FormStepShipment(): JSX.Element {
           name="delivery.tracking_number"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label="Nomor Pelacakan"
+              label={t('order_form.tracking_number')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
-              placeholder="Masukkan nomor pelacakan"
+              placeholder={t('order_form.enter_tracking_number')}
             />
           )}
         />

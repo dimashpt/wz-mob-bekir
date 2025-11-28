@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 
 import { useFormContext } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { BottomSheet, BottomSheetModal } from '@/components';
 import { ProductRepo } from '@/services';
@@ -19,6 +20,7 @@ export const ProductSelectSheet = forwardRef<
   BottomSheetModal | null,
   ProductSelectSheetProps
 >(({ locationId, selectedProducts: initialSelectedProducts }, ref) => {
+  const { t } = useTranslation();
   const form = useFormContext<OrderFormValues>();
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
@@ -81,9 +83,9 @@ export const ProductSelectSheet = forwardRef<
     <BottomSheet.Confirm
       ref={ref as React.RefObject<BottomSheetModal | null>}
       handleClose={handleCloseAndReset}
-      title="Pilih Produk"
+      title={t('order_form.add_item')}
       contentContainerClassName="max-h-96"
-      submitButtonProps={{ text: 'Done' }}
+      submitButtonProps={{ text: t('general.done') }}
       handleSubmit={handleUpdateSelectedProducts}
     >
       <FlatList
