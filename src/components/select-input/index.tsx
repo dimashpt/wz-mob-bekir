@@ -6,7 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import {
+  FlatListProps,
+  Keyboard,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
@@ -28,6 +33,7 @@ export interface SelectInputProps<TData = unknown>
   title?: string;
   hideTouchable?: boolean;
   renderItem?: (props: RenderItemProps<TData>) => React.ReactElement;
+  flatListProps?: Omit<FlatListProps<Option<TData>>, 'data' | 'renderItem'>;
 }
 
 export interface SelectInputRef {
@@ -46,6 +52,7 @@ function SelectInputInner<TData = unknown>(
     title,
     hideTouchable = false,
     renderItem,
+    flatListProps,
     ...props
   }: SelectInputProps<TData>,
   ref: React.ForwardedRef<SelectInputRef>,
@@ -112,6 +119,7 @@ function SelectInputInner<TData = unknown>(
         selectedValue={selectedValue}
         title={title ?? placeholder ?? label}
         renderItem={renderItem}
+        flatListProps={flatListProps}
       />
     </View>
   );

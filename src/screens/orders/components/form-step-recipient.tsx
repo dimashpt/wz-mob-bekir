@@ -1,14 +1,66 @@
-import React, { JSX } from 'react';
+import React, { JSX, memo } from 'react';
+import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
-import { Container, InputField, Text, ToggleSwitch } from '@/components';
+import { Container, Icon, InputField, Text, ToggleSwitch } from '@/components';
 import SelectInput from '@/components/select-input';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { useDebounce } from '@/hooks';
+import { useAddressQuery } from '@/services/order/repository';
 import { OrderFormValues } from '../helpers/order-form';
 
+const SearchBar = memo(
+  ({
+    search,
+    setSearch,
+    isSearchDebouncing,
+  }: {
+    search: string;
+    setSearch: (value: string) => void;
+    isSearchDebouncing: boolean;
+  }) => (
+    <View className="px-md pb-sm bg-surface">
+      <InputField
+        left={
+          <Icon name="search" size="lg" className="text-muted-foreground" />
+        }
+        className="gap-xs min-h-8 rounded-full"
+        inputClassName="min-h-8"
+        loading={isSearchDebouncing}
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Masukkan nama kelurahan/desa penerima"
+      />
+    </View>
+  ),
+);
+
 export function FormStepRecipient(): JSX.Element {
-  const { control } = useFormContext<OrderFormValues>();
+  const [search, setSearch, debouncedSearch, isSearchDebouncing] =
+    useDebounce();
+  const { data: addresses } = useAddressQuery(
+    {
+      select: (data) =>
+        data.destinations.map((address) => ({
+          data: address,
+          label: [
+            address.subdistrict,
+            address.district,
+            address.city,
+            address.state,
+            address.country,
+            address.postcode,
+          ]
+            .filter(Boolean)
+            .join(', '),
+          value: address.subdistrict_code,
+        })),
+    },
+    debouncedSearch,
+  );
+
+  const { control, ...form } = useFormContext<OrderFormValues>();
   const isSameAsRecipient = useWatch({
     control,
     name: 'is_same_as_recipient',
@@ -92,13 +144,34 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <SelectInput
               label="Kelurahan/Desa Penerima"
-              onSelect={onChange}
-              options={[]}
-              value={value}
+              onSelect={(value) => {
+                onChange(value);
+
+                if (value?.data) {
+                  form.setValue('recipient.country', value?.data?.country);
+                  form.setValue('recipient.province', value?.data?.state);
+                  form.setValue('recipient.city', value?.data?.city);
+                  form.setValue('recipient.district', value?.data?.district);
+                  form.setValue('recipient.postal_code', value?.data?.postcode);
+                }
+              }}
+              mandatory
+              options={addresses ?? []}
+              value={value?.label}
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
               placeholder="Pilih kelurahan/desa penerima"
+              flatListProps={{
+                stickyHeaderIndices: [0],
+                ListHeaderComponent: () => (
+                  <SearchBar
+                    search={search}
+                    setSearch={setSearch}
+                    isSearchDebouncing={isSearchDebouncing}
+                  />
+                ),
+              }}
             />
           )}
         />
@@ -112,6 +185,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label="Negara Penerima"
+              mandatory
+              disabled
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -125,12 +200,15 @@ export function FormStepRecipient(): JSX.Element {
         <Controller
           control={control}
           name="recipient.province"
+          disabled
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
           }) => (
             <InputField
               label="Provinsi Penerima"
+              mandatory
+              disabled
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -150,6 +228,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label="Kota Penerima"
+              mandatory
+              disabled
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -169,6 +249,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label="Kecamatan Penerima"
+              mandatory
+              disabled
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -188,6 +270,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label="Kode Pos Penerima"
+              mandatory
+              disabled
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -206,6 +290,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
+              mandatory
               label="Alamat Lengkap Penerima"
               value={value}
               error={!!error?.message}
@@ -265,6 +350,7 @@ export function FormStepRecipient(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
+                mandatory
                 label="Nama Customer"
                 value={value}
                 error={!!error?.message}
@@ -284,6 +370,7 @@ export function FormStepRecipient(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
+                mandatory
                 label="No. HP Customer"
                 value={value}
                 error={!!error?.message}
@@ -304,6 +391,7 @@ export function FormStepRecipient(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
+                mandatory
                 label="Email Customer"
                 value={value}
                 error={!!error?.message}
@@ -325,6 +413,7 @@ export function FormStepRecipient(): JSX.Element {
               fieldState: { error },
             }) => (
               <InputField
+                mandatory
                 label="Alamat Lengkap Customer"
                 value={value}
                 error={!!error?.message}

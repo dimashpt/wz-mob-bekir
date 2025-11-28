@@ -271,3 +271,32 @@ export interface OrderHistory {
   updated_at: string;
   deleted_at: string | null;
 }
+
+export interface AddressRequestParams {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  search_by?: string;
+}
+
+export interface AddressResponse {
+  destinations: Address[];
+  pagination: PaginationResponse;
+}
+
+export interface Address {
+  region_id: number;
+  country: string;
+  state: string;
+  district: string;
+  city: string;
+  subdistrict: string;
+  subdistrict_code: string;
+  postcode: string;
+  longitude: string;
+  latitude: string;
+  destination_id: number | null;
+  destination_code: string | null;
+  created_at: string;
+  updated_at: string;
+}

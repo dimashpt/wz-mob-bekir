@@ -2,6 +2,8 @@ import { SuccessResponse } from '@/@types/api';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import { API } from '@/lib/axios';
 import {
+  AddressRequestParams,
+  AddressResponse,
   OrderDetailsResponse,
   OrderHistoryParams,
   OrderHistoryResponse,
@@ -51,6 +53,22 @@ export async function getOrderHistories(
 ): Promise<OrderHistoryResponse> {
   const response = await API.get<SuccessResponse<OrderHistoryResponse>>(
     ORDER_ENDPOINTS.GET_ORDER_HISTORIES.replace(':id', id),
+    { params },
+  );
+
+  return response.data.data;
+}
+
+/**
+ * Fetches addresses autocomplete from the API.
+ * @param params - The parameters for the request.
+ * @returns A promise that resolves to the addresses autocomplete.
+ */
+export async function getAddress(
+  params: AddressRequestParams,
+): Promise<AddressResponse> {
+  const response = await API.get<SuccessResponse<AddressResponse>>(
+    ORDER_ENDPOINTS.GET_ADDRESS,
     { params },
   );
 

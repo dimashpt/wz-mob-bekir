@@ -11,6 +11,7 @@ import {
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import * as OrderService from './index';
 import {
+  AddressResponse,
   OrderDetailsResponse,
   OrderHistoryResponse,
   OrderRequestParams,
@@ -108,6 +109,35 @@ export function useOrderHistoriesQuery<T = OrderHistoryResponse>(
       OrderService.getOrderHistories(id, {
         page: 1,
         per_page: 100,
+      }),
+  });
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch addresses autocomplete.
+ * @param params - Optional parameters for the query, including select for data transformation.
+ * @param search - The search query.
+ * @returns The query object containing addresses autocomplete.
+ * @template T - The type of data returned after selection (defaults to AddressResponse).
+ */
+export function useAddressQuery<T = AddressResponse>(
+  params: Omit<
+    UseQueryOptions<OrderService.AddressResponse, Error, T>,
+    'queryKey' | 'queryFn'
+  > = {},
+  search?: string,
+): UseQueryResult<T, Error> {
+  const query = useQuery<OrderService.AddressResponse, Error, T>({
+    ...params,
+    queryKey: [ORDER_ENDPOINTS.GET_ADDRESS, search],
+    queryFn: () =>
+      OrderService.getAddress({
+        page: 1,
+        per_page: 5,
+        search_by: 'subdistrict',
+        search,
       }),
   });
 

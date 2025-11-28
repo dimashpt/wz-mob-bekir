@@ -4,15 +4,23 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Dimensions, TouchableHighlight, View } from 'react-native';
+import {
+  Dimensions,
+  FlatListProps,
+  TouchableHighlight,
+  View,
+} from 'react-native';
 
 import {
   BottomSheetFlatList,
   BottomSheetFooter,
   BottomSheetHandle,
 } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
+import { useCSSVariable } from 'uniwind';
 
+import { Illustrations } from '@/assets/illustrations';
 import { BottomSheet, BottomSheetModal } from '@/components/bottom-sheet';
 import { Icon } from '@/components/icon';
 import { Text } from '@/components/text';
@@ -35,6 +43,7 @@ type BaseOptionBottomSheetProps<TData = unknown> = {
   options: Option<TData>[];
   title?: string;
   renderItem?: (props: RenderItemProps<TData>) => React.ReactElement;
+  flatListProps?: Omit<FlatListProps<Option<TData>>, 'data' | 'renderItem'>;
 };
 
 type SingleSelectOptionBottomSheetProps<TData = unknown> =
@@ -62,7 +71,7 @@ export interface OptionBottomSheetRef {
   close: () => void;
 }
 
-const { height } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 function OptionBottomSheetInner<TData = unknown>(
   {
@@ -73,9 +82,12 @@ function OptionBottomSheetInner<TData = unknown>(
     multiselect = false,
     selectedValues = [],
     renderItem,
+    flatListProps,
   }: OptionBottomSheetProps<TData>,
   ref: React.ForwardedRef<OptionBottomSheetRef>,
 ): React.ReactElement {
+  const { t } = useTranslation();
+  const accentColor = useCSSVariable('--color-accent') as string;
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const [internalSelectedValues, setInternalSelectedValues] = useState<
     Option<TData>[]
@@ -180,6 +192,7 @@ function OptionBottomSheetInner<TData = unknown>(
       )}
     >
       <BottomSheetFlatList
+        {...flatListProps}
         data={options}
         enableFooterMarginAdjustment
         renderItem={({
@@ -211,11 +224,13 @@ function OptionBottomSheetInner<TData = unknown>(
               ) : (
                 <View
                   className={twMerge(
-                    'py-md px-md w-full flex-row items-center',
+                    'py-md px-lg w-full flex-row items-center',
                     options.length !== index + 1 && 'border-border border-b',
                   )}
                 >
-                  <Text variant="bodyS">{option.label}</Text>
+                  <Text variant="bodyS" className="shrink">
+                    {option.label}
+                  </Text>
                   <View className="flex-1" />
                   {isOptionSelected(option) && (
                     <Icon name="tickCircle" size="lg" className="text-accent" />
@@ -225,6 +240,18 @@ function OptionBottomSheetInner<TData = unknown>(
             </TouchableHighlight>
           );
         }}
+        ListEmptyComponent={() => (
+          <View className="gap-sm py-xl flex-1 items-center justify-center">
+            <Illustrations.NoData
+              color={accentColor}
+              width={width / 3}
+              height={width / 3}
+            />
+            <Text variant="bodyM" className="text-center">
+              {t('general.no_data')}
+            </Text>
+          </View>
+        )}
         style={{ flex: 1 }}
         contentContainerStyle={{
           paddingBottom: multiselect ? 0 : undefined,

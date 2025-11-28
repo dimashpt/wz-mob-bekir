@@ -57,8 +57,9 @@ export function FormStepItem(): JSX.Element {
           render={({ field: { onChange, value } }) => (
             <InputField
               label="Berat"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
+              placeholder="0"
               keyboardType="numeric"
               right={
                 <Icon
@@ -81,7 +82,8 @@ export function FormStepItem(): JSX.Element {
           render={({ field: { onChange, value } }) => (
             <InputField
               label="Panjang"
-              value={value.toString()}
+              placeholder="0"
+              value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
             />
@@ -93,9 +95,10 @@ export function FormStepItem(): JSX.Element {
           render={({ field: { onChange, value } }) => (
             <InputField
               label="Lebar"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
+              placeholder="0"
             />
           )}
         />
@@ -105,9 +108,10 @@ export function FormStepItem(): JSX.Element {
           render={({ field: { onChange, value } }) => (
             <InputField
               label="Tinggi"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
+              placeholder="0"
             />
           )}
         />

@@ -44,7 +44,10 @@ export const orderFormSchema = z.object({
     country: z.string(),
     province: z.string(),
     city: z.string(),
-    sub_district: z.string(),
+    sub_district: z.object({
+      value: z.string(),
+      label: z.string(),
+    }),
     district: z.string(),
     postal_code: z.string(),
     full_address: z.string(),

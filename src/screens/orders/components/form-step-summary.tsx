@@ -22,9 +22,10 @@ export function FormStepSummary(): JSX.Element {
           render={({ field: { value, onChange } }) => (
             <InputField
               label="Shipping Price"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
               disabled
+              placeholder="0"
             />
           )}
         />
@@ -35,8 +36,9 @@ export function FormStepSummary(): JSX.Element {
           render={({ field: { value, onChange } }) => (
             <InputField
               label="Other Price"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
+              placeholder="0"
             />
           )}
         />
@@ -71,9 +73,10 @@ export function FormStepSummary(): JSX.Element {
           render={({ field: { value, onChange } }) => (
             <InputField
               label="Diskon Pesanan"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
+              placeholder="0"
             />
           )}
         />
@@ -84,9 +87,10 @@ export function FormStepSummary(): JSX.Element {
           render={({ field: { value, onChange } }) => (
             <InputField
               label="Biaya Packing"
-              value={value.toString()}
+              value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
+              placeholder="0"
             />
           )}
         />
