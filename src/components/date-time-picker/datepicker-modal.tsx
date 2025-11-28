@@ -19,11 +19,10 @@ export interface DatePickerModalRef {
   close: () => void;
 }
 
-export interface DatePickerModalProps
-  extends Omit<
-    React.ComponentProps<typeof BottomSheetModal>,
-    'ref' | 'children'
-  > {
+export interface DatePickerModalProps extends Omit<
+  React.ComponentProps<typeof BottomSheetModal>,
+  'ref' | 'children'
+> {
   value?: Dayjs | null;
   onSelect?: (value: Dayjs | null) => void;
   onRangeSelect?: (range: { start: Dayjs; end: Dayjs }) => void;

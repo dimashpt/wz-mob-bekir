@@ -17,6 +17,7 @@ import gear from './gear.svg';
 import home from './home.svg';
 import info from './info.svg';
 import logout from './logout.svg';
+import minus from './minus.svg';
 import notification from './notification.svg';
 import order from './order.svg';
 import plus from './plus.svg';
@@ -35,6 +36,7 @@ import truck from './truck.svg';
 import userSettings from './user-settings.svg';
 import user from './user.svg';
 import warning from './warning.svg';
+import weight from './weight.svg';
 
 export const Icons = {
   appearance,
@@ -56,6 +58,7 @@ export const Icons = {
   home,
   info,
   logout,
+  minus,
   notification,
   order,
   plus,
@@ -74,4 +77,5 @@ export const Icons = {
   user,
   userSettings,
   warning,
+  weight,
 };

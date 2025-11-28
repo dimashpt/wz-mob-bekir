@@ -20,8 +20,10 @@ export interface SelectDateTimeRef {
   close: () => void;
 }
 
-export interface SelectDateTimeProps
-  extends Omit<React.ComponentProps<typeof InputField>, 'value' | 'mode'> {
+export interface SelectDateTimeProps extends Omit<
+  React.ComponentProps<typeof InputField>,
+  'value' | 'mode'
+> {
   value?: Dayjs | null;
   onSelect?: (value: Dayjs | null) => void;
   onRangeSelect?: (range: { start: Dayjs; end: Dayjs }) => void;

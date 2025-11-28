@@ -24,8 +24,9 @@ import {
   RenderItemProps,
 } from '../option-bottom-sheet';
 
-export interface SelectInputProps<TData = unknown>
-  extends React.ComponentProps<typeof InputField> {
+export interface SelectInputProps<TData = unknown> extends React.ComponentProps<
+  typeof InputField
+> {
   options: Option<TData>[];
   onSelect: (value: Option<TData> | null) => void;
   selected?: Option<TData> | null;

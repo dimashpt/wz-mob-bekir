@@ -34,8 +34,9 @@ interface ContainerProps extends ViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
-interface KeyboardAwareScrollViewProps
-  extends ComponentProps<typeof KeyboardAwareScrollView> {
+interface KeyboardAwareScrollViewProps extends ComponentProps<
+  typeof KeyboardAwareScrollView
+> {
   children: ReactNode;
   contentContainerClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;

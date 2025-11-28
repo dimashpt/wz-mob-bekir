@@ -42,16 +42,19 @@ interface BottomSheetProps extends ComponentProps<typeof MappedBottomSheet> {
   >;
 }
 
-interface BottomSheetModalProps
-  extends ComponentProps<typeof MappedBottomSheetModal> {
+interface BottomSheetModalProps extends ComponentProps<
+  typeof MappedBottomSheetModal
+> {
   ref?: React.Ref<GBottomSheetModal>;
   dismissable?: boolean;
 }
 
-interface BottomSheetConfirmProps
-  extends Omit<BottomSheetModalProps, 'children'> {
+interface BottomSheetConfirmProps extends Omit<
+  BottomSheetModalProps,
+  'children'
+> {
   ref?: React.RefObject<GBottomSheetModal | null>;
-  variant?: 'success' | 'error' | 'info';
+  variant?: 'success' | 'error' | 'info' | undefined;
   title?: string;
   description?: string;
   children?: React.ReactNode;
@@ -64,8 +67,9 @@ interface BottomSheetConfirmProps
   contentContainerClassName?: string;
 }
 
-interface BottomSheetViewProps
-  extends React.ComponentProps<typeof GBottomSheetView> {
+interface BottomSheetViewProps extends React.ComponentProps<
+  typeof GBottomSheetView
+> {
   detached?: boolean;
 }
 
@@ -197,7 +201,7 @@ export function BottomSheetModal({
 }
 
 function BottomSheetConfirm({
-  variant = 'info',
+  variant,
   title,
   children,
   closeButtonProps,
@@ -210,6 +214,7 @@ function BottomSheetConfirm({
   handleClose: handleCloseProp,
   handleSubmit: handleSubmitProp,
   ref,
+  ...props
 }: BottomSheetConfirmProps): React.JSX.Element {
   const { t } = useTranslation();
 
@@ -232,6 +237,7 @@ function BottomSheetConfirm({
       ref={ref}
       dismissable={dismissable}
       onDismiss={dismissable ? handleClose : undefined}
+      {...props}
     >
       <BottomSheet.View
         detached

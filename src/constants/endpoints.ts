@@ -35,6 +35,10 @@ const ENDPOINTS = {
   WAREHOUSE_ENDPOINTS: {
     LIST_WAREHOUSES: '/tenant/location',
   },
+
+  PRODUCT_ENDPOINTS: {
+    LIST_PRODUCTS: '/tenant/products',
+  },
 } as const;
 
 export default ENDPOINTS;
@@ -46,4 +50,5 @@ export const {
   ORDER_ENDPOINTS,
   STORE_ENDPOINTS,
   WAREHOUSE_ENDPOINTS,
+  PRODUCT_ENDPOINTS,
 } = ENDPOINTS;

@@ -1,8 +1,9 @@
-import React, { JSX } from 'react';
+import React, { JSX, useRef } from 'react';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 import {
+  BottomSheetModal,
   Button,
   Container,
   Icon,
@@ -12,13 +13,35 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { OrderFormValues } from '../helpers/order-form';
+import { ProductItem } from './product-item';
+import { ProductSelectSheet } from './product-select-sheet';
 
 export function FormStepItem(): JSX.Element {
-  const { control } = useFormContext<OrderFormValues>();
+  const productSheetRef = useRef<BottomSheetModal>(null);
+  const { control, ...form } = useFormContext<OrderFormValues>();
   const watchIsDropship = useWatch({
     control,
     name: 'is_dropship',
   });
+  const watchWarehouseId = useWatch({
+    control,
+    name: 'location_id',
+  });
+  const watchProducts = useWatch({
+    control,
+    name: 'products',
+  });
+
+  function onQuantityChange(
+    updatedProduct: OrderFormValues['products'][0],
+    index: number,
+  ): void {
+    const updatedProducts = [...(watchProducts || [])];
+
+    updatedProducts[index] = updatedProduct;
+
+    form.setValue('products', updatedProducts);
+  }
 
   return (
     <Container.Scroll
@@ -27,11 +50,23 @@ export function FormStepItem(): JSX.Element {
     >
       <Text variant="labelL">Item Order</Text>
       <Container.Card className="p-lg gap-md">
+        {watchProducts && watchProducts.length > 0
+          ? watchProducts.map((product, index) => (
+              <ProductItem
+                key={index}
+                product={product}
+                onQuantityChange={(updatedProduct) =>
+                  onQuantityChange(updatedProduct, index)
+                }
+              />
+            ))
+          : null}
         <Button
           variant="outlined"
           prefixIcon="productAdd"
           text="Tambah Item"
           className="border-muted-foreground rounded-md border border-dashed"
+          onPress={() => productSheetRef.current?.present()}
         />
       </Container.Card>
 
@@ -56,7 +91,7 @@ export function FormStepItem(): JSX.Element {
           name="package.weight"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Berat"
+              label="Berat (gram)"
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
@@ -81,7 +116,7 @@ export function FormStepItem(): JSX.Element {
           name="package.length"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Panjang"
+              label="Panjang (cm)"
               placeholder="0"
               value={value?.toString()}
               onChangeText={onChange}
@@ -94,7 +129,7 @@ export function FormStepItem(): JSX.Element {
           name="package.width"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Lebar"
+              label="Lebar (cm)"
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -107,7 +142,7 @@ export function FormStepItem(): JSX.Element {
           name="package.height"
           render={({ field: { onChange, value } }) => (
             <InputField
-              label="Tinggi"
+              label="Tinggi (cm)"
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -201,6 +236,11 @@ export function FormStepItem(): JSX.Element {
           />
         </Container.Card>
       )}
+      <ProductSelectSheet
+        ref={productSheetRef}
+        locationId={watchWarehouseId?.value}
+        selectedProducts={watchProducts}
+      />
     </Container.Scroll>
   );
 }
