@@ -332,6 +332,7 @@
     "height_cm": "Height (cm)",
     "weight_auto_calculated": "Weight is automatically calculated from total products. You can change it manually",
     "out_of_stock": "Out of stock",
-    "delete_product_confirmation": "Are you sure you want to delete this product?"
+    "delete_product_confirmation": "Are you sure you want to delete this product?",
+    "delete_products_confirmation": "Are you sure you want to remove these products:"
   }
 }

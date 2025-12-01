@@ -336,6 +336,7 @@
     "height_cm": "Tinggi (cm)",
     "weight_auto_calculated": "Berat otomatis dihitung dari total produk. Anda dapat mengubahnya secara manual",
     "out_of_stock": "Stok habis",
-    "delete_product_confirmation": "Apakah Anda yakin ingin menghapus produk ini?"
+    "delete_product_confirmation": "Apakah Anda yakin ingin menghapus produk ini?",
+    "delete_products_confirmation": "Apakah Anda yakin ingin menghapus produk berikut:"
   }
 }

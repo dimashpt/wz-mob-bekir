@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useImperativeHandle, useRef } from 'react';
 import {
   Keyboard,
   Platform,
@@ -47,6 +47,8 @@ interface BottomSheetModalProps extends ComponentProps<
 > {
   ref?: React.Ref<GBottomSheetModal>;
   dismissable?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
 }
 
 interface BottomSheetConfirmProps extends Omit<
@@ -164,10 +166,25 @@ export function BottomSheetModal({
   children,
   backdropComponent,
   dismissable = true,
+  onOpen,
+  onClose,
   ...props
 }: BottomSheetModalProps): React.JSX.Element {
   const { bottom } = useSafeAreaInsets();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
+  const internalRef = useRef<GBottomSheetModal>(null);
+
+  useImperativeHandle(ref, () => ({
+    ...internalRef.current!,
+    present: (...args: Parameters<GBottomSheetModal['present']>) => {
+      internalRef.current?.present(...args);
+      onOpen?.();
+    },
+    close: (...args: Parameters<GBottomSheetModal['close']>) => {
+      internalRef.current?.close(...args);
+      onClose?.();
+    },
+  }));
 
   const BlurBackdropWrapper = (
     backdropProps: BottomSheetBackdropProps,
@@ -177,7 +194,7 @@ export function BottomSheetModal({
 
   return (
     <MappedBottomSheetModal
-      ref={ref}
+      ref={internalRef}
       detached
       enablePanDownToClose={dismissable}
       bottomInset={bottom || spacingLg}
