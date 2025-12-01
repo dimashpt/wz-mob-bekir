@@ -1,3 +1,4 @@
+import dayjs, { Dayjs } from 'dayjs';
 import { z } from 'zod';
 
 export const orderFormSchema = z.object({
@@ -22,7 +23,7 @@ export const orderFormSchema = z.object({
     value: z.string(),
     label: z.string(),
   }),
-  checkout_at: z.string(),
+  checkout_at: z.custom<Dayjs>((val) => dayjs.isDayjs(val) && val.isValid()),
   sales_pic: z.string(),
   remarks: z.string(),
   origin_code: z.string(),
@@ -103,10 +104,10 @@ export const orderFormSchema = z.object({
     }),
   ),
   package: z.object({
-    weight: z.number(),
-    length: z.number(),
-    width: z.number(),
-    height: z.number(),
+    weight: z.coerce.number<number>(),
+    length: z.coerce.number<number>(),
+    width: z.coerce.number<number>(),
+    height: z.coerce.number<number>(),
   }),
   price: z.object({
     sub_total_price: z.number(),

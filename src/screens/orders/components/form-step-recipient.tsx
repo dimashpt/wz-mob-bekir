@@ -369,7 +369,7 @@ export function FormStepRecipient(): JSX.Element {
 
           <Controller
             control={control}
-            name="recipient.phone"
+            name="buyer.phone"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -390,7 +390,7 @@ export function FormStepRecipient(): JSX.Element {
 
           <Controller
             control={control}
-            name="recipient.email"
+            name="buyer.email"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },

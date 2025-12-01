@@ -104,8 +104,10 @@ export default function OrderFormScreen(): JSX.Element {
         full_address: '',
       },
       delivery: {
+        is_self_delivery: false,
         logistic: null,
         delivery_method: '',
+        logistic_name: '',
         logistic_provider_name: '',
         logistic_service_name: '',
         logistic_carrier: '',
@@ -146,7 +148,11 @@ export default function OrderFormScreen(): JSX.Element {
     }
   }
 
-  function handleSubmit(): void {}
+  function handleSubmit(values: OrderFormValues): void {
+    console.log('form: ', values);
+  }
+
+  console.log(form.formState.errors);
 
   const renderTabBar = (
     props: SceneRendererProps & {
@@ -207,7 +213,9 @@ export default function OrderFormScreen(): JSX.Element {
             <Button
               variant="filled"
               className="flex-1"
-              onPress={isLastStep ? handleSubmit : handleNext}
+              onPress={
+                isLastStep ? form.handleSubmit(handleSubmit) : handleNext
+              }
               text={
                 isLastStep
                   ? t('order_form.navigation.submit')

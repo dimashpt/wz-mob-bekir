@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { Container, InputField, Text, ToggleSwitch } from '@/components';
@@ -10,6 +10,11 @@ import { OrderFormValues } from '../helpers/order-form';
 export function FormStepSummary(): JSX.Element {
   const { t } = useTranslation();
   const { control } = useFormContext<OrderFormValues>();
+
+  const watchIsShippingCostCoveredBySeller = useWatch({
+    control,
+    name: 'price.is_shipping_cost_covered_by_seller',
+  });
 
   return (
     <Container.Scroll
@@ -26,7 +31,6 @@ export function FormStepSummary(): JSX.Element {
               label={t('order_form.shipping_price')}
               value={value?.toString()}
               onChangeText={onChange}
-              disabled
               placeholder="0"
             />
           )}
@@ -71,6 +75,22 @@ export function FormStepSummary(): JSX.Element {
       </Container.Card>
 
       <Container.Card className="p-md gap-md">
+        {watchIsShippingCostCoveredBySeller && (
+          <Controller
+            control={control}
+            name="price.discount_shipping"
+            render={({ field: { value, onChange } }) => (
+              <InputField
+                label={t('order_form.shipping_discount')}
+                value={value?.toString()}
+                onChangeText={onChange}
+                keyboardType="numeric"
+                placeholder="0"
+              />
+            )}
+          />
+        )}
+
         <Controller
           control={control}
           name="price.discount_seller"
