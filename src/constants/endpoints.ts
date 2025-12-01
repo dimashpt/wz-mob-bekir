@@ -39,6 +39,10 @@ const ENDPOINTS = {
   PRODUCT_ENDPOINTS: {
     LIST_PRODUCTS: '/tenant/products',
   },
+
+  SHIPMENT_ENDPOINTS: {
+    LIST_LOGISTICS: '/tenant/settings/logistics',
+  },
 } as const;
 
 export default ENDPOINTS;
@@ -51,4 +55,5 @@ export const {
   STORE_ENDPOINTS,
   WAREHOUSE_ENDPOINTS,
   PRODUCT_ENDPOINTS,
+  SHIPMENT_ENDPOINTS,
 } = ENDPOINTS;

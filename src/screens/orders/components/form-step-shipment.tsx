@@ -3,19 +3,78 @@ import React, { JSX } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { Container, InputField, Text, ToggleSwitch } from '@/components';
+import {
+  Container,
+  InputField,
+  Option,
+  Text,
+  ToggleSwitch,
+} from '@/components';
 import SelectInput from '@/components/select-input';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { ShipmentRepo } from '@/services';
+import { formatCurrency } from '@/utils/formatter';
 import { OrderFormValues } from '../helpers/order-form';
 
 export function FormStepShipment(): JSX.Element {
   const { t } = useTranslation();
-  const { control } = useFormContext<OrderFormValues>();
+  const { control, ...form } = useFormContext<OrderFormValues>();
 
   const watchIsSelfDelivery = useWatch({
     control,
     name: 'delivery.is_self_delivery',
   });
+
+  const { data: logisticProviders } = ShipmentRepo.useLogisticProvidersQuery({
+    select: (data) =>
+      data.map((provider) => ({
+        label: [provider.pattern, formatCurrency(provider.price ?? 0)].join(
+          ' - ',
+        ),
+        // Joining value to make it unique and handles multiple services from same provider
+        value: [provider.provider_code, provider.service_type].join('@'),
+        data: provider,
+      })),
+  });
+
+  type LogisticInner = {
+    provider_name?: string;
+    service_type?: string;
+    pattern?: string;
+  } | null;
+
+  type LogisticOption =
+    | ({
+        label?: string;
+        value?: string;
+        data?: LogisticInner;
+      } & object)
+    | null;
+
+  function handleSelfDeliveryChange(value: boolean): void {
+    form.setValue('delivery.is_self_delivery', value);
+    if (value) {
+      form.setValue('delivery.logistic', null);
+      form.setValue('delivery.logistic_name', '');
+      form.setValue('delivery.logistic_provider_name', '');
+      form.setValue('delivery.logistic_service_name', '');
+      form.setValue('delivery.logistic_carrier', '');
+      form.setValue('delivery.tracking_number', '');
+    }
+  }
+
+  function handleLogisticSelect(value: LogisticOption): void {
+    form.setValue('delivery.logistic', value as Option);
+    form.setValue(
+      'delivery.logistic_provider_name',
+      value?.data?.provider_name || '',
+    );
+    form.setValue(
+      'delivery.logistic_service_name',
+      value?.data?.service_type || '',
+    );
+    form.setValue('delivery.logistic_carrier', value?.data?.pattern ?? '');
+  }
 
   return (
     <Container.Scroll
@@ -30,8 +89,12 @@ export function FormStepShipment(): JSX.Element {
         <Controller
           control={control}
           name="delivery.is_self_delivery"
-          render={({ field: { onChange, value } }) => (
-            <ToggleSwitch value={value} size="small" onValueChange={onChange} />
+          render={({ field: { value } }) => (
+            <ToggleSwitch
+              value={value}
+              size="small"
+              onValueChange={handleSelfDeliveryChange}
+            />
           )}
         />
       </Container.Card>
@@ -40,12 +103,12 @@ export function FormStepShipment(): JSX.Element {
         <Controller
           control={control}
           name="delivery.logistic"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
+          render={({ field: { value }, fieldState: { error } }) => (
             <SelectInput
               label={t('order_form.logistic_service')}
-              onSelect={onChange}
-              options={[]}
-              value={value}
+              onSelect={handleLogisticSelect}
+              options={logisticProviders || []}
+              value={value?.label}
               error={!!error?.message}
               errors={[error?.message]}
               placeholder={t('order_form.select_logistic')}
@@ -77,6 +140,7 @@ export function FormStepShipment(): JSX.Element {
             <InputField
               label={t('order_form.provider_name')}
               value={value}
+              disabled={!watchIsSelfDelivery}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
@@ -92,6 +156,7 @@ export function FormStepShipment(): JSX.Element {
             <InputField
               label={t('order_form.service_name')}
               value={value}
+              disabled={!watchIsSelfDelivery}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
@@ -107,6 +172,7 @@ export function FormStepShipment(): JSX.Element {
             <InputField
               label={t('order_form.logistic_carrier')}
               value={value}
+              disabled={!watchIsSelfDelivery}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
@@ -122,6 +188,7 @@ export function FormStepShipment(): JSX.Element {
             <InputField
               label={t('order_form.tracking_number')}
               value={value}
+              disabled={!watchIsSelfDelivery}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}

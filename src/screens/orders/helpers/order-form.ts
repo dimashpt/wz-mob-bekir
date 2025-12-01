@@ -64,7 +64,12 @@ export const orderFormSchema = z.object({
   delivery: z.object({
     is_self_delivery: z.boolean(),
     logistic_name: z.string(),
-    logistic: z.string(),
+    logistic: z
+      .object({
+        value: z.string(),
+        label: z.string(),
+      })
+      .nullable(),
     delivery_method: z.string(),
     logistic_provider_name: z.string(),
     logistic_service_name: z.string(),
@@ -73,11 +78,6 @@ export const orderFormSchema = z.object({
   }),
   products: z.array(
     z.object({
-      // name: z.string(),
-      // sku: z.string(),
-      // product_id: z.number(),
-      // unit_price: z.number(),
-      // unit_weight: z.string(),
       quantity: z.number().optional(),
       product_id: z.number(),
       name: z.string(),

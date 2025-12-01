@@ -10,6 +10,10 @@ export * as OrderRepo from './order/repository';
 export * as ProductService from './products';
 export * as ProductRepo from './products/repository';
 
+// Shipment Service
+export * as ShipmentService from './shipment';
+export * as ShipmentRepo from './shipment/repository';
+
 // Store Service
 export * as StoreService from './store';
 export * as StoreRepo from './store/repository';

@@ -104,7 +104,7 @@ export default function OrderFormScreen(): JSX.Element {
         full_address: '',
       },
       delivery: {
-        logistic: '',
+        logistic: null,
         delivery_method: '',
         logistic_provider_name: '',
         logistic_service_name: '',

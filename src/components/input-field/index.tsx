@@ -157,7 +157,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               inputFieldVariants({
                 variant: transparent ? 'transparent' : 'filled',
               }),
-              dense && 'min-h-[48px]',
+              dense && 'min-h-12',
               getBorderClassName(),
               props.disabled && 'bg-field-disabled',
               className,
