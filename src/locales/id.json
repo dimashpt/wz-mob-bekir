@@ -6,6 +6,7 @@
     "yes": "Ya",
     "cancel": "Batal",
     "confirm": "Konfirmasi",
+    "delete": "Hapus",
     "loading": "Memuat...",
     "updating": "Memperbarui... {{progress}}%",
     "update_available": "Pembaruan Tersedia",
@@ -334,6 +335,7 @@
     "width_cm": "Lebar (cm)",
     "height_cm": "Tinggi (cm)",
     "weight_auto_calculated": "Berat otomatis dihitung dari total produk. Anda dapat mengubahnya secara manual",
-    "out_of_stock": "Stok habis"
+    "out_of_stock": "Stok habis",
+    "delete_product_confirmation": "Apakah Anda yakin ingin menghapus produk ini?"
   }
 }

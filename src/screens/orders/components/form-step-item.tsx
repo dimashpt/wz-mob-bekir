@@ -1,10 +1,11 @@
-import React, { JSX, useCallback, useEffect, useRef } from 'react';
+import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import {
+  BottomSheet,
   BottomSheetModal,
   Button,
   Container,
@@ -23,6 +24,10 @@ import { ProductSelectSheet } from './product-select-sheet';
 export function FormStepItem(): JSX.Element {
   const { t } = useTranslation();
   const productSheetRef = useRef<BottomSheetModal>(null);
+  const deleteConfirmRef = useRef<BottomSheetModal>(null);
+  const [productToDelete, setProductToDelete] = useState<
+    OrderFormValues['products'][0] | null
+  >(null);
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchIsDropship = useWatch({
     control,
@@ -73,6 +78,23 @@ export function FormStepItem(): JSX.Element {
     form.setValue('products', updatedProducts);
   }
 
+  function onDeleteProductRequest(
+    product: OrderFormValues['products'][0],
+  ): void {
+    setProductToDelete(product);
+    deleteConfirmRef.current?.present();
+  }
+
+  function handleConfirmDelete(): void {
+    if (!productToDelete) return;
+    const updatedProducts = (watchProducts || []).filter(
+      (p) => p.product_id !== productToDelete.product_id,
+    );
+    form.setValue('products', updatedProducts);
+    deleteConfirmRef.current?.dismiss();
+    setProductToDelete(null);
+  }
+
   return (
     <Container.Scroll
       contentContainerClassName="p-lg gap-md"
@@ -88,11 +110,13 @@ export function FormStepItem(): JSX.Element {
                 onQuantityChange={(updatedProduct) =>
                   onQuantityChange(updatedProduct, index)
                 }
+                onDeleteRequest={onDeleteProductRequest}
               />
             ))
           : null}
         <Button
           variant="outlined"
+          disabled={!watchWarehouseId?.value}
           prefixIcon="productAdd"
           text={t('order_form.add_item')}
           className="border-muted-foreground rounded-md border border-dashed"
@@ -286,6 +310,20 @@ export function FormStepItem(): JSX.Element {
         ref={productSheetRef}
         locationId={watchWarehouseId?.value}
         selectedProducts={watchProducts}
+      />
+      <BottomSheet.Confirm
+        ref={deleteConfirmRef}
+        title={t('general.confirm')}
+        description={
+          productToDelete
+            ? `${t('order_form.delete_product_confirmation')} "${productToDelete.name}"?`
+            : ''
+        }
+        showCloseButton
+        closeButtonProps={{ text: t('general.cancel') }}
+        submitButtonProps={{ text: t('general.delete') }}
+        handleSubmit={handleConfirmDelete}
+        variant="error"
       />
     </Container.Scroll>
   );

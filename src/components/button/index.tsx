@@ -156,7 +156,7 @@ export function Button({
   const foregroundInvertedColor = useCSSVariable(
     '--color-foreground-inverted',
   ) as string;
-  const foregroundMuted = useCSSVariable('--color-muted') as string;
+  const foregroundMuted = useCSSVariable('--color-muted-foreground') as string;
   const disabledBgColor = useCSSVariable('--color-muted') as string;
 
   // Animation shared values

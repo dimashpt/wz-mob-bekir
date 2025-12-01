@@ -19,6 +19,7 @@ interface ProductItemProps {
   selected?: boolean;
   onPress?: (product: Product) => void;
   onQuantityChange?: (updatedProduct: OrderFormValues['products'][0]) => void;
+  onDeleteRequest?: (product: OrderFormValues['products'][0]) => void;
 }
 
 export function ProductItem({
@@ -26,6 +27,7 @@ export function ProductItem({
   selected,
   onPress,
   onQuantityChange,
+  onDeleteRequest,
 }: ProductItemProps): React.JSX.Element {
   const { t } = useTranslation();
   function handleQuantityIncrease(): void {
@@ -38,12 +40,25 @@ export function ProductItem({
   }
 
   function handleQuantityDecrease(): void {
+    const currentQuantity = product.quantity ?? 0;
+    const newQuantity = Math.max(currentQuantity - 1, 0);
+
+    if (newQuantity === 0 && onDeleteRequest) {
+      onDeleteRequest(product);
+      return;
+    }
+
     if (onQuantityChange) {
       onQuantityChange({
         ...product,
-        quantity: Math.max((product.quantity ?? 0) - 1, 0),
+        quantity: newQuantity,
       });
     }
+  }
+
+  function handleDeleteProduct(): void {
+    if (!onDeleteRequest) return;
+    onDeleteRequest(product);
   }
 
   return (
@@ -101,24 +116,33 @@ export function ProductItem({
               </View>
             </View>
             {onQuantityChange && (
-              <View className="gap-xs border-accent flex-row items-center rounded-full border">
-                <Clickable
-                  onPress={handleQuantityDecrease}
-                  disabled={(product.quantity ?? 0) <= 0}
-                  className="p-xs"
-                >
-                  <Icon name="minus" size="base" className="text-accent" />
-                </Clickable>
-                <Text variant="labelXS" className="mx-xs">
-                  {product.quantity ?? 0}
-                </Text>
-                <Clickable
-                  onPress={handleQuantityIncrease}
-                  disabled={(product.quantity ?? 0) >= (product.available ?? 0)}
-                  className="p-xs"
-                >
-                  <Icon name="plus" size="base" className="text-accent" />
-                </Clickable>
+              <View className="gap-md flex-row items-center">
+                {onDeleteRequest && (
+                  <Clickable onPress={handleDeleteProduct} className="p-xs">
+                    <Icon name="trash" size="base" className="text-danger" />
+                  </Clickable>
+                )}
+                <View className="gap-xs border-accent flex-row items-center rounded-full border">
+                  <Clickable
+                    onPress={handleQuantityDecrease}
+                    disabled={(product.quantity ?? 0) <= 0}
+                    className="p-xs"
+                  >
+                    <Icon name="minus" size="base" className="text-accent" />
+                  </Clickable>
+                  <Text variant="labelXS" className="mx-xs">
+                    {product.quantity ?? 0}
+                  </Text>
+                  <Clickable
+                    onPress={handleQuantityIncrease}
+                    disabled={
+                      (product.quantity ?? 0) >= (product.available ?? 0)
+                    }
+                    className="p-xs"
+                  >
+                    <Icon name="plus" size="base" className="text-accent" />
+                  </Clickable>
+                </View>
               </View>
             )}
           </View>
