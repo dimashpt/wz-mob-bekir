@@ -59,7 +59,7 @@ export function FormStepOrder(): JSX.Element {
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchPaymentMethodType = useWatch({
     control,
-    name: 'payment_method_type',
+    name: 'step_order.payment_method_type',
   });
 
   const PAYMENT_TYPE_OPTIONS = Object.keys(ORDER_PAYMENT_TYPES).map(
@@ -84,7 +84,7 @@ export function FormStepOrder(): JSX.Element {
       <Container.Card className="p-md gap-sm">
         <Controller
           control={control}
-          name="order_code"
+          name="step_order.order_code"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -102,7 +102,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="payment_method_type"
+          name="step_order.payment_method_type"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -112,7 +112,7 @@ export function FormStepOrder(): JSX.Element {
               label={t('order_form.payment_method')}
               onSelect={(value) => {
                 onChange(value);
-                form.setValue('payment_via', null);
+                form.resetField('step_order.payment_via');
               }}
               options={PAYMENT_TYPE_OPTIONS}
               value={value?.value}
@@ -125,7 +125,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="payment_via"
+          name="step_order.payment_via"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -146,7 +146,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="store_id"
+          name="step_order.store_id"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -191,7 +191,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="location_id"
+          name="step_order.location_id"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -211,7 +211,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="checkout_at"
+          name="step_order.checkout_at"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -232,7 +232,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="sales_pic"
+          name="step_order.sales_pic"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -250,7 +250,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="remarks"
+          name="step_order.remarks"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },

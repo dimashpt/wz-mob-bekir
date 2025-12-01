@@ -61,79 +61,7 @@ export default function OrderFormScreen(): JSX.Element {
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
-    defaultValues: {
-      order_code: '',
-      payment_method_type: null,
-      payment_via: null,
-      store_id: undefined,
-      location_id: undefined,
-      checkout_at: '',
-      sales_pic: '',
-      remarks: '',
-      origin_code: '',
-      destination_code: '',
-      cod_percentage: 0,
-      insurance_percentage: 0,
-      dropshipper_name: '',
-      dropshipper_phone: '',
-      dropshipper_email: '',
-      dropshipper_full_address: '',
-      is_dropship: false,
-      is_draft: false,
-      is_unpaid: false,
-      is_same_as_recipient: false,
-      recipient: {
-        name: '',
-        phone: '',
-        email: '',
-        country: '',
-        province: '',
-        city: '',
-        sub_district: undefined,
-        district: '',
-        postal_code: '',
-        full_address: '',
-        sub_district_id: '',
-        remarks: '',
-        recipient_sub_district_id: '',
-      },
-      buyer: {
-        name: '',
-        phone: '',
-        email: '',
-        full_address: '',
-      },
-      delivery: {
-        is_self_delivery: false,
-        logistic: null,
-        delivery_method: '',
-        logistic_name: '',
-        logistic_provider_name: '',
-        logistic_service_name: '',
-        logistic_carrier: '',
-        tracking_number: '',
-      },
-      products: [],
-      package: {
-        weight: undefined,
-        length: undefined,
-        width: undefined,
-        height: undefined,
-      },
-      price: {
-        sub_total_price: undefined,
-        shipping_price: undefined,
-        other_price: undefined,
-        total_discount_price: undefined,
-        cod_fee: undefined,
-        cod_price: undefined,
-        grand_total_order_price: undefined,
-        discount_seller: undefined,
-        discount_shipping: undefined,
-        packing_price: undefined,
-        insurance_price: undefined,
-      },
-    },
+    mode: 'onChange',
   });
 
   function handleNext(): void {
@@ -151,8 +79,6 @@ export default function OrderFormScreen(): JSX.Element {
   function handleSubmit(values: OrderFormValues): void {
     console.log('form: ', values);
   }
-
-  console.log(form.formState.errors);
 
   const renderTabBar = (
     props: SceneRendererProps & {
@@ -213,9 +139,9 @@ export default function OrderFormScreen(): JSX.Element {
             <Button
               variant="filled"
               className="flex-1"
-              onPress={
-                isLastStep ? form.handleSubmit(handleSubmit) : handleNext
-              }
+              onPress={form.handleSubmit(
+                isLastStep ? handleSubmit : handleNext,
+              )}
               text={
                 isLastStep
                   ? t('order_form.navigation.submit')

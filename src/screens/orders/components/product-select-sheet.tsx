@@ -50,7 +50,7 @@ export const ProductSelectSheet = forwardRef<
   }
 
   function handleUpdateSelectedProducts(): void {
-    const existingProducts = form.getValues('products') || [];
+    const existingProducts = form.getValues('step_item.products') || [];
 
     // Find products that were previously selected but now deselected
     const removedProducts = existingProducts.filter(
@@ -72,7 +72,7 @@ export const ProductSelectSheet = forwardRef<
   }
 
   function applyProductChanges(): void {
-    const existingProducts = form.getValues('products') || [];
+    const existingProducts = form.getValues('step_item.products') || [];
 
     // Find NEW products to add
     const newProducts = selectedProducts.filter(
@@ -94,7 +94,10 @@ export const ProductSelectSheet = forwardRef<
       ),
     );
 
-    form.setValue('products', [...remainingProducts, ...mappedNewProducts]);
+    form.setValue('step_item.products', [
+      ...remainingProducts,
+      ...mappedNewProducts,
+    ]);
     handleCloseAndReset();
   }
 

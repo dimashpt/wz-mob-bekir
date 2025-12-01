@@ -13,7 +13,7 @@ export function FormStepSummary(): JSX.Element {
 
   const watchIsShippingCostCoveredBySeller = useWatch({
     control,
-    name: 'price.is_shipping_cost_covered_by_seller',
+    name: 'step_summary.price.is_shipping_cost_covered_by_seller',
   });
 
   return (
@@ -25,7 +25,7 @@ export function FormStepSummary(): JSX.Element {
       <Container.Card className="p-lg gap-md">
         <Controller
           control={control}
-          name="price.shipping_price"
+          name="step_summary.price.shipping_price"
           render={({ field: { value, onChange } }) => (
             <InputField
               label={t('order_form.shipping_price')}
@@ -38,7 +38,7 @@ export function FormStepSummary(): JSX.Element {
 
         <Controller
           control={control}
-          name="price.other_price"
+          name="step_summary.price.other_price"
           render={({ field: { value, onChange } }) => (
             <InputField
               label={t('order_form.other_price')}
@@ -56,7 +56,7 @@ export function FormStepSummary(): JSX.Element {
         </Text>
         <Controller
           control={control}
-          name="price.is_shipping_cost_covered_by_seller"
+          name="step_summary.price.is_shipping_cost_covered_by_seller"
           render={({ field: { value, onChange } }) => (
             <ToggleSwitch value={value} size="small" onValueChange={onChange} />
           )}
@@ -67,7 +67,7 @@ export function FormStepSummary(): JSX.Element {
         <Text variant="bodyS">{t('order_form.use_insurance')}</Text>
         <Controller
           control={control}
-          name="price.is_using_insurance"
+          name="step_summary.price.is_using_insurance"
           render={({ field: { value, onChange } }) => (
             <ToggleSwitch value={value} size="small" onValueChange={onChange} />
           )}
@@ -78,7 +78,7 @@ export function FormStepSummary(): JSX.Element {
         {watchIsShippingCostCoveredBySeller && (
           <Controller
             control={control}
-            name="price.discount_shipping"
+            name="step_summary.price.discount_shipping"
             render={({ field: { value, onChange } }) => (
               <InputField
                 label={t('order_form.shipping_discount')}
@@ -93,7 +93,7 @@ export function FormStepSummary(): JSX.Element {
 
         <Controller
           control={control}
-          name="price.discount_seller"
+          name="step_summary.price.discount_seller"
           render={({ field: { value, onChange } }) => (
             <InputField
               label={t('order_form.order_discount')}
@@ -107,7 +107,7 @@ export function FormStepSummary(): JSX.Element {
 
         <Controller
           control={control}
-          name="price.packing_price"
+          name="step_summary.price.packing_price"
           render={({ field: { value, onChange } }) => (
             <InputField
               label={t('order_form.packing_fee')}

@@ -67,7 +67,7 @@ export function FormStepRecipient(): JSX.Element {
   const { control, ...form } = useFormContext<OrderFormValues>();
   const isSameAsRecipient = useWatch({
     control,
-    name: 'is_same_as_recipient',
+    name: 'step_recipient.is_same_as_recipient',
   });
 
   return (
@@ -79,7 +79,7 @@ export function FormStepRecipient(): JSX.Element {
       <Container.Card className="p-lg gap-md">
         <Controller
           control={control}
-          name="recipient.name"
+          name="step_recipient.recipient.name"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -99,7 +99,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.phone"
+          name="step_recipient.recipient.phone"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -120,7 +120,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.email"
+          name="step_recipient.recipient.email"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -141,7 +141,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.sub_district"
+          name="step_recipient.recipient.sub_district"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -152,11 +152,26 @@ export function FormStepRecipient(): JSX.Element {
                 onChange(value);
 
                 if (value?.data) {
-                  form.setValue('recipient.country', value?.data?.country);
-                  form.setValue('recipient.province', value?.data?.state);
-                  form.setValue('recipient.city', value?.data?.city);
-                  form.setValue('recipient.district', value?.data?.district);
-                  form.setValue('recipient.postal_code', value?.data?.postcode);
+                  form.setValue(
+                    'step_recipient.recipient.country',
+                    value?.data?.country,
+                  );
+                  form.setValue(
+                    'step_recipient.recipient.province',
+                    value?.data?.state,
+                  );
+                  form.setValue(
+                    'step_recipient.recipient.city',
+                    value?.data?.city,
+                  );
+                  form.setValue(
+                    'step_recipient.recipient.district',
+                    value?.data?.district,
+                  );
+                  form.setValue(
+                    'step_recipient.recipient.postal_code',
+                    value?.data?.postcode,
+                  );
                 }
               }}
               mandatory
@@ -183,7 +198,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.country"
+          name="step_recipient.recipient.country"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -204,7 +219,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.province"
+          name="step_recipient.recipient.province"
           disabled
           render={({
             field: { onChange, value, onBlur },
@@ -226,7 +241,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.city"
+          name="step_recipient.recipient.city"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -247,7 +262,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.district"
+          name="step_recipient.recipient.district"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -268,7 +283,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.postal_code"
+          name="step_recipient.recipient.postal_code"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -289,7 +304,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.full_address"
+          name="step_recipient.recipient.full_address"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -311,7 +326,7 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="recipient.remarks"
+          name="step_recipient.recipient.remarks"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -338,7 +353,7 @@ export function FormStepRecipient(): JSX.Element {
         </Text>
         <Controller
           control={control}
-          name="is_same_as_recipient"
+          name="step_recipient.is_same_as_recipient"
           render={({ field: { onChange, value } }) => (
             <ToggleSwitch value={value} size="small" onValueChange={onChange} />
           )}
@@ -349,7 +364,7 @@ export function FormStepRecipient(): JSX.Element {
         <Container.Card className="p-lg gap-md">
           <Controller
             control={control}
-            name="buyer.name"
+            name="step_recipient.customer.name"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -369,7 +384,7 @@ export function FormStepRecipient(): JSX.Element {
 
           <Controller
             control={control}
-            name="buyer.phone"
+            name="step_recipient.customer.phone"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -390,7 +405,7 @@ export function FormStepRecipient(): JSX.Element {
 
           <Controller
             control={control}
-            name="buyer.email"
+            name="step_recipient.customer.email"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -412,7 +427,7 @@ export function FormStepRecipient(): JSX.Element {
 
           <Controller
             control={control}
-            name="buyer.full_address"
+            name="step_recipient.customer.full_address"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },

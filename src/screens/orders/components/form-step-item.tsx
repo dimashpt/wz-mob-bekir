@@ -26,25 +26,25 @@ export function FormStepItem(): JSX.Element {
   const productSheetRef = useRef<BottomSheetModal>(null);
   const deleteConfirmRef = useRef<BottomSheetModal>(null);
   const [productToDelete, setProductToDelete] = useState<
-    OrderFormValues['products'][0] | null
+    OrderFormValues['step_item']['products'][0] | null
   >(null);
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchIsDropship = useWatch({
     control,
-    name: 'is_dropship',
+    name: 'step_item.is_dropship',
   });
   const watchWarehouseId = useWatch({
     control,
-    name: 'location_id',
+    name: 'step_order.location_id',
   });
   const watchProducts = useWatch({
     control,
-    name: 'products',
+    name: 'step_item.products',
   });
 
   useEffect(() => {
     // Update package weight in the form
-    form.setValue('package.weight', handleCalculateWeight());
+    form.setValue('step_item.package.weight', handleCalculateWeight());
   }, [watchProducts]);
 
   const handleCalculateWeight = useCallback(() => {
@@ -68,18 +68,18 @@ export function FormStepItem(): JSX.Element {
   }, [watchProducts]);
 
   function onQuantityChange(
-    updatedProduct: OrderFormValues['products'][0],
+    updatedProduct: OrderFormValues['step_item']['products'][0],
     index: number,
   ): void {
     const updatedProducts = [...(watchProducts || [])];
 
     updatedProducts[index] = updatedProduct;
 
-    form.setValue('products', updatedProducts);
+    form.setValue('step_item.products', updatedProducts);
   }
 
   function onDeleteProductRequest(
-    product: OrderFormValues['products'][0],
+    product: OrderFormValues['step_item']['products'][0],
   ): void {
     setProductToDelete(product);
     deleteConfirmRef.current?.present();
@@ -90,7 +90,7 @@ export function FormStepItem(): JSX.Element {
     const updatedProducts = (watchProducts || []).filter(
       (p) => p.product_id !== productToDelete.product_id,
     );
-    form.setValue('products', updatedProducts);
+    form.setValue('step_item.products', updatedProducts);
     deleteConfirmRef.current?.dismiss();
     setProductToDelete(null);
   }
@@ -142,31 +142,18 @@ export function FormStepItem(): JSX.Element {
         </View>
       </Container.Card>
 
-      <Text variant="labelL">{t('order_form.dropshipping_information')}</Text>
-      <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
-        <Text variant="bodyM" className="flex-1">
-          {t('order_form.dropship_order')}
-        </Text>
-        <Controller
-          control={control}
-          name="is_dropship"
-          render={({ field: { onChange, value } }) => (
-            <ToggleSwitch value={value} size="small" onValueChange={onChange} />
-          )}
-        />
-      </Container.Card>
-
       <Text variant="labelL">{t('order_form.package_information')}</Text>
       <Container.Card className="p-lg gap-md">
         <Controller
           control={control}
-          name="package.weight"
+          name="step_item.package.weight"
           render={({ field: { onChange, value } }) => (
             <InputField
               label={t('order_form.weight_gram')}
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
+              mandatory
               keyboardType="numeric"
               right={
                 <Icon
@@ -183,7 +170,7 @@ export function FormStepItem(): JSX.Element {
         />
         <Controller
           control={control}
-          name="package.length"
+          name="step_item.package.length"
           render={({ field: { onChange, value } }) => (
             <InputField
               label={t('order_form.length_cm')}
@@ -196,7 +183,7 @@ export function FormStepItem(): JSX.Element {
         />
         <Controller
           control={control}
-          name="package.width"
+          name="step_item.package.width"
           render={({ field: { onChange, value } }) => (
             <InputField
               label={t('order_form.width_cm')}
@@ -209,7 +196,7 @@ export function FormStepItem(): JSX.Element {
         />
         <Controller
           control={control}
-          name="package.height"
+          name="step_item.package.height"
           render={({ field: { onChange, value } }) => (
             <InputField
               label={t('order_form.height_cm')}
@@ -222,11 +209,25 @@ export function FormStepItem(): JSX.Element {
         />
       </Container.Card>
 
+      <Text variant="labelL">{t('order_form.dropshipping_information')}</Text>
+      <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
+        <Text variant="bodyM" className="flex-1">
+          {t('order_form.dropship_order')}
+        </Text>
+        <Controller
+          control={control}
+          name="step_item.is_dropship"
+          render={({ field: { onChange, value } }) => (
+            <ToggleSwitch value={value} size="small" onValueChange={onChange} />
+          )}
+        />
+      </Container.Card>
+
       {watchIsDropship && (
         <Container.Card className="p-lg gap-md">
           <Controller
             control={control}
-            name="dropshipper_name"
+            name="step_item.dropshipper_name"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -245,7 +246,7 @@ export function FormStepItem(): JSX.Element {
 
           <Controller
             control={control}
-            name="dropshipper_phone"
+            name="step_item.dropshipper_phone"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -265,7 +266,7 @@ export function FormStepItem(): JSX.Element {
 
           <Controller
             control={control}
-            name="dropshipper_email"
+            name="step_item.dropshipper_email"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },
@@ -286,7 +287,7 @@ export function FormStepItem(): JSX.Element {
 
           <Controller
             control={control}
-            name="dropshipper_full_address"
+            name="step_item.dropshipper_full_address"
             render={({
               field: { onChange, value, onBlur },
               fieldState: { error },

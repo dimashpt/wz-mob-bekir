@@ -22,7 +22,7 @@ export function FormStepShipment(): JSX.Element {
 
   const watchIsSelfDelivery = useWatch({
     control,
-    name: 'delivery.is_self_delivery',
+    name: 'step_shipment.delivery.is_self_delivery',
   });
 
   const { data: logisticProviders } = ShipmentRepo.useLogisticProvidersQuery({
@@ -52,28 +52,31 @@ export function FormStepShipment(): JSX.Element {
     | null;
 
   function handleSelfDeliveryChange(value: boolean): void {
-    form.setValue('delivery.is_self_delivery', value);
+    form.setValue('step_shipment.delivery.is_self_delivery', value);
     if (value) {
-      form.setValue('delivery.logistic', null);
-      form.setValue('delivery.logistic_name', '');
-      form.setValue('delivery.logistic_provider_name', '');
-      form.setValue('delivery.logistic_service_name', '');
-      form.setValue('delivery.logistic_carrier', '');
-      form.setValue('delivery.tracking_number', '');
+      form.setValue('step_shipment.delivery.logistic', null);
+      form.setValue('step_shipment.delivery.logistic_name', '');
+      form.setValue('step_shipment.delivery.logistic_provider_name', '');
+      form.setValue('step_shipment.delivery.logistic_service_name', '');
+      form.setValue('step_shipment.delivery.logistic_carrier', '');
+      form.setValue('step_shipment.delivery.tracking_number', '');
     }
   }
 
   function handleLogisticSelect(value: LogisticOption): void {
-    form.setValue('delivery.logistic', value as Option);
+    form.setValue('step_shipment.delivery.logistic', value as Option);
     form.setValue(
-      'delivery.logistic_provider_name',
+      'step_shipment.delivery.logistic_provider_name',
       value?.data?.provider_name || '',
     );
     form.setValue(
-      'delivery.logistic_service_name',
+      'step_shipment.delivery.logistic_service_name',
       value?.data?.service_type || '',
     );
-    form.setValue('delivery.logistic_carrier', value?.data?.pattern ?? '');
+    form.setValue(
+      'step_shipment.delivery.logistic_carrier',
+      value?.data?.pattern ?? '',
+    );
   }
 
   return (
@@ -88,7 +91,7 @@ export function FormStepShipment(): JSX.Element {
         </Text>
         <Controller
           control={control}
-          name="delivery.is_self_delivery"
+          name="step_shipment.delivery.is_self_delivery"
           render={({ field: { value } }) => (
             <ToggleSwitch
               value={value}
@@ -102,11 +105,12 @@ export function FormStepShipment(): JSX.Element {
       <Container.Card className="p-md gap-sm">
         <Controller
           control={control}
-          name="delivery.logistic"
+          name="step_shipment.delivery.logistic"
           render={({ field: { value }, fieldState: { error } }) => (
             <SelectInput
               label={t('order_form.logistic_service')}
               onSelect={handleLogisticSelect}
+              mandatory
               options={logisticProviders || []}
               value={value?.label}
               error={!!error?.message}
@@ -119,7 +123,7 @@ export function FormStepShipment(): JSX.Element {
         {watchIsSelfDelivery && (
           <Controller
             control={control}
-            name="delivery.logistic_name"
+            name="step_shipment.delivery.logistic_name"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <InputField
                 label={t('order_form.logistic_name')}
@@ -135,7 +139,7 @@ export function FormStepShipment(): JSX.Element {
 
         <Controller
           control={control}
-          name="delivery.logistic_provider_name"
+          name="step_shipment.delivery.logistic_provider_name"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.provider_name')}
@@ -151,7 +155,7 @@ export function FormStepShipment(): JSX.Element {
 
         <Controller
           control={control}
-          name="delivery.logistic_service_name"
+          name="step_shipment.delivery.logistic_service_name"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.service_name')}
@@ -167,7 +171,7 @@ export function FormStepShipment(): JSX.Element {
 
         <Controller
           control={control}
-          name="delivery.logistic_carrier"
+          name="step_shipment.delivery.logistic_carrier"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.logistic_carrier')}
@@ -183,7 +187,7 @@ export function FormStepShipment(): JSX.Element {
 
         <Controller
           control={control}
-          name="delivery.tracking_number"
+          name="step_shipment.delivery.tracking_number"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.tracking_number')}

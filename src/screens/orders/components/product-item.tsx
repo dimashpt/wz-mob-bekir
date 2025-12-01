@@ -15,11 +15,15 @@ import { OrderFormValues } from '../helpers/order-form';
 const Image = withUniwind(ExpoImage);
 
 interface ProductItemProps {
-  product: OrderFormValues['products'][0];
+  product: OrderFormValues['step_item']['products'][0];
   selected?: boolean;
   onPress?: (product: Product) => void;
-  onQuantityChange?: (updatedProduct: OrderFormValues['products'][0]) => void;
-  onDeleteRequest?: (product: OrderFormValues['products'][0]) => void;
+  onQuantityChange?: (
+    updatedProduct: OrderFormValues['step_item']['products'][0],
+  ) => void;
+  onDeleteRequest?: (
+    product: OrderFormValues['step_item']['products'][0],
+  ) => void;
 }
 
 export function ProductItem({
