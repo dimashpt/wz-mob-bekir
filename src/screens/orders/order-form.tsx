@@ -76,8 +76,8 @@ export default function OrderFormScreen(): JSX.Element {
     }
   }
 
-  function handleSubmit(values: OrderFormValues): void {
-    console.log('form: ', values);
+  function handleSubmit(_values: OrderFormValues): void {
+    // TODO: Handle form submission
   }
 
   const renderTabBar = (
