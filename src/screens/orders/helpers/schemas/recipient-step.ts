@@ -15,9 +15,7 @@ const baseRecipientStepSchema = z.object({
     district: z.string(),
     postal_code: z.string(),
     full_address: z.string(),
-    sub_district_id: z.string(),
     remarks: z.string().optional(),
-    recipient_sub_district_id: z.string(),
   }),
 });
 

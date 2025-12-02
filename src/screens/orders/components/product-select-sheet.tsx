@@ -94,10 +94,11 @@ export const ProductSelectSheet = forwardRef<
       ),
     );
 
-    form.setValue('step_item.products', [
-      ...remainingProducts,
-      ...mappedNewProducts,
-    ]);
+    form.setValue(
+      'step_item.products',
+      [...remainingProducts, ...mappedNewProducts],
+      { shouldValidate: true },
+    );
     handleCloseAndReset();
   }
 

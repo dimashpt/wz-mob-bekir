@@ -59,14 +59,35 @@ export default function OrderFormScreen(): JSX.Element {
     { key: 'summary', title: t('order_form.steps.summary') },
   ]);
 
+  const stepFieldNames: Record<number, keyof OrderFormValues> = {
+    0: 'step_order',
+    1: 'step_recipient',
+    2: 'step_item',
+    3: 'step_shipment',
+    4: 'step_summary',
+  };
+
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     mode: 'onChange',
+    defaultValues: {
+      step_recipient: {
+        is_same_as_recipient: false,
+      },
+      step_item: {
+        is_dropship: false,
+      },
+    },
   });
 
-  function handleNext(): void {
+  async function handleNext(): Promise<void> {
     if (index < routes.length - 1) {
-      setIndex(index + 1);
+      const currentStepField = stepFieldNames[index];
+      const isValid = await form.trigger(currentStepField);
+
+      if (isValid) {
+        setIndex(index + 1);
+      }
     }
   }
 
@@ -76,7 +97,7 @@ export default function OrderFormScreen(): JSX.Element {
     }
   }
 
-  function handleSubmit(_values: OrderFormValues): void {
+  function handleSubmit(): void {
     // TODO: Handle form submission
   }
 
@@ -139,9 +160,9 @@ export default function OrderFormScreen(): JSX.Element {
             <Button
               variant="filled"
               className="flex-1"
-              onPress={form.handleSubmit(
-                isLastStep ? handleSubmit : handleNext,
-              )}
+              onPress={
+                isLastStep ? form.handleSubmit(handleSubmit) : handleNext
+              }
               text={
                 isLastStep
                   ? t('order_form.navigation.submit')

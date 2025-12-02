@@ -102,6 +102,11 @@ export function FormStepItem(): JSX.Element {
     >
       <Text variant="labelL">{t('order_form.item_order')}</Text>
       <Container.Card className="p-lg gap-md">
+        {form.formState.errors.step_item?.products && (
+          <Text variant="bodyS" color="danger">
+            {form.formState.errors.step_item.products.message}
+          </Text>
+        )}
         {watchProducts && watchProducts.length > 0
           ? watchProducts.map((product, index) => (
               <ProductItem
@@ -147,7 +152,7 @@ export function FormStepItem(): JSX.Element {
         <Controller
           control={control}
           name="step_item.package.weight"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.weight_gram')}
               value={value?.toString()}
@@ -165,45 +170,53 @@ export function FormStepItem(): JSX.Element {
               }
               helpers={[t('order_form.weight_auto_calculated')]}
               onPressRight={() => {}}
+              error={!!error?.message}
+              errors={[error?.message]}
             />
           )}
         />
         <Controller
           control={control}
           name="step_item.package.length"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.length_cm')}
               placeholder="0"
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
+              error={!!error?.message}
+              errors={[error?.message]}
             />
           )}
         />
         <Controller
           control={control}
           name="step_item.package.width"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.width_cm')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
+              error={!!error?.message}
+              errors={[error?.message]}
             />
           )}
         />
         <Controller
           control={control}
           name="step_item.package.height"
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.height_cm')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
+              error={!!error?.message}
+              errors={[error?.message]}
             />
           )}
         />

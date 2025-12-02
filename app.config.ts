@@ -18,7 +18,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     experiments: {
-      reactCompiler: true,
+      reactCompiler: false,
       typedRoutes: true,
     },
     extra: {

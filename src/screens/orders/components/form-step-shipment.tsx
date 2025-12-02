@@ -54,12 +54,12 @@ export function FormStepShipment(): JSX.Element {
   function handleSelfDeliveryChange(value: boolean): void {
     form.setValue('step_shipment.delivery.is_self_delivery', value);
     if (value) {
-      form.setValue('step_shipment.delivery.logistic', null);
-      form.setValue('step_shipment.delivery.logistic_name', '');
-      form.setValue('step_shipment.delivery.logistic_provider_name', '');
-      form.setValue('step_shipment.delivery.logistic_service_name', '');
-      form.setValue('step_shipment.delivery.logistic_carrier', '');
-      form.setValue('step_shipment.delivery.tracking_number', '');
+      form.resetField('step_shipment.delivery.logistic');
+      form.resetField('step_shipment.delivery.logistic_name');
+      form.resetField('step_shipment.delivery.logistic_provider_name');
+      form.resetField('step_shipment.delivery.logistic_service_name');
+      form.resetField('step_shipment.delivery.logistic_carrier');
+      form.resetField('step_shipment.delivery.tracking_number');
     }
   }
 

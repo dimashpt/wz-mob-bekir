@@ -155,22 +155,27 @@ export function FormStepRecipient(): JSX.Element {
                   form.setValue(
                     'step_recipient.recipient.country',
                     value?.data?.country,
+                    { shouldValidate: true },
                   );
                   form.setValue(
                     'step_recipient.recipient.province',
                     value?.data?.state,
+                    { shouldValidate: true },
                   );
                   form.setValue(
                     'step_recipient.recipient.city',
                     value?.data?.city,
+                    { shouldValidate: true },
                   );
                   form.setValue(
                     'step_recipient.recipient.district',
                     value?.data?.district,
+                    { shouldValidate: true },
                   );
                   form.setValue(
                     'step_recipient.recipient.postal_code',
                     value?.data?.postcode,
+                    { shouldValidate: true },
                   );
                 }
               }}
