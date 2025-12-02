@@ -1,3 +1,9 @@
+export interface LogisticProvidersParams {
+  origin_code: string;
+  destination_code: string;
+  weight: number;
+}
+
 export type LogisticProvidersResponse = LogisticProvider[];
 
 export interface LogisticProvider {

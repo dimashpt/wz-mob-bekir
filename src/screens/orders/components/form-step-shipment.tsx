@@ -13,6 +13,7 @@ import {
 import SelectInput from '@/components/select-input';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { ShipmentRepo } from '@/services';
+import { LogisticProvider } from '@/services/shipment/types';
 import { formatCurrency } from '@/utils/formatter';
 import { OrderFormValues } from '../helpers/order-form';
 
@@ -24,18 +25,39 @@ export function FormStepShipment(): JSX.Element {
     control,
     name: 'step_shipment.delivery.is_self_delivery',
   });
-
-  const { data: logisticProviders } = ShipmentRepo.useLogisticProvidersQuery({
-    select: (data) =>
-      data.map((provider) => ({
-        label: [provider.pattern, formatCurrency(provider.price ?? 0)].join(
-          ' - ',
-        ),
-        // Joining value to make it unique and handles multiple services from same provider
-        value: [provider.provider_code, provider.service_type].join('@'),
-        data: provider,
-      })),
+  const watchWarehouseId = useWatch({
+    control,
+    name: 'step_order.location_id',
   });
+  const watchRecipientSubDistrict = useWatch({
+    control,
+    name: 'step_recipient.recipient.sub_district',
+  });
+  const watchWeight = useWatch({
+    control,
+    name: 'step_item.package.weight',
+  });
+
+  const { data: logisticProviders } = ShipmentRepo.useLogisticProvidersQuery<
+    Option<LogisticProvider>[]
+  >(
+    {
+      select: (data) =>
+        data.map((provider) => ({
+          label: [provider.pattern, formatCurrency(provider.price ?? 0)].join(
+            ' - ',
+          ),
+          // Joining value to make it unique and handles multiple services from same provider
+          value: [provider.provider_code, provider.service_type].join('@'),
+          data: provider,
+        })),
+    },
+    {
+      destination_code: watchRecipientSubDistrict.data.subdistrict_code ?? '',
+      origin_code: watchWarehouseId?.data?.origin_code ?? '',
+      weight: watchWeight,
+    },
+  );
 
   type LogisticInner = {
     provider_name?: string;

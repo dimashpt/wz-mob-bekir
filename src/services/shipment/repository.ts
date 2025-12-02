@@ -6,7 +6,7 @@ import {
 
 import { SHIPMENT_ENDPOINTS } from '@/constants/endpoints';
 import { ShipmentService } from '..';
-import { LogisticProvidersResponse } from './types';
+import { LogisticProvidersParams, LogisticProvidersResponse } from './types';
 
 /**
  * Custom hook to fetch logistic providers.
@@ -19,11 +19,16 @@ export function useLogisticProvidersQuery<T = LogisticProvidersResponse>(
     UseQueryOptions<LogisticProvidersResponse, Error, T>,
     'queryKey' | 'queryFn'
   > = {},
+  queryParams: LogisticProvidersParams,
 ): UseQueryResult<T, Error> {
   const query = useQuery<LogisticProvidersResponse, Error, T>({
+    enabled:
+      Boolean(queryParams.origin_code) &&
+      Boolean(queryParams.destination_code) &&
+      Boolean(queryParams.weight),
     ...params,
-    queryKey: [SHIPMENT_ENDPOINTS.LIST_LOGISTICS],
-    queryFn: ShipmentService.getLogistics,
+    queryKey: [SHIPMENT_ENDPOINTS.LIST_LOGISTICS, queryParams],
+    queryFn: () => ShipmentService.getLogistics(queryParams),
   });
 
   return query;

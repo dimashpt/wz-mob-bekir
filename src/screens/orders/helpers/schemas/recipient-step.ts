@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { Address } from '@/services/order';
+
 const baseRecipientStepSchema = z.object({
   recipient: z.object({
     name: z.string(),
@@ -11,6 +13,7 @@ const baseRecipientStepSchema = z.object({
     sub_district: z.object({
       value: z.string(),
       label: z.string(),
+      data: z.custom<Address>(),
     }),
     district: z.string(),
     postal_code: z.string(),
