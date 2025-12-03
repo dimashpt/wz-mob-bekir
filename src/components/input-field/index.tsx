@@ -124,11 +124,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
           <View className="gap-xs">
             {label ? (
               <View className="gap-sm flex-row items-center justify-between">
-                <Text
-                  variant="labelM"
-                  color="placeholder"
-                  className="font-medium"
-                >
+                <Text variant="labelS" className="font-medium">
                   {label}
                   {mandatory ? (
                     <Text
@@ -179,7 +175,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                 secureTextEntry={secret && !isSecureTextVisible}
                 className={twMerge(
                   'flex-1 py-0',
-                  'android:font-map-normal font-sans text-base/5',
+                  'android:font-map-normal font-sans text-base/tight',
                   props.multiline ? 'py-sm' : '',
                   props.disabled || transparent
                     ? 'text-foreground-muted'
@@ -202,7 +198,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                 secureTextEntry={secret && !isSecureTextVisible}
                 className={twMerge(
                   'flex-1 py-0',
-                  'android:font-map-normal font-sans text-base/5',
+                  'android:font-map-normal font-sans text-sm/tight',
                   props.multiline ? 'py-sm' : '',
                   props.disabled || transparent
                     ? 'text-muted-foreground'
