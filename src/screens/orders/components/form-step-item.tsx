@@ -42,6 +42,7 @@ export function FormStepItem(): JSX.Element {
     name: 'step_item.products',
   });
 
+  // FIXME: This causes the weight to be recalculated
   useEffect(() => {
     // Update package weight in the form
     form.setValue('step_item.package.weight', handleCalculateWeight());

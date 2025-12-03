@@ -43,25 +43,27 @@ export function FormStepShipment(): JSX.Element {
     name: 'step_shipment.logistic',
   });
 
-  const { data: logisticProviders } = ShipmentRepo.useLogisticProvidersQuery(
-    {
-      select: (data) => ({
-        data: data.map((provider) => ({
-          label: [provider.pattern, formatCurrency(provider.price ?? 0)].join(
-            ' - ',
-          ),
-          // Joining value to make it unique and handles multiple services from same provider
-          value: [provider.provider_code, provider.service_type].join('@'),
-          data: provider,
-        })),
-      }),
-    },
-    {
-      destination_code: watchRecipientSubDistrict?.data?.subdistrict_code ?? '',
-      origin_code: watchWarehouseId?.data?.origin_code ?? '',
-      weight: watchWeight,
-    },
-  );
+  const { data: logisticProviders, isFetching } =
+    ShipmentRepo.useLogisticProvidersQuery(
+      {
+        select: (data) => ({
+          data: data.map((provider) => ({
+            label: [provider.pattern, formatCurrency(provider.price ?? 0)].join(
+              ' - ',
+            ),
+            // Joining value to make it unique and handles multiple services from same provider
+            value: [provider.provider_code, provider.service_type].join('@'),
+            data: provider,
+          })),
+        }),
+      },
+      {
+        destination_code:
+          watchRecipientSubDistrict?.data?.subdistrict_code ?? '',
+        origin_code: watchWarehouseId?.data?.origin_code ?? '',
+        weight: watchWeight,
+      },
+    );
 
   function handleSelfDeliveryChange(value: boolean): void {
     form.setValue('step_shipment.is_self_delivery', value);
@@ -123,6 +125,8 @@ export function FormStepShipment(): JSX.Element {
             <SelectInput
               label={t('order_form.logistic')}
               onSelect={handleLogisticSelect}
+              loading={isFetching}
+              disabled={isFetching}
               mandatory
               options={logisticProviders?.data || []}
               value={value?.label}

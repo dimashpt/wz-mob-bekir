@@ -33,21 +33,13 @@ type TabRoute = Route & {
   title: string;
 };
 
-const renderScene = SceneMap({
-  order: FormStepOrder,
-  recipient: FormStepRecipient,
-  item: FormStepItem,
-  shipment: FormStepShipment,
-  summary: FormStepSummary,
-});
-
 export default function OrderFormScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
   const layout = useWindowDimensions();
   const accentColor = useCSSVariable('--color-accent') as string;
-  const mutedColor = useCSSVariable('--color-muted') as string;
+  const mutedColor = useCSSVariable('--color-muted-foreground') as string;
   const backgroundColor = useCSSVariable('--color-background') as string;
 
   const [index, setIndex] = useState(0);
@@ -111,9 +103,10 @@ export default function OrderFormScreen(): JSX.Element {
       scrollEnabled
       indicatorClassName="bg-accent"
       className="bg-surface"
+      tabClassName="w-auto"
       activeColor={accentColor}
       inactiveColor={mutedColor}
-      tabStyle={{ width: 'auto' }}
+      onTabPress={({ preventDefault }) => !__DEV__ && preventDefault()}
     />
   );
 
@@ -126,7 +119,13 @@ export default function OrderFormScreen(): JSX.Element {
         <Header title={t('order_form.title')} />
         <TabView
           navigationState={{ index, routes }}
-          renderScene={renderScene}
+          renderScene={SceneMap({
+            order: FormStepOrder,
+            recipient: FormStepRecipient,
+            item: FormStepItem,
+            shipment: FormStepShipment,
+            summary: FormStepSummary,
+          })}
           renderTabBar={renderTabBar}
           onIndexChange={setIndex}
           initialLayout={{ width: layout.width }}
