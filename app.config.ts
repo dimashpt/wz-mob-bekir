@@ -38,7 +38,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
       icon: './src/assets/images/icon-ios.icon',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
-        AppStoreID: '6744095571',
+        AppStoreID: '',
         AppStoreCountry: 'id',
       },
     },

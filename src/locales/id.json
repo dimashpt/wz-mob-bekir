@@ -18,7 +18,8 @@
     "done": "Selesai",
     "no_data_description": "Tidak ada data yang tersedia saat ini",
     "no_data_found": "Tidak ada hasil yang ditemukan untuk '{{search}}'",
-    "continue": "Lanjutkan"
+    "continue": "Lanjutkan",
+    "search": "Cari"
   },
   "tab": {
     "home": "Home",

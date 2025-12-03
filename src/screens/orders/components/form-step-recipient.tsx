@@ -1,50 +1,28 @@
-import React, { JSX, memo } from 'react';
-import { View } from 'react-native';
+import React, { JSX } from 'react';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { Container, Icon, InputField, Text, ToggleSwitch } from '@/components';
+import {
+  Container,
+  InputField,
+  Option,
+  Text,
+  ToggleSwitch,
+} from '@/components';
 import SelectInput from '@/components/select-input';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
+import { Address } from '@/services/order';
 import { useAddressQuery } from '@/services/order/repository';
 import { OrderFormValues } from '../helpers/order-form';
 
-const SearchBar = memo(
-  ({
-    search,
-    setSearch,
-    isSearchDebouncing,
-    placeholder,
-  }: {
-    search: string;
-    setSearch: (value: string) => void;
-    isSearchDebouncing: boolean;
-    placeholder: string;
-  }) => (
-    <View className="px-md pb-sm bg-surface">
-      <InputField
-        left={
-          <Icon name="search" size="lg" className="text-muted-foreground" />
-        }
-        className="gap-xs min-h-8 rounded-full"
-        inputClassName="min-h-8"
-        loading={isSearchDebouncing}
-        value={search}
-        onChangeText={setSearch}
-        placeholder={placeholder}
-      />
-    </View>
-  ),
-);
-
 export function FormStepRecipient(): JSX.Element {
   const { t } = useTranslation();
-  const [search, setSearch, debouncedSearch, isSearchDebouncing] =
-    useDebounce();
-  const { data: addresses } = useAddressQuery(
+  const [, setSearch, debouncedSearch] = useDebounce();
+  const { data: addresses, isFetching } = useAddressQuery(
     {
+      enabled: debouncedSearch?.length >= 3 || debouncedSearch.length === 0,
       select: (data) =>
         data.destinations.map((address) => ({
           data: address,
@@ -69,6 +47,31 @@ export function FormStepRecipient(): JSX.Element {
     control,
     name: 'step_recipient.is_same_as_recipient',
   });
+
+  function onSubdistrictChange(value: Option<Address> | null): void {
+    form.setValue('step_recipient.recipient.sub_district', value!);
+    if (value?.data) {
+      form.setValue('step_recipient.recipient.country', value?.data?.country, {
+        shouldValidate: true,
+      });
+      form.setValue('step_recipient.recipient.province', value?.data?.state, {
+        shouldValidate: true,
+      });
+      form.setValue('step_recipient.recipient.city', value?.data?.city, {
+        shouldValidate: true,
+      });
+      form.setValue(
+        'step_recipient.recipient.district',
+        value?.data?.district,
+        { shouldValidate: true },
+      );
+      form.setValue(
+        'step_recipient.recipient.postal_code',
+        value?.data?.postcode,
+        { shouldValidate: true },
+      );
+    }
+  }
 
   return (
     <Container.Scroll
@@ -142,43 +145,11 @@ export function FormStepRecipient(): JSX.Element {
         <Controller
           control={control}
           name="step_recipient.recipient.sub_district"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
+          render={({ field: { value, onBlur }, fieldState: { error } }) => (
             <SelectInput
+              key="subdistrict-select"
               label={t('order_form.recipient_subdistrict')}
-              onSelect={(value) => {
-                onChange(value);
-
-                if (value?.data) {
-                  form.setValue(
-                    'step_recipient.recipient.country',
-                    value?.data?.country,
-                    { shouldValidate: true },
-                  );
-                  form.setValue(
-                    'step_recipient.recipient.province',
-                    value?.data?.state,
-                    { shouldValidate: true },
-                  );
-                  form.setValue(
-                    'step_recipient.recipient.city',
-                    value?.data?.city,
-                    { shouldValidate: true },
-                  );
-                  form.setValue(
-                    'step_recipient.recipient.district',
-                    value?.data?.district,
-                    { shouldValidate: true },
-                  );
-                  form.setValue(
-                    'step_recipient.recipient.postal_code',
-                    value?.data?.postcode,
-                    { shouldValidate: true },
-                  );
-                }
-              }}
+              onSelect={onSubdistrictChange}
               mandatory
               options={addresses ?? []}
               value={value?.label}
@@ -186,16 +157,10 @@ export function FormStepRecipient(): JSX.Element {
               error={!!error?.message}
               errors={[error?.message]}
               placeholder={t('order_form.select_subdistrict')}
-              flatListProps={{
-                stickyHeaderIndices: [0],
-                ListHeaderComponent: () => (
-                  <SearchBar
-                    search={search}
-                    setSearch={setSearch}
-                    isSearchDebouncing={isSearchDebouncing}
-                    placeholder={t('order_form.search_subdistrict')}
-                  />
-                ),
+              search={{
+                isLoading: isFetching,
+                placeholder: t('order_form.search_subdistrict'),
+                onSearchChange: setSearch,
               }}
             />
           )}

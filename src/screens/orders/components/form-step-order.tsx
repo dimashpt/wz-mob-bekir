@@ -1,5 +1,5 @@
 import React, { JSX, useMemo } from 'react';
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import dayjs from 'dayjs';
 import { Image as ExpoImage } from 'expo-image';
@@ -30,8 +30,18 @@ const Image = withUniwind(ExpoImage);
 
 export function FormStepOrder(): JSX.Element {
   const { t } = useTranslation();
-  const { data: stores } = useStoresInfiniteQuery();
-  const { data: warehouses } = useWarehousesInfiniteQuery();
+  const {
+    data: stores,
+    fetchNextPage: fetchNextStorePage,
+    hasNextPage: hasNextStorePage,
+    isFetchingNextPage: isFetchingNextStorePage,
+  } = useStoresInfiniteQuery();
+  const {
+    data: warehouses,
+    fetchNextPage: fetchNextWarehousePage,
+    hasNextPage: hasNextWarehousePage,
+    isFetchingNextPage: isFetchingNextWarehousePage,
+  } = useWarehousesInfiniteQuery();
 
   const storeOptions = useMemo(
     () =>
@@ -161,6 +171,19 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
+              flatListProps={{
+                onEndReached: () => {
+                  if (hasNextStorePage && !isFetchingNextStorePage) {
+                    fetchNextStorePage();
+                  }
+                },
+                onEndReachedThreshold: 0.5,
+                ListFooterComponent: isFetchingNextStorePage ? (
+                  <View className="py-md items-center">
+                    <ActivityIndicator size="small" />
+                  </View>
+                ) : null,
+              }}
               placeholder={t('order_form.select_store')}
               renderItem={(props) => (
                 <View
@@ -206,6 +229,19 @@ export function FormStepOrder(): JSX.Element {
               onBlur={onBlur}
               error={!!error?.message}
               errors={[error?.message]}
+              flatListProps={{
+                onEndReached: () => {
+                  if (hasNextWarehousePage && !isFetchingNextWarehousePage) {
+                    fetchNextWarehousePage();
+                  }
+                },
+                onEndReachedThreshold: 0.5,
+                ListFooterComponent: isFetchingNextWarehousePage ? (
+                  <View className="py-md items-center">
+                    <ActivityIndicator />
+                  </View>
+                ) : null,
+              }}
               placeholder={t('order_form.select_warehouse')}
             />
           )}

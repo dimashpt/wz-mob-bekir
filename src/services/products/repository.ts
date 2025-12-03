@@ -42,19 +42,18 @@ export function useProductsInfiniteQuery<T = InfiniteData<ProductListResponse>>(
     queryKey: [PRODUCT_ENDPOINTS.LIST_PRODUCTS, 'infinite', requestParams],
     queryFn: ({ pageParam }) =>
       ProductService.getProducts({
-        ...requestParams,
-        page: pageParam,
-        per_page: 100,
         sort_by: 'created_at',
         sort_direction: 'desc',
         search_by: 'name',
         status: 'published',
         is_stock: true,
+        ...requestParams,
+        page: pageParam,
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const currentPage = lastPage?.pagination?.current_page;
-      const totalPages = lastPage?.pagination?.total_pages;
+      const totalPages = lastPage?.pagination?.last_page;
 
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },

@@ -35,6 +35,11 @@ export interface SelectInputProps<TData = unknown> extends React.ComponentProps<
   hideTouchable?: boolean;
   renderItem?: (props: RenderItemProps<TData>) => React.ReactElement;
   flatListProps?: Omit<FlatListProps<Option<TData>>, 'data' | 'renderItem'>;
+  search?: {
+    onSearchChange?: (text: string) => void;
+    placeholder?: string;
+    isLoading?: boolean;
+  };
 }
 
 export interface SelectInputRef {
@@ -58,11 +63,13 @@ function SelectInputInner<TData = unknown>(
   }: SelectInputProps<TData>,
   ref: React.ForwardedRef<SelectInputRef>,
 ): React.ReactElement {
+  const bottomSheetRef = useRef<OptionBottomSheetRef>(null);
+
   const { t } = useTranslation();
+
   const [selectedValue, setSelectedValue] = useState<Option<TData> | null>(
     selected,
   );
-  const bottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const defaultPlaceholder = placeholder ?? t('select_input.placeholder');
 
   function handleOptionSelect(value: Option<TData>): void {
@@ -120,7 +127,34 @@ function SelectInputInner<TData = unknown>(
         selectedValue={selectedValue}
         title={title ?? placeholder ?? label}
         renderItem={renderItem}
-        flatListProps={flatListProps}
+        flatListProps={{
+          ...(props.search
+            ? {
+                stickyHeaderIndices: [0],
+                ListHeaderComponent: (
+                  <View className="px-md pb-sm bg-surface">
+                    <InputField
+                      left={
+                        <Icon
+                          name="search"
+                          size="lg"
+                          className="text-muted-foreground"
+                        />
+                      }
+                      className="gap-xs min-h-8 rounded-full"
+                      inputClassName="min-h-8"
+                      loading={props.search?.isLoading ?? false}
+                      onChangeText={props.search?.onSearchChange}
+                      placeholder={
+                        props.search?.placeholder || t('general.search')
+                      }
+                    />
+                  </View>
+                ),
+              }
+            : {}),
+          ...flatListProps,
+        }}
       />
     </View>
   );

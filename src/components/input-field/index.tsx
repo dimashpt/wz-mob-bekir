@@ -235,7 +235,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   <Icon
                     name={isSecureTextVisible ? 'eyeSlash' : 'eye'}
                     size="lg"
-                    className="text-muted"
+                    className="text-field-placeholder"
                   />
                 ) : (
                   right

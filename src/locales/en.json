@@ -19,7 +19,8 @@
     "no_data": "No data",
     "no_data_description": "Nothing to see here!\nAdd some orders to begin",
     "no_data_found": "No results found for '{{search}}'",
-    "continue": "Continue"
+    "continue": "Continue",
+    "search": "Search"
   },
   "tab": {
     "home": "Home",

@@ -1,12 +1,14 @@
 import type { Product } from '@/services/products/types';
 
 import { forwardRef, useRef, useState } from 'react';
-import { FlatList } from 'react-native';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { useCSSVariable } from 'uniwind';
 
 import { BottomSheet, BottomSheetModal } from '@/components';
+import { screenHeight } from '@/hooks';
 import { ProductRepo } from '@/services';
 import { OrderFormValues } from '../helpers/order-form';
 import { ProductItem } from './product-item';
@@ -22,13 +24,20 @@ export const ProductSelectSheet = forwardRef<
 >(({ locationId, selectedProducts: initialSelectedProducts }, ref) => {
   const { t } = useTranslation();
   const form = useFormContext<OrderFormValues>();
+  const spacingLg = useCSSVariable('--spacing-lg') as number;
+
   const removeConfirmRef = useRef<BottomSheetModal>(null);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [productsToRemove, setProductsToRemove] = useState<Product[]>([]);
 
-  const { data: products } = ProductRepo.useProductsInfiniteQuery(
+  const {
+    data: products,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = ProductRepo.useProductsInfiniteQuery(
     { enabled: Boolean(locationId) },
-    { location_id: Number(locationId) },
+    { location_id: Number(locationId), per_page: 10 },
   );
 
   function handleSelectProduct(product: Product): void {
@@ -136,7 +145,9 @@ export const ProductSelectSheet = forwardRef<
         ref={ref as React.RefObject<BottomSheetModal | null>}
         handleClose={handleCloseAndReset}
         title={t('order_form.add_item')}
-        contentContainerClassName="max-h-96"
+        contentContainerStyle={{
+          maxHeight: screenHeight / 2,
+        }}
         submitButtonProps={{ text: t('general.done') }}
         handleSubmit={handleUpdateSelectedProducts}
         onOpen={() => setSelectedProducts(initialSelectedProducts ?? [])}
@@ -145,6 +156,20 @@ export const ProductSelectSheet = forwardRef<
           data={flattenedProducts}
           keyExtractor={(item, index) => `${item.product_id}-${index}`}
           contentContainerClassName="gap-sm"
+          showsVerticalScrollIndicator={false}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View className="py-md items-center">
+                <ActivityIndicator />
+              </View>
+            ) : null
+          }
           renderItem={({ item }) => {
             const isSelected = selectedProducts.some(
               (p) => p.product_id === item.product_id,

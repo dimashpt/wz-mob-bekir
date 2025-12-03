@@ -13,7 +13,7 @@ const baseRecipientStepSchema = z.object({
     sub_district: z.object({
       value: z.string(),
       label: z.string(),
-      data: z.custom<Address>(),
+      data: z.custom<Address>().optional(),
     }),
     district: z.string(),
     postal_code: z.string(),

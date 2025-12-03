@@ -23,6 +23,6 @@ export const orderStepSchema = z.object({
     data: z.custom<Warehouse>(),
   }),
   checkout_at: z.custom<Dayjs>((val) => dayjs.isDayjs(val) && val.isValid()),
-  sales_pic: z.string(),
-  remarks: z.string(),
+  sales_pic: z.string().optional(),
+  remarks: z.string().optional(),
 });
