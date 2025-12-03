@@ -1,11 +1,6 @@
 import { z } from 'zod';
 
 const baseItemStepSchema = z.object({
-  is_dropship: z.boolean(),
-  dropshipper_name: z.string(),
-  dropshipper_phone: z.string(),
-  dropshipper_email: z.string(),
-  dropshipper_full_address: z.string(),
   products: z
     .array(
       z.object({

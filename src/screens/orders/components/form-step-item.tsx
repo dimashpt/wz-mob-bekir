@@ -35,7 +35,7 @@ export function FormStepItem(): JSX.Element {
   });
   const watchWarehouseId = useWatch({
     control,
-    name: 'step_order.location_id',
+    name: 'step_order.warehouse',
   });
   const watchProducts = useWatch({
     control,
@@ -154,7 +154,7 @@ export function FormStepItem(): JSX.Element {
           name="step_item.package.weight"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label={t('order_form.weight_gram')}
+              label={t('order_form.package.weight')}
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
@@ -180,7 +180,7 @@ export function FormStepItem(): JSX.Element {
           name="step_item.package.length"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label={t('order_form.length_cm')}
+              label={t('order_form.package.length')}
               placeholder="0"
               value={value?.toString()}
               onChangeText={onChange}
@@ -195,7 +195,7 @@ export function FormStepItem(): JSX.Element {
           name="step_item.package.width"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label={t('order_form.width_cm')}
+              label={t('order_form.package.width')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -210,7 +210,7 @@ export function FormStepItem(): JSX.Element {
           name="step_item.package.height"
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <InputField
-              label={t('order_form.height_cm')}
+              label={t('order_form.package.height')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
@@ -225,7 +225,7 @@ export function FormStepItem(): JSX.Element {
       <Text variant="labelL">{t('order_form.dropshipping_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          {t('order_form.dropship_order')}
+          {t('order_form.is_dropship')}
         </Text>
         <Controller
           control={control}

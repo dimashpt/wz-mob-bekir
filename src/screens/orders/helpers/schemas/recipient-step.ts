@@ -9,7 +9,7 @@ const baseRecipientStepSchema = z.object({
   country: z.string(),
   province: z.string(),
   city: z.string(),
-  sub_district: z.object({
+  subdistrict: z.object({
     value: z.string(),
     label: z.string(),
     data: z.custom<Address>().optional(),

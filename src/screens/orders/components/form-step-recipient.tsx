@@ -49,7 +49,7 @@ export function FormStepRecipient(): JSX.Element {
   });
 
   function onSubdistrictChange(value: Option<Address> | null): void {
-    form.setValue('step_recipient.sub_district', value!);
+    form.setValue('step_recipient.subdistrict', value!);
     if (value?.data) {
       form.setValue('step_recipient.country', value?.data?.country, {
         shouldValidate: true,
@@ -84,14 +84,14 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_name')}
+              label={t('order_form.name')}
               mandatory
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.enter_recipient_name')}
+              placeholder={t('order_form.enter_name')}
             />
           )}
         />
@@ -104,14 +104,14 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_phone')}
+              label={t('order_form.phone')}
               mandatory
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.enter_recipient_phone')}
+              placeholder={t('order_form.enter_phone')}
               keyboardType="phone-pad"
             />
           )}
@@ -125,13 +125,13 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_email')}
+              label={t('order_form.email')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.enter_recipient_email')}
+              placeholder={t('order_form.enter_email')}
               keyboardType="email-address"
               autoCapitalize="none"
             />
@@ -140,10 +140,10 @@ export function FormStepRecipient(): JSX.Element {
 
         <Controller
           control={control}
-          name="step_recipient.sub_district"
+          name="step_recipient.subdistrict"
           render={({ field: { value, onBlur }, fieldState: { error } }) => (
             <SelectInput
-              label={t('order_form.recipient_subdistrict')}
+              label={t('order_form.subdistrict')}
               onSelect={onSubdistrictChange}
               mandatory
               options={addresses ?? []}
@@ -169,7 +169,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_country')}
+              label={t('order_form.country')}
               mandatory
               disabled
               value={value}
@@ -177,7 +177,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.recipient_country')}
+              placeholder={t('order_form.country')}
             />
           )}
         />
@@ -191,7 +191,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_province')}
+              label={t('order_form.province')}
               mandatory
               disabled
               value={value}
@@ -199,7 +199,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.recipient_province')}
+              placeholder={t('order_form.province')}
             />
           )}
         />
@@ -212,7 +212,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_city')}
+              label={t('order_form.city')}
               mandatory
               disabled
               value={value}
@@ -220,7 +220,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.recipient_city')}
+              placeholder={t('order_form.city')}
             />
           )}
         />
@@ -233,7 +233,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_district')}
+              label={t('order_form.district')}
               mandatory
               disabled
               value={value}
@@ -241,7 +241,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.recipient_district')}
+              placeholder={t('order_form.district')}
             />
           )}
         />
@@ -254,7 +254,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_postal_code')}
+              label={t('order_form.postal_code')}
               mandatory
               disabled
               value={value}
@@ -262,7 +262,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={[error?.message]}
               onChangeText={onChange}
               onBlur={onBlur}
-              placeholder={t('order_form.recipient_postal_code')}
+              placeholder={t('order_form.postal_code')}
             />
           )}
         />
@@ -276,7 +276,7 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               mandatory
-              label={t('order_form.recipient_full_address')}
+              label={t('order_form.full_address')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -284,7 +284,7 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               multiline
               inputClassName="min-h-20"
-              placeholder={t('order_form.enter_recipient_address')}
+              placeholder={t('order_form.enter_full_address')}
             />
           )}
         />
@@ -297,7 +297,7 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.recipient_remarks')}
+              label={t('order_form.remarks')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -305,7 +305,7 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               multiline
               inputClassName="min-h-20"
-              placeholder={t('order_form.enter_recipient_remarks')}
+              placeholder={t('order_form.enter_remarks')}
             />
           )}
         />
@@ -314,7 +314,7 @@ export function FormStepRecipient(): JSX.Element {
       <Text variant="labelL">{t('order_form.customer_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          {t('order_form.same_as_recipient')}
+          {t('order_form.is_same_as_recipient')}
         </Text>
         <Controller
           control={control}
@@ -336,7 +336,7 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label={t('order_form.customer_name')}
+                label={t('order_form.customer.name')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
@@ -356,7 +356,7 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label={t('order_form.customer_phone')}
+                label={t('order_form.customer.phone')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
@@ -377,7 +377,7 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label={t('order_form.customer_email')}
+                label={t('order_form.customer.email')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}
@@ -399,7 +399,7 @@ export function FormStepRecipient(): JSX.Element {
             }) => (
               <InputField
                 mandatory
-                label={t('order_form.customer_full_address')}
+                label={t('order_form.customer.full_address')}
                 value={value}
                 error={!!error?.message}
                 errors={[error?.message]}

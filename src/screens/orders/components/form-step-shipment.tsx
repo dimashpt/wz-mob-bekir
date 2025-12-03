@@ -28,19 +28,15 @@ export function FormStepShipment(): JSX.Element {
   });
   const watchWarehouseId = useWatch({
     control,
-    name: 'step_order.location_id',
+    name: 'step_order.warehouse',
   });
   const watchRecipientSubDistrict = useWatch({
     control,
-    name: 'step_recipient.sub_district',
+    name: 'step_recipient.subdistrict',
   });
   const watchWeight = useWatch({
     control,
     name: 'step_item.package.weight',
-  });
-  const watchIsShippingCostCoveredBySeller = useWatch({
-    control,
-    name: 'step_shipment.is_shipping_cost_covered_by_seller',
   });
   const watchLogistics = useWatch({
     control,
@@ -93,7 +89,7 @@ export function FormStepShipment(): JSX.Element {
     form.setValue('step_shipment.logistic_carrier', value?.data?.pattern ?? '');
 
     // Set summary
-    form.setValue('step_shipment.shipping_price', value?.data?.price || 0);
+    form.setValue('step_shipment.shipping_fee', value?.data?.price || 0);
   }
 
   return (
@@ -104,7 +100,7 @@ export function FormStepShipment(): JSX.Element {
       <Text variant="labelL">{t('order_form.delivery_information')}</Text>
       <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
         <Text variant="bodyM" className="flex-1">
-          {t('order_form.self_delivery')}
+          {t('order_form.is_self_delivery')}
         </Text>
         <Controller
           control={control}
@@ -125,7 +121,7 @@ export function FormStepShipment(): JSX.Element {
           name="step_shipment.logistic"
           render={({ field: { value }, fieldState: { error } }) => (
             <SelectInput
-              label={t('order_form.logistic_service')}
+              label={t('order_form.logistic')}
               onSelect={handleLogisticSelect}
               mandatory
               options={logisticProviders?.data || []}
@@ -223,10 +219,10 @@ export function FormStepShipment(): JSX.Element {
       <Container.Card className="p-lg gap-sm">
         <Controller
           control={control}
-          name="step_shipment.shipping_price"
+          name="step_shipment.shipping_fee"
           render={({ field: { value, onChange } }) => (
             <InputField
-              label={t('order_form.shipping_price')}
+              label={t('order_form.shipping_fee')}
               value={value?.toString()}
               onChangeText={onChange}
               disabled={Boolean(watchLogistics?.value)}
@@ -248,25 +244,6 @@ export function FormStepShipment(): JSX.Element {
             )}
           />
         </View>
-        <View className="flex-row items-center justify-between">
-          <Text variant="bodyS">
-            {t('order_form.shipping_cost_covered_by_seller')}
-          </Text>
-          <Controller
-            control={control}
-            name="step_shipment.is_shipping_cost_covered_by_seller"
-            render={({ field: { value, onChange } }) => (
-              <ToggleSwitch
-                value={!!value}
-                size="small"
-                onValueChange={(value) => {
-                  onChange(value);
-                  form.resetField('step_shipment.shipping_discount');
-                }}
-              />
-            )}
-          />
-        </View>
 
         <Controller
           control={control}
@@ -275,7 +252,6 @@ export function FormStepShipment(): JSX.Element {
             <InputField
               label={t('order_form.shipping_discount')}
               value={value?.toString()}
-              disabled={!watchIsShippingCostCoveredBySeller}
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"

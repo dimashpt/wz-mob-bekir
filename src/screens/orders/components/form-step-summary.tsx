@@ -41,9 +41,9 @@ export function FormStepSummary(): JSX.Element {
   const { t } = useTranslation();
   const { control } = useFormContext<OrderFormValues>();
 
-  const watchShippingPrice = useWatch({
+  const watchShippingFee = useWatch({
     control,
-    name: 'step_shipment.shipping_price',
+    name: 'step_shipment.shipping_fee',
   });
   const watchShippingDiscount = useWatch({
     control,
@@ -63,7 +63,7 @@ export function FormStepSummary(): JSX.Element {
   });
   const watchPaymentMethod = useWatch({
     control,
-    name: 'step_order.payment_method_type',
+    name: 'step_order.payment_type',
   });
   const watchIsUsingInsurance = useWatch({
     control,
@@ -116,7 +116,7 @@ export function FormStepSummary(): JSX.Element {
   const totalPrice = useMemo(() => {
     const total =
       subTotal +
-      (Number(watchShippingPrice) || 0) +
+      (Number(watchShippingFee) || 0) +
       (Number(watchOtherFees) || 0) +
       (Number(watchPackingFee) || 0) +
       insuranceFee +
@@ -125,7 +125,7 @@ export function FormStepSummary(): JSX.Element {
     return total;
   }, [
     subTotal,
-    watchShippingPrice,
+    watchShippingFee,
     watchOtherFees,
     watchPackingFee,
     totalDiscount,
@@ -145,7 +145,7 @@ export function FormStepSummary(): JSX.Element {
           name="step_summary.other_fee"
           render={({ field: { value, onChange } }) => (
             <InputField
-              label={t('order_form.other_fees')}
+              label={t('order_form.other_fee')}
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
@@ -176,7 +176,7 @@ export function FormStepSummary(): JSX.Element {
       />
       <PriceInfo
         label={t('order_form.shipping_fee')}
-        value={watchShippingPrice || 0}
+        value={watchShippingFee || 0}
       />
       <PriceInfo label={t('order_form.insurance_fee')} value={insuranceFee} />
       <PriceInfo label={t('order_form.cod_fee')} value={codFee} />

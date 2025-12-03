@@ -70,7 +70,7 @@ export function FormStepOrder(): JSX.Element {
   const { control, ...form } = useFormContext<OrderFormValues>();
   const watchPaymentMethodType = useWatch({
     control,
-    name: 'step_order.payment_method_type',
+    name: 'step_order.payment_type',
   });
 
   const PAYMENT_TYPE_OPTIONS = Object.keys(ORDER_PAYMENT_TYPES).map(
@@ -101,7 +101,7 @@ export function FormStepOrder(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.order_number')}
+              label={t('order_form.order_code')}
               value={value}
               error={!!error?.message}
               errors={[error?.message]}
@@ -113,17 +113,17 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.payment_method_type"
+          name="step_order.payment_type"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
           }) => (
             <SelectInput
               mandatory
-              label={t('order_form.payment_method')}
+              label={t('order_form.payment_type')}
               onSelect={(value) => {
                 onChange(value);
-                form.resetField('step_order.payment_via');
+                form.resetField('step_order.payment_method');
               }}
               options={PAYMENT_TYPE_OPTIONS}
               value={value?.value}
@@ -136,7 +136,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.payment_via"
+          name="step_order.payment_method"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -157,7 +157,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.store_id"
+          name="step_order.store"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -215,14 +215,14 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.location_id"
+          name="step_order.warehouse"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
           }) => (
             <SelectInput
               mandatory
-              label={t('order_form.ship_from')}
+              label={t('order_form.warehouse')}
               onSelect={onChange}
               options={warehouseOptions}
               value={value?.label}
@@ -248,7 +248,7 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.checkout_at"
+          name="step_order.checkout_time"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
@@ -258,7 +258,7 @@ export function FormStepOrder(): JSX.Element {
               value={value ? dayjs(value) : undefined}
               onSelect={onChange}
               onBlur={onBlur}
-              label={t('order_form.checkout_date')}
+              label={t('order_form.checkout_time')}
               placeholder={t('order_form.select_checkout_date')}
               mode="datetime"
               error={!!error?.message}
@@ -269,13 +269,13 @@ export function FormStepOrder(): JSX.Element {
         />
         <Controller
           control={control}
-          name="step_order.sales_pic"
+          name="step_order.sales"
           render={({
             field: { onChange, value, onBlur },
             fieldState: { error },
           }) => (
             <InputField
-              label={t('order_form.sales_pic')}
+              label={t('order_form.sales')}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
