@@ -11,7 +11,7 @@ export async function getLogistics(
 ): Promise<LogisticProvidersResponse> {
   const response = await API.get<LogisticProvidersResponse>(
     SHIPMENT_ENDPOINTS.LIST_LOGISTICS,
-    { params },
+    { params, timeout: 100_000 },
   );
 
   return response.data;

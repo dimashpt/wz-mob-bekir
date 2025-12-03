@@ -154,7 +154,7 @@ export default function OrdersScreen(): JSX.Element {
                   className="text-muted-foreground"
                 />
               }
-              className="bg-surface min-h-10 rounded-full"
+              className="bg-surface py-sm rounded-full"
               loading={isSearchDebouncing || isRefetching}
             />
           </View>

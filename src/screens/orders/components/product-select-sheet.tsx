@@ -5,7 +5,6 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useCSSVariable } from 'uniwind';
 
 import { BottomSheet, BottomSheetModal } from '@/components';
 import { screenHeight } from '@/hooks';
@@ -24,7 +23,6 @@ export const ProductSelectSheet = forwardRef<
 >(({ locationId, selectedProducts: initialSelectedProducts }, ref) => {
   const { t } = useTranslation();
   const form = useFormContext<OrderFormValues>();
-  const spacingLg = useCSSVariable('--spacing-lg') as number;
 
   const removeConfirmRef = useRef<BottomSheetModal>(null);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);

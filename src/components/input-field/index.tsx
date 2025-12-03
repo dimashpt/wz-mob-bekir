@@ -37,7 +37,7 @@ interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
 }
 
 const inputFieldVariants = tv({
-  base: 'px-md min-h-[56px] flex-row items-center rounded-md border',
+  base: 'p-md flex-row items-center rounded-md border',
   variants: {
     variant: {
       filled: 'bg-field-background',
@@ -68,7 +68,6 @@ const inputFieldVariants = tv({
 export const InputField = forwardRef<TextInput, CustomTextInputProps>(
   (
     {
-      dense = true,
       mandatory = false,
       description,
       errors,
@@ -157,7 +156,6 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               inputFieldVariants({
                 variant: transparent ? 'transparent' : 'filled',
               }),
-              dense && 'min-h-12',
               getBorderClassName(),
               props.disabled && 'bg-field-disabled',
               className,
@@ -207,7 +205,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   'android:font-map-normal font-sans text-base/5',
                   props.multiline ? 'py-sm' : '',
                   props.disabled || transparent
-                    ? 'text-foreground-muted'
+                    ? 'text-muted-foreground'
                     : 'text-field-foreground',
                   inputClassName,
                 )}

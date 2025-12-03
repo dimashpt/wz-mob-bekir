@@ -141,8 +141,8 @@ function SelectInputInner<TData = unknown>(
                           className="text-muted-foreground"
                         />
                       }
-                      className="gap-xs min-h-8 rounded-full"
-                      inputClassName="min-h-8"
+                      bottomSheet
+                      className="gap-xs py-sm rounded-full"
                       loading={props.search?.isLoading ?? false}
                       onChangeText={props.search?.onSearchChange}
                       placeholder={

@@ -51,7 +51,7 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
           {item.order_code}
         </Text>
         <View className="gap-xs flex-row items-center">
-          <Icon name="product" size="sm" className="text-muted" />
+          <Icon name="product" size="sm" className="text-muted-foreground" />
           <Text variant="bodyXS" color="muted">
             {t('orders.total_items', {
               count: item.order_items.length,

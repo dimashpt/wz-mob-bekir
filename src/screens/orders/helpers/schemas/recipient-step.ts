@@ -3,23 +3,21 @@ import { z } from 'zod';
 import { Address } from '@/services/order';
 
 const baseRecipientStepSchema = z.object({
-  recipient: z.object({
-    name: z.string(),
-    phone: z.string(),
-    email: z.string().optional(),
-    country: z.string(),
-    province: z.string(),
-    city: z.string(),
-    sub_district: z.object({
-      value: z.string(),
-      label: z.string(),
-      data: z.custom<Address>().optional(),
-    }),
-    district: z.string(),
-    postal_code: z.string(),
-    full_address: z.string(),
-    remarks: z.string().optional(),
+  name: z.string(),
+  phone: z.string(),
+  email: z.string().optional(),
+  country: z.string(),
+  province: z.string(),
+  city: z.string(),
+  sub_district: z.object({
+    value: z.string(),
+    label: z.string(),
+    data: z.custom<Address>().optional(),
   }),
+  district: z.string(),
+  postal_code: z.string(),
+  full_address: z.string(),
+  remarks: z.string().optional(),
 });
 
 const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({

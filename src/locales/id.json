@@ -237,7 +237,7 @@
   "order_form": {
     "title": "Buat Pesanan",
     "steps": {
-      "recipient_info": "Info Penerima",
+      "recipient_info": "Penerima",
       "item": "Produk & Paket",
       "shipment": "Pengiriman",
       "summary": "Ringkasan",
@@ -251,7 +251,7 @@
     },
     "order_summary": "Ringkasan Pesanan",
     "shipping_price": "Harga Pengiriman",
-    "other_price": "Harga Lainnya",
+    "other_fees": "Biaya Lainnya",
     "shipping_cost_covered_by_seller": "Biaya Pengiriman Ditanggung Penjual",
     "use_insurance": "Gunakan Asuransi Pengiriman",
     "order_discount": "Diskon Pesanan",
@@ -339,6 +339,15 @@
     "out_of_stock": "Stok habis",
     "delete_product_confirmation": "Apakah Anda yakin ingin menghapus produk ini?",
     "delete_products_confirmation": "Apakah Anda yakin ingin menghapus produk berikut:",
-    "shipping_discount": "Diskon Pengiriman"
+    "shipping_discount": "Diskon Pengiriman",
+    "fees_and_discounts": "Biaya Pengiriman & Diskon",
+    "subtotal": "Subtotal",
+    "item": "item",
+    "shipping_fee": "Biaya Pengiriman",
+    "insurance_fee": "Biaya Asuransi",
+    "cod_fee": "Biaya COD",
+    "packing_fee_label": "Biaya Packing",
+    "discount": "Diskon",
+    "total": "Total"
   }
 }
