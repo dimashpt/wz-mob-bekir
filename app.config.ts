@@ -5,12 +5,13 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
   const VERSION = '0.1.0';
   const BUILD_NUMBER = 1;
   const BUNDLE_ID = 'com.bebaschat.app';
+  const EXPO_PROJECT_ID = 'cf27c8f8-5c74-4302-9386-a44ed0d781ad';
 
   const config: ExpoConfig = {
     ...defaultConfig,
     name: 'Bebaschat',
     slug: 'bebaschat',
-    owner: 'bebaschat',
+    owner: 'wz-technology',
     version: VERSION,
     orientation: 'portrait',
     icon: './src/assets/images/icon.png',
@@ -23,9 +24,9 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     },
     extra: {
       router: { origin: false },
-      eas: { projectId: 'c6fe0669-c099-455d-99a7-b131730757b4' },
+      eas: { projectId: EXPO_PROJECT_ID },
     },
-    updates: { url: 'https://u.expo.dev/c6fe0669-c099-455d-99a7-b131730757b4' },
+    updates: { url: `https://u.expo.dev/${EXPO_PROJECT_ID}` },
     runtimeVersion: { policy: 'appVersion' },
     ios: {
       ...defaultConfig.ios,
@@ -116,8 +117,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
         '@sentry/react-native/expo',
         {
           url: 'https://sentry.io/',
-          project: 'app-mobile',
-          organization: 'lobataros-comp',
+          project: 'bebaschat',
+          organization: 'wz-technology',
         },
       ],
     ],

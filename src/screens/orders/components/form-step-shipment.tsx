@@ -53,7 +53,7 @@ export function FormStepShipment(): JSX.Element {
         })),
     },
     {
-      destination_code: watchRecipientSubDistrict.data.subdistrict_code ?? '',
+      destination_code: watchRecipientSubDistrict?.data?.subdistrict_code ?? '',
       origin_code: watchWarehouseId?.data?.origin_code ?? '',
       weight: watchWeight,
     },
