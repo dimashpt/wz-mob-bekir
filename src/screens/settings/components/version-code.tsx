@@ -140,8 +140,7 @@ export function VersionCode(): JSX.Element {
                 onChangeText={onChange}
                 mandatory
                 autoFocus
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onBlur={onBlur}
                 secureTextEntry
                 enterKeyHint="done"

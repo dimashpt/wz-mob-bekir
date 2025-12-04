@@ -181,8 +181,7 @@ function LoginScreen(): JSX.Element {
                 label={t('login.form.email')}
                 placeholder={t('login.form.email_placeholder')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 autoCapitalize="none"
@@ -206,8 +205,7 @@ function LoginScreen(): JSX.Element {
                 label={t('login.form.password')}
                 placeholder={t('login.form.password_placeholder')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 returnKeyType="done"
@@ -256,8 +254,7 @@ function LoginScreen(): JSX.Element {
               <InputField
                 placeholder={t('login.form.email_placeholder')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 bottomSheet

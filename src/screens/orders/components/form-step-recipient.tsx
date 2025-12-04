@@ -87,8 +87,7 @@ export function FormStepRecipient(): JSX.Element {
               label={t('order_form.name')}
               mandatory
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.enter_name')}
@@ -107,8 +106,7 @@ export function FormStepRecipient(): JSX.Element {
               label={t('order_form.phone')}
               mandatory
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.enter_phone')}
@@ -127,8 +125,7 @@ export function FormStepRecipient(): JSX.Element {
             <InputField
               label={t('order_form.email')}
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.enter_email')}
@@ -149,8 +146,7 @@ export function FormStepRecipient(): JSX.Element {
               options={addresses ?? []}
               value={value?.label}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.select_subdistrict')}
               search={{
                 isLoading: isFetching,
@@ -173,8 +169,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               disabled
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.country')}
@@ -195,8 +190,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               disabled
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.province')}
@@ -216,8 +210,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               disabled
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.city')}
@@ -237,8 +230,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               disabled
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.district')}
@@ -258,8 +250,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               disabled
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.postal_code')}
@@ -278,8 +269,7 @@ export function FormStepRecipient(): JSX.Element {
               mandatory
               label={t('order_form.full_address')}
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               multiline
@@ -299,8 +289,7 @@ export function FormStepRecipient(): JSX.Element {
             <InputField
               label={t('order_form.remarks')}
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               multiline
@@ -338,8 +327,7 @@ export function FormStepRecipient(): JSX.Element {
                 mandatory
                 label={t('order_form.customer.name')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_customer_name')}
@@ -358,8 +346,7 @@ export function FormStepRecipient(): JSX.Element {
                 mandatory
                 label={t('order_form.customer.phone')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_customer_phone')}
@@ -379,8 +366,7 @@ export function FormStepRecipient(): JSX.Element {
                 mandatory
                 label={t('order_form.customer.email')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_customer_email')}
@@ -401,8 +387,7 @@ export function FormStepRecipient(): JSX.Element {
                 mandatory
                 label={t('order_form.customer.full_address')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_customer_address')}

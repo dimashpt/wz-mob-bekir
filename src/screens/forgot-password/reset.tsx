@@ -133,8 +133,7 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
                   label={t('reset_password.password')}
                   placeholder={t('reset_password.password')}
                   value={value}
-                  error={!!error?.message}
-                  errors={[error?.message]}
+                  errors={error?.message}
                   onChangeText={(text) => {
                     onChange(text);
 
@@ -165,8 +164,7 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
                   label={t('reset_password.confirm_password')}
                   placeholder={t('reset_password.confirm_password')}
                   value={value}
-                  error={!!error?.message}
-                  errors={[error?.message]}
+                  errors={error?.message}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   autoCapitalize="none"

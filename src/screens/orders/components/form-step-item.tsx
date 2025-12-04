@@ -171,8 +171,7 @@ export function FormStepItem(): JSX.Element {
               }
               helpers={[t('order_form.weight_auto_calculated')]}
               onPressRight={() => {}}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
             />
           )}
         />
@@ -186,8 +185,7 @@ export function FormStepItem(): JSX.Element {
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
             />
           )}
         />
@@ -201,8 +199,7 @@ export function FormStepItem(): JSX.Element {
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
             />
           )}
         />
@@ -216,8 +213,7 @@ export function FormStepItem(): JSX.Element {
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
             />
           )}
         />
@@ -249,8 +245,7 @@ export function FormStepItem(): JSX.Element {
               <InputField
                 label={t('order_form.dropshipper_name')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_dropshipper_name')}
@@ -268,8 +263,7 @@ export function FormStepItem(): JSX.Element {
               <InputField
                 label={t('order_form.dropshipper_phone')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_dropshipper_phone')}
@@ -288,8 +282,7 @@ export function FormStepItem(): JSX.Element {
               <InputField
                 label={t('order_form.dropshipper_email')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_dropshipper_email')}
@@ -309,8 +302,7 @@ export function FormStepItem(): JSX.Element {
               <InputField
                 label={t('order_form.dropshipper_full_address')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 placeholder={t('order_form.enter_dropshipper_address')}

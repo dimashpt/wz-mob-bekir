@@ -129,8 +129,7 @@ export function FormStepShipment(): JSX.Element {
               mandatory
               options={logisticProviders?.data || []}
               value={value?.label}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.select_logistic')}
             />
           )}
@@ -144,8 +143,7 @@ export function FormStepShipment(): JSX.Element {
               <InputField
                 label={t('order_form.logistic_name')}
                 value={value}
-                error={!!error?.message}
-                errors={[error?.message]}
+                errors={error?.message}
                 onChangeText={onChange}
                 placeholder={t('order_form.enter_logistic_name')}
               />
@@ -161,8 +159,7 @@ export function FormStepShipment(): JSX.Element {
               label={t('order_form.provider_name')}
               value={value}
               disabled={!watchIsSelfDelivery}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               placeholder={t('order_form.enter_provider_name')}
             />
@@ -177,8 +174,7 @@ export function FormStepShipment(): JSX.Element {
               label={t('order_form.service_name')}
               value={value}
               disabled={!watchIsSelfDelivery}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               placeholder={t('order_form.enter_service_name')}
             />
@@ -193,8 +189,7 @@ export function FormStepShipment(): JSX.Element {
               label={t('order_form.logistic_carrier')}
               value={value}
               disabled={!watchIsSelfDelivery}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               placeholder={t('order_form.enter_carrier_name')}
             />
@@ -209,8 +204,7 @@ export function FormStepShipment(): JSX.Element {
               label={t('order_form.tracking_number')}
               value={value}
               disabled={!watchIsSelfDelivery}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               placeholder={t('order_form.enter_tracking_number')}
             />

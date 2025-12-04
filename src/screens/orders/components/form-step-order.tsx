@@ -103,8 +103,7 @@ export function FormStepOrder(): JSX.Element {
             <InputField
               label={t('order_form.order_code')}
               value={value}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               placeholder={t('order_form.enter_order_number')}
@@ -128,8 +127,7 @@ export function FormStepOrder(): JSX.Element {
               options={PAYMENT_TYPE_OPTIONS}
               value={value?.value}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.select_payment_method')}
             />
           )}
@@ -149,8 +147,7 @@ export function FormStepOrder(): JSX.Element {
               options={PAYMENT_VIA_OPTIONS}
               value={value?.value}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.select_payment_via')}
             />
           )}
@@ -169,8 +166,7 @@ export function FormStepOrder(): JSX.Element {
               options={storeOptions}
               value={value?.label}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               flatListProps={{
                 onEndReached: () => {
                   if (hasNextStorePage && !isFetchingNextStorePage) {
@@ -227,8 +223,7 @@ export function FormStepOrder(): JSX.Element {
               options={warehouseOptions}
               value={value?.label}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               flatListProps={{
                 onEndReached: () => {
                   if (hasNextWarehousePage && !isFetchingNextWarehousePage) {
@@ -261,8 +256,7 @@ export function FormStepOrder(): JSX.Element {
               label={t('order_form.checkout_time')}
               placeholder={t('order_form.select_checkout_date')}
               mode="datetime"
-              error={!!error?.message}
-              errors={error?.message ? [error.message] : []}
+              errors={error?.message}
               disabledDate={(date) => date.isAfter(dayjs())}
             />
           )}
@@ -279,8 +273,7 @@ export function FormStepOrder(): JSX.Element {
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.enter_sales_pic')}
             />
           )}
@@ -299,8 +292,7 @@ export function FormStepOrder(): JSX.Element {
               inputClassName="min-h-20"
               onChangeText={onChange}
               onBlur={onBlur}
-              error={!!error?.message}
-              errors={[error?.message]}
+              errors={error?.message}
               placeholder={t('order_form.enter_remarks')}
             />
           )}

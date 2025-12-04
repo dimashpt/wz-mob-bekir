@@ -112,7 +112,7 @@ export default function OrderFormScreen(): JSX.Element {
 
     return (
       <Icon
-        name={iconName}
+        name={hasErrors && !focused ? 'warning' : iconName}
         size="sm"
         className={
           focused
@@ -134,6 +134,11 @@ export default function OrderFormScreen(): JSX.Element {
       <Text
         variant="labelS"
         color={focused ? 'accent' : hasErrors ? 'danger' : 'muted'}
+        className={
+          focused
+            ? 'android:font-map-semibold font-semibold'
+            : 'android:font-map-medium font-medium'
+        }
       >
         {labelText}
       </Text>
@@ -172,7 +177,7 @@ export default function OrderFormScreen(): JSX.Element {
       scrollEnabled
       indicatorClassName="bg-accent"
       className="bg-surface"
-      tabClassName="w-auto px-0 flex-row gap-xs items-center"
+      tabClassName="w-auto px-0 flex-row gap-xs items-center min-h-0"
       contentContainerClassName="px-lg"
       gap={16}
       options={tabBarOptions}

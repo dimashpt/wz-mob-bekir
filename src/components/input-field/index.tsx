@@ -16,7 +16,6 @@ const { width } = Dimensions.get('window');
 interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
   mandatory?: boolean;
   description?: string;
-  errors?: (string | undefined)[];
   helpers?: (string | undefined)[];
   onPressLeft?: () => void;
   onPressRight?: () => void;
@@ -28,7 +27,7 @@ interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
   left?: React.ReactNode;
   right?: React.ReactNode;
   disabled?: boolean;
-  error?: boolean;
+  errors?: string | string[];
   loading?: boolean;
   secret?: boolean;
   labelSuffix?: React.ReactNode;
@@ -105,7 +104,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
     }
 
     function getBorderClassName(): string {
-      if (props.error) return 'border-danger';
+      if (errors) return 'border-danger';
 
       if (isFocused) return 'border-accent';
 
@@ -227,9 +226,11 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   <Loader />
                 ) : secret ? (
                   <Icon
-                    name={isSecureTextVisible ? 'eyeSlash' : 'eye'}
+                    name={isSecureTextVisible ? 'eye' : 'eyeSlash'}
                     size="lg"
-                    className="text-field-placeholder"
+                    className={
+                      errors ? 'text-danger' : 'text-field-placeholder'
+                    }
                   />
                 ) : (
                   right
@@ -254,17 +255,12 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
             </View>
           ) : null}
           {errors?.length ? (
-            <View style={{ maxWidth: width * 0.85 }}>
-              {errors.map((error) =>
+            <View>
+              {(Array.isArray(errors) ? errors : [errors]).map((error) =>
                 error ? (
-                  <View
-                    key={`error-${error}`}
-                    className="gap-xs flex-row items-center"
-                  >
-                    <Text variant="bodyS" color="danger">
-                      {error}
-                    </Text>
-                  </View>
+                  <Text variant="bodyXS" color="danger" key={`error-${error}`}>
+                    {error}
+                  </Text>
                 ) : null,
               )}
             </View>
