@@ -162,13 +162,13 @@ const shipmentStepSchema = z.object({
   logistic_carrier: z.string().optional(),
   tracking_number: z.string().optional(),
   shipping_fee: z.number({ error: required }),
-  shipping_discount: z.number().optional(),
-  packing_fee: z.number().optional(),
+  shipping_discount: z.coerce.number<number>().optional(),
+  packing_fee: z.coerce.number<number>().optional(),
 });
 
 const summaryStepSchema = z.object({
-  other_fee: z.number().optional(),
-  order_discount: z.number().optional(),
+  other_fee: z.coerce.number<number>().optional(),
+  order_discount: z.coerce.number<number>().optional(),
 });
 
 export const orderFormSchema = z.object({

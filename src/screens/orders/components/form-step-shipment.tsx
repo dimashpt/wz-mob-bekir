@@ -65,7 +65,9 @@ export function FormStepShipment(): JSX.Element {
     );
 
   function handleSelfDeliveryChange(value: boolean): void {
-    form.setValue('step_shipment.is_self_delivery', value);
+    form.setValue('step_shipment.is_self_delivery', value, {
+      shouldValidate: true,
+    });
 
     if (value) {
       form.resetField('step_shipment.logistic');
@@ -217,13 +219,14 @@ export function FormStepShipment(): JSX.Element {
         <Controller
           control={control}
           name="step_shipment.shipping_fee"
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.shipping_fee')}
               value={value?.toString()}
               onChangeText={onChange}
               disabled={Boolean(watchLogistics?.value)}
               placeholder="0"
+              errors={error?.message}
             />
           )}
         />
@@ -231,26 +234,28 @@ export function FormStepShipment(): JSX.Element {
         <Controller
           control={control}
           name="step_shipment.shipping_discount"
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.shipping_discount')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
+              errors={error?.message}
             />
           )}
         />
         <Controller
           control={control}
           name="step_shipment.packing_fee"
-          render={({ field: { value, onChange } }) => (
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
             <InputField
               label={t('order_form.packing_fee')}
               value={value?.toString()}
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
+              errors={error?.message}
             />
           )}
         />

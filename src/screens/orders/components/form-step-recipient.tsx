@@ -49,7 +49,9 @@ export function FormStepRecipient(): JSX.Element {
   });
 
   function onSubdistrictChange(value: Option<Address> | null): void {
-    form.setValue('step_recipient.subdistrict', value!);
+    form.setValue('step_recipient.subdistrict', value!, {
+      shouldValidate: true,
+    });
     if (value?.data) {
       form.setValue('step_recipient.country', value?.data?.country, {
         shouldValidate: true,

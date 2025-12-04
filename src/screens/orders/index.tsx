@@ -244,7 +244,7 @@ export default function OrdersScreen(): JSX.Element {
         ListEmptyComponent={() => (
           <View className="gap-sm flex-1 items-center justify-center">
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({ length: 10 }).map((_, index) => (
                 <Skeleton key={index} className="h-24" />
               ))
             ) : (

@@ -4,6 +4,7 @@ import { API } from '@/lib/axios';
 import {
   AddressRequestParams,
   AddressResponse,
+  CreateOrderPayload,
   OrderDetailsResponse,
   OrderHistoryParams,
   OrderHistoryResponse,
@@ -75,4 +76,19 @@ export async function getAddress(
   return response.data.data;
 }
 
+/**
+ * Creates an order from the API.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the created order.
+ */
+export async function createOrder(
+  payload: CreateOrderPayload,
+): Promise<OrderResponse> {
+  const response = await API.post<SuccessResponse<OrderResponse>>(
+    ORDER_ENDPOINTS.CREATE_ORDER,
+    payload,
+  );
+
+  return response.data.data;
+}
 export * from './types';

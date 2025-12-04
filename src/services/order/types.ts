@@ -300,3 +300,93 @@ export interface Address {
   created_at: string;
   updated_at: string;
 }
+
+export interface CreateOrderPayload {
+  order_code: string;
+  payment_method_type: string;
+  payment_via: string;
+  store_id: string;
+  location_id: string;
+  checkout_at: string;
+  sales_pic: string;
+  remarks: string;
+  origin_code: string;
+  destination_code: string;
+  cod_percentage: number;
+  insurance_percentage: number;
+  dropshipper_name: string;
+  dropshipper_phone: string;
+  dropshipper_email: string;
+  dropshipper_full_address: string;
+  is_dropship: boolean;
+  is_draft: boolean;
+  is_unpaid: boolean;
+  recipient: Recipient;
+  buyer: Buyer;
+  delivery: Delivery;
+  products: Product[];
+  package: Package;
+  price: Price;
+}
+
+interface Price {
+  sub_total_price: number;
+  shipping_price: number;
+  other_price: number;
+  total_discount_price: number;
+  cod_fee: number;
+  cod_price: number;
+  grand_total_order_price: number;
+  discount_seller: number;
+  discount_shipping: number;
+  packing_price: number;
+  insurance_price: number;
+}
+
+interface Package {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+}
+
+interface Product {
+  name: string;
+  sku: string;
+  product_id: number;
+  unit_price: number;
+  unit_weight: string;
+  qty: number;
+}
+
+interface Delivery {
+  logistic: string;
+  delivery_method: 'SYSTEM-DELIVERY' | 'SELF-DELIVERY';
+  logistic_provider_name: string;
+  logistic_service_name: string;
+  logistic_carrier: string;
+  tracking_number: string;
+}
+
+interface Buyer {
+  name: string;
+  phone: string;
+  email: string;
+  full_address: string;
+}
+
+interface Recipient {
+  name: string;
+  phone: string;
+  email: string;
+  country: string;
+  province: string;
+  city: string;
+  sub_district: string;
+  district: string;
+  postal_code: string;
+  full_address: string;
+  sub_district_id: string;
+  remarks: string;
+  recipient_sub_district_id: string;
+}

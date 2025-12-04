@@ -1,9 +1,9 @@
 import React, { JSX, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -18,13 +18,17 @@ import {
 import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Button, Container, Header, Icon, IconNames, Text } from '@/components';
+import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { OrderService } from '@/services';
 import { FormStepItem } from './components/form-step-item';
 import { FormStepOrder } from './components/form-step-order';
 import { FormStepRecipient } from './components/form-step-recipient';
 import { FormStepShipment } from './components/form-step-shipment';
 import { FormStepSummary } from './components/form-step-summary';
-import { orderFormSchema, OrderFormValues } from './utils/order-form-schema';
+import { usePriceCalculations } from './context/price-calculations-context';
+import { OrderFormValues } from './utils/order-form-schema';
+import { mapToOrderPayload } from './utils/order-helpers';
 
 const TabBar = withUniwind(RNTabBar);
 const MappedLinearGradient = withUniwind(LinearGradient);
@@ -61,17 +65,13 @@ export default function OrderFormScreen(): JSX.Element {
     4: 'step_summary',
   };
 
-  const form = useForm<OrderFormValues>({
-    resolver: zodResolver(orderFormSchema),
-    mode: 'onChange',
-    defaultValues: {
-      step_recipient: {
-        is_same_as_recipient: false,
-      },
-      step_item: {
-        is_dropship: false,
-      },
-    },
+  const form = useFormContext<OrderFormValues>();
+  const { subTotal, insuranceFee, codFee, totalDiscount, totalPrice } =
+    usePriceCalculations();
+
+  const createOrderMutation = useMutation({
+    mutationKey: [ORDER_ENDPOINTS.CREATE_ORDER],
+    mutationFn: OrderService.createOrder,
   });
 
   async function handleNext(): Promise<void> {
@@ -91,8 +91,20 @@ export default function OrderFormScreen(): JSX.Element {
     }
   }
 
-  function handleSubmit(): void {
-    // TODO: Handle form submission
+  function handleSubmit(values: OrderFormValues): void {
+    const payload = mapToOrderPayload(values);
+
+    createOrderMutation.mutate({
+      ...payload,
+      price: {
+        ...payload.price,
+        sub_total_price: subTotal,
+        total_discount_price: totalDiscount,
+        cod_price: codFee,
+        grand_total_order_price: totalPrice,
+        insurance_price: insuranceFee,
+      },
+    });
   }
 
   const tabIconNames: Record<RouteKey, IconNames> = {
@@ -115,10 +127,10 @@ export default function OrderFormScreen(): JSX.Element {
         name={hasErrors && !focused ? 'warning' : iconName}
         size="sm"
         className={
-          focused
-            ? 'text-accent'
-            : hasErrors
-              ? 'text-danger'
+          hasErrors
+            ? 'text-danger'
+            : focused
+              ? 'text-accent'
               : 'text-muted-foreground'
         }
       />
@@ -133,7 +145,7 @@ export default function OrderFormScreen(): JSX.Element {
     return (
       <Text
         variant="labelS"
-        color={focused ? 'accent' : hasErrors ? 'danger' : 'muted'}
+        color={hasErrors ? 'danger' : focused ? 'accent' : 'muted'}
         className={
           focused
             ? 'android:font-map-semibold font-semibold'
@@ -159,6 +171,7 @@ export default function OrderFormScreen(): JSX.Element {
         renderLabel(labelText || '', focused, hasErrors),
     };
   };
+
   const tabBarOptions = {
     order: createTabOption('order'),
     recipient: createTabOption('recipient'),
@@ -166,6 +179,10 @@ export default function OrderFormScreen(): JSX.Element {
     shipment: createTabOption('shipment'),
     summary: createTabOption('summary'),
   };
+
+  const isCurrentStepHasErrors = Boolean(
+    form.formState.errors[stepFieldNames[activeIndex]],
+  );
 
   const renderTabBar = (
     props: SceneRendererProps & {
@@ -175,7 +192,7 @@ export default function OrderFormScreen(): JSX.Element {
     <TabBar
       {...props}
       scrollEnabled
-      indicatorClassName="bg-accent"
+      indicatorClassName={isCurrentStepHasErrors ? 'bg-danger' : 'bg-accent'}
       className="bg-surface"
       tabClassName="w-auto px-0 flex-row gap-xs items-center min-h-0"
       contentContainerClassName="px-lg"
@@ -183,7 +200,6 @@ export default function OrderFormScreen(): JSX.Element {
       options={tabBarOptions}
       activeColor={accentColor}
       inactiveColor={mutedColor}
-      onTabPress={({ preventDefault }) => !__DEV__ && preventDefault()}
     />
   );
 
@@ -191,63 +207,60 @@ export default function OrderFormScreen(): JSX.Element {
   const isLastStep = activeIndex === routes.length - 1;
 
   return (
-    <FormProvider {...form}>
-      <Container className="bg-background flex-1">
-        <Header title={t('order_form.title')} className="border-b-0" />
-        <TabView
-          navigationState={{ index: activeIndex, routes }}
-          renderScene={SceneMap({
-            order: FormStepOrder,
-            recipient: FormStepRecipient,
-            item: FormStepItem,
-            shipment: FormStepShipment,
-            summary: FormStepSummary,
-          })}
-          renderTabBar={renderTabBar}
-          onIndexChange={setActiveIndex}
-          initialLayout={{ width: layout.width }}
-          swipeEnabled
-          lazy
-        />
-        <MappedLinearGradient
-          colors={[
-            backgroundColor + '00',
-            backgroundColor,
-            backgroundColor,
-            backgroundColor,
-          ]}
-          className="absolute right-0 bottom-0 left-0 items-center"
-          style={{
-            paddingBottom: insets.bottom || spacingLg,
-            height: TAB_BAR_HEIGHT + 20,
-          }}
+    <Container className="bg-background flex-1">
+      <Header title={t('order_form.title')} className="border-b-0" />
+      <TabView
+        navigationState={{ index: activeIndex, routes }}
+        renderScene={SceneMap({
+          order: FormStepOrder,
+          recipient: FormStepRecipient,
+          item: FormStepItem,
+          shipment: FormStepShipment,
+          summary: FormStepSummary,
+        })}
+        renderTabBar={renderTabBar}
+        onIndexChange={setActiveIndex}
+        initialLayout={{ width: layout.width }}
+        swipeEnabled
+        lazy
+      />
+      <MappedLinearGradient
+        colors={[
+          backgroundColor + '00',
+          backgroundColor,
+          backgroundColor,
+          backgroundColor,
+        ]}
+        className="absolute right-0 bottom-0 left-0 items-center"
+        style={{
+          paddingBottom: insets.bottom || spacingLg,
+          height: TAB_BAR_HEIGHT + 20,
+        }}
+      >
+        <View
+          className="gap-md p-lg absolute right-0 bottom-0 left-0 flex-row"
+          style={{ paddingBottom: insets.bottom || spacingLg }}
         >
-          <View
-            className="gap-md p-lg absolute right-0 bottom-0 left-0 flex-row"
-            style={{ paddingBottom: insets.bottom || spacingLg }}
-          >
-            <Button
-              variant="outlined"
-              className="flex-1"
-              onPress={handlePrevious}
-              disabled={isFirstStep}
-              text={t('order_form.navigation.previous')}
-            />
-            <Button
-              variant="filled"
-              className="flex-1"
-              onPress={
-                isLastStep ? form.handleSubmit(handleSubmit) : handleNext
-              }
-              text={
-                isLastStep
-                  ? t('order_form.navigation.submit')
-                  : t('order_form.navigation.next')
-              }
-            />
-          </View>
-        </MappedLinearGradient>
-      </Container>
-    </FormProvider>
+          <Button
+            variant="outlined"
+            className="flex-1"
+            onPress={handlePrevious}
+            disabled={isFirstStep}
+            text={t('order_form.navigation.previous')}
+          />
+          <Button
+            variant="filled"
+            className="flex-1"
+            loading={createOrderMutation.isPending}
+            onPress={isLastStep ? form.handleSubmit(handleSubmit) : handleNext}
+            text={
+              isLastStep
+                ? t('order_form.navigation.submit')
+                : t('order_form.navigation.next')
+            }
+          />
+        </View>
+      </MappedLinearGradient>
+    </Container>
   );
 }
