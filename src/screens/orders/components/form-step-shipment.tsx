@@ -1,5 +1,4 @@
 import React, { JSX } from 'react';
-import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -100,8 +99,8 @@ export function FormStepShipment(): JSX.Element {
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
       <Text variant="labelL">{t('order_form.delivery_information')}</Text>
-      <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
-        <Text variant="bodyM" className="flex-1">
+      <Container.Card className="gap-sm flex-row items-center justify-between">
+        <Text variant="bodyS" className="font-medium">
           {t('order_form.is_self_delivery')}
         </Text>
         <Controller
@@ -234,20 +233,6 @@ export function FormStepShipment(): JSX.Element {
             />
           )}
         />
-        <View className="flex-row items-center justify-between">
-          <Text variant="bodyS">{t('order_form.use_insurance')}</Text>
-          <Controller
-            control={control}
-            name="step_shipment.is_using_insurance"
-            render={({ field: { value, onChange } }) => (
-              <ToggleSwitch
-                value={!!value}
-                size="small"
-                onValueChange={onChange}
-              />
-            )}
-          />
-        </View>
 
         <Controller
           control={control}
@@ -272,6 +257,23 @@ export function FormStepShipment(): JSX.Element {
               onChangeText={onChange}
               keyboardType="numeric"
               placeholder="0"
+            />
+          )}
+        />
+      </Container.Card>
+
+      <Container.Card className="flex-row items-center justify-between">
+        <Text variant="bodyS" className="font-medium">
+          {t('order_form.use_insurance')}
+        </Text>
+        <Controller
+          control={control}
+          name="step_shipment.is_using_insurance"
+          render={({ field: { value, onChange } }) => (
+            <ToggleSwitch
+              value={!!value}
+              size="small"
+              onValueChange={onChange}
             />
           )}
         />

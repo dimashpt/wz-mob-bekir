@@ -312,8 +312,8 @@ export function FormStepRecipient(): JSX.Element {
       </Container.Card>
 
       <Text variant="labelL">{t('order_form.customer_information')}</Text>
-      <Container.Card className="p-lg gap-sm flex-row items-center justify-between">
-        <Text variant="bodyM" className="flex-1">
+      <Container.Card className="gap-sm flex-row items-center justify-between">
+        <Text variant="bodyS" className="font-medium">
           {t('order_form.is_same_as_recipient')}
         </Text>
         <Controller

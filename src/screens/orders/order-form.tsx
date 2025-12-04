@@ -12,11 +12,12 @@ import {
   Route,
   SceneMap,
   SceneRendererProps,
+  TabDescriptor,
   TabView,
 } from 'react-native-tab-view';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
-import { Button, Container, Header } from '@/components';
+import { Button, Container, Header, Icon, IconNames, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { FormStepItem } from './components/form-step-item';
 import { FormStepOrder } from './components/form-step-order';
@@ -28,8 +29,9 @@ import { orderFormSchema, OrderFormValues } from './helpers/order-form';
 const TabBar = withUniwind(RNTabBar);
 const MappedLinearGradient = withUniwind(LinearGradient);
 
+type RouteKey = 'order' | 'recipient' | 'item' | 'shipment' | 'summary';
 type TabRoute = Route & {
-  key: string;
+  key: RouteKey;
   title: string;
 };
 
@@ -42,7 +44,7 @@ export default function OrderFormScreen(): JSX.Element {
   const mutedColor = useCSSVariable('--color-muted-foreground') as string;
   const backgroundColor = useCSSVariable('--color-background') as string;
 
-  const [index, setIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [routes] = useState<TabRoute[]>([
     { key: 'order', title: t('order_form.steps.order_details') },
     { key: 'recipient', title: t('order_form.steps.recipient_info') },
@@ -73,25 +75,92 @@ export default function OrderFormScreen(): JSX.Element {
   });
 
   async function handleNext(): Promise<void> {
-    if (index < routes.length - 1) {
-      const currentStepField = stepFieldNames[index];
+    if (activeIndex < routes.length - 1) {
+      const currentStepField = stepFieldNames[activeIndex];
       const isValid = await form.trigger(currentStepField);
 
       if (isValid) {
-        setIndex(index + 1);
+        setActiveIndex(activeIndex + 1);
       }
     }
   }
 
   function handlePrevious(): void {
-    if (index > 0) {
-      setIndex(index - 1);
+    if (activeIndex > 0) {
+      setActiveIndex(activeIndex - 1);
     }
   }
 
   function handleSubmit(): void {
     // TODO: Handle form submission
   }
+
+  const tabIconNames: Record<RouteKey, IconNames> = {
+    order: 'info',
+    recipient: 'user',
+    item: 'product',
+    shipment: 'truck',
+    summary: 'order',
+  };
+
+  const renderIcon = (
+    tabKey: RouteKey,
+    focused: boolean,
+    hasErrors: boolean,
+  ): JSX.Element => {
+    const iconName = tabIconNames[tabKey];
+
+    return (
+      <Icon
+        name={iconName}
+        size="sm"
+        className={
+          focused
+            ? 'text-accent'
+            : hasErrors
+              ? 'text-danger'
+              : 'text-muted-foreground'
+        }
+      />
+    );
+  };
+
+  const renderLabel = (
+    labelText: string,
+    focused: boolean,
+    hasErrors: boolean,
+  ): JSX.Element => {
+    return (
+      <Text
+        variant="labelS"
+        color={focused ? 'accent' : hasErrors ? 'danger' : 'muted'}
+      >
+        {labelText}
+      </Text>
+    );
+  };
+
+  const createTabOption = (tabKey: RouteKey): TabDescriptor<Route> => {
+    const findTabIndex = Object.values(stepFieldNames).indexOf(
+      `step_${tabKey}`,
+    );
+    const hasErrors = Boolean(
+      form.formState.errors[stepFieldNames[findTabIndex]],
+    );
+
+    return {
+      icon: (props) => renderIcon(tabKey, props.focused, hasErrors),
+      label: ({ labelText, focused }) =>
+        renderLabel(labelText || '', focused, hasErrors),
+    };
+  };
+  const tabBarOptions = {
+    order: createTabOption('order'),
+    recipient: createTabOption('recipient'),
+    item: createTabOption('item'),
+    shipment: createTabOption('shipment'),
+    summary: createTabOption('summary'),
+  };
 
   const renderTabBar = (
     props: SceneRendererProps & {
@@ -103,22 +172,25 @@ export default function OrderFormScreen(): JSX.Element {
       scrollEnabled
       indicatorClassName="bg-accent"
       className="bg-surface"
-      tabClassName="w-auto"
+      tabClassName="w-auto px-0 flex-row gap-xs items-center"
+      contentContainerClassName="px-lg"
+      gap={16}
+      options={tabBarOptions}
       activeColor={accentColor}
       inactiveColor={mutedColor}
       onTabPress={({ preventDefault }) => !__DEV__ && preventDefault()}
     />
   );
 
-  const isFirstStep = index === 0;
-  const isLastStep = index === routes.length - 1;
+  const isFirstStep = activeIndex === 0;
+  const isLastStep = activeIndex === routes.length - 1;
 
   return (
     <FormProvider {...form}>
       <Container className="bg-background flex-1">
-        <Header title={t('order_form.title')} />
+        <Header title={t('order_form.title')} className="border-b-0" />
         <TabView
-          navigationState={{ index, routes }}
+          navigationState={{ index: activeIndex, routes }}
           renderScene={SceneMap({
             order: FormStepOrder,
             recipient: FormStepRecipient,
@@ -127,7 +199,7 @@ export default function OrderFormScreen(): JSX.Element {
             summary: FormStepSummary,
           })}
           renderTabBar={renderTabBar}
-          onIndexChange={setIndex}
+          onIndexChange={setActiveIndex}
           initialLayout={{ width: layout.width }}
           swipeEnabled
           lazy
