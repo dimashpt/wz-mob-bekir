@@ -36,7 +36,7 @@ interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
 }
 
 const inputFieldVariants = tv({
-  base: 'p-md flex-row items-center rounded-md border',
+  base: 'flex-row items-center rounded-md border',
   variants: {
     variant: {
       filled: 'bg-field-background',
@@ -167,18 +167,17 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
             )}
             {bottomSheet ? (
               <BottomSheetTextInput
+                editable={!props.disabled}
                 {...props}
                 // @ts-ignore
                 ref={ref as RefObject<TextInput>}
-                editable={!props.disabled}
                 secureTextEntry={secret && !isSecureTextVisible}
                 className={twMerge(
-                  'flex-1 py-0',
-                  'android:font-map-normal font-sans text-base/tight',
-                  props.multiline ? 'py-sm' : '',
+                  'p-md flex-1 rounded-md',
+                  'android:font-map-normal font-sans text-sm/tight',
                   props.disabled || transparent
-                    ? 'text-foreground-muted'
-                    : 'text-foreground',
+                    ? 'text-muted-foreground'
+                    : 'text-field-foreground',
                   inputClassName,
                 )}
                 onFocus={(e) => {
@@ -192,13 +191,12 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               />
             ) : (
               <TextInput
-                {...props}
                 editable={!props.disabled}
+                {...props}
                 secureTextEntry={secret && !isSecureTextVisible}
                 className={twMerge(
-                  'flex-1 py-0',
+                  'p-md flex-1 rounded-md',
                   'android:font-map-normal font-sans text-sm/tight',
-                  props.multiline ? 'py-sm' : '',
                   props.disabled || transparent
                     ? 'text-muted-foreground'
                     : 'text-field-foreground',
@@ -220,7 +218,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               <Clickable
                 disabled={secret ? false : !onPressRight}
                 onPress={secret ? toggleSecureTextVisibility : onPressRight}
-                className="px-xs items-center justify-center"
+                className="pr-md pl-xs py-md items-center justify-center rounded-md"
               >
                 {loading ? (
                   <Loader />

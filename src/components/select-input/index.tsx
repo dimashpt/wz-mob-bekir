@@ -6,23 +6,20 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  FlatListProps,
-  Keyboard,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { FlatListProps, Keyboard, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components/icon';
 import { InputField } from '@/components/input-field';
+import { Clickable } from '../clickable';
 import {
   Option,
   OptionBottomSheet,
   OptionBottomSheetRef,
   RenderItemProps,
 } from '../option-bottom-sheet';
+import { Text } from '../text';
 
 export interface SelectInputProps<TData = unknown> extends React.ComponentProps<
   typeof InputField
@@ -95,18 +92,27 @@ function SelectInputInner<TData = unknown>(
   }, [selected]);
 
   return (
-    <View>
+    <View className="gap-xs">
       {hideTouchable ? null : (
-        <TouchableWithoutFeedback
-          onPress={props.disabled ? undefined : handlePresentOptionModalPress}
-        >
-          <View pointerEvents="box-only">
+        <>
+          <Text variant="labelS" className="font-medium">
+            {label}
+            {mandatory ? (
+              <Text variant="labelM" color="danger" className="font-medium">
+                *
+              </Text>
+            ) : null}
+          </Text>
+          <Clickable
+            onPress={props.disabled ? undefined : handlePresentOptionModalPress}
+            pointerEvents="box-only"
+          >
             <InputField
-              label={label}
               mandatory={mandatory}
               value={selectedValue?.label || ''}
               placeholder={defaultPlaceholder}
               editable={false}
+              multiline
               right={
                 <Icon
                   name="chevron"
@@ -116,8 +122,8 @@ function SelectInputInner<TData = unknown>(
               }
               {...props}
             />
-          </View>
-        </TouchableWithoutFeedback>
+          </Clickable>
+        </>
       )}
 
       <OptionBottomSheet
