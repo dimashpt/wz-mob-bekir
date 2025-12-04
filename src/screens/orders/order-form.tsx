@@ -3,6 +3,7 @@ import { useWindowDimensions, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,9 +18,18 @@ import {
 } from 'react-native-tab-view';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
-import { Button, Container, Header, Icon, IconNames, Text } from '@/components';
+import {
+  Button,
+  Container,
+  Header,
+  Icon,
+  IconNames,
+  snackbar,
+  Text,
+} from '@/components';
 import { ORDER_ENDPOINTS } from '@/constants/endpoints';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { queryClient } from '@/lib/react-query';
 import { OrderService } from '@/services';
 import { FormStepItem } from './components/form-step-item';
 import { FormStepOrder } from './components/form-step-order';
@@ -41,6 +51,7 @@ type TabRoute = Route & {
 
 export default function OrderFormScreen(): JSX.Element {
   const { t } = useTranslation();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
   const layout = useWindowDimensions();
@@ -72,6 +83,13 @@ export default function OrderFormScreen(): JSX.Element {
   const createOrderMutation = useMutation({
     mutationKey: [ORDER_ENDPOINTS.CREATE_ORDER],
     mutationFn: OrderService.createOrder,
+    onSuccess: () => {
+      snackbar.success(t('order_form.message.success'));
+      router.back();
+      queryClient.invalidateQueries({
+        queryKey: [ORDER_ENDPOINTS.LIST_ORDERS],
+      });
+    },
   });
 
   async function handleNext(): Promise<void> {

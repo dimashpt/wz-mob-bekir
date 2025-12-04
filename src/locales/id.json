@@ -359,6 +359,9 @@
     "cod_fee": "Biaya COD",
     "packing_fee_label": "Biaya Packing",
     "discount": "Diskon",
-    "total": "Total"
+    "total": "Total",
+    "message": {
+      "success": "Order berhasil dibuat"
+    }
   }
 }

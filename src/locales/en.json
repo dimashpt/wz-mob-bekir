@@ -355,6 +355,9 @@
     "cod_fee": "COD Fee",
     "packing_fee_label": "Packing Fee",
     "discount": "Discount",
-    "total": "Total"
+    "total": "Total",
+    "message": {
+      "success": "Order created successfully"
+    }
   }
 }
