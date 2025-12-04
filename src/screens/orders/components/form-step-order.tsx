@@ -103,6 +103,7 @@ export function FormStepOrder(): JSX.Element {
             <InputField
               label={t('order_form.order_code')}
               value={value}
+              mandatory
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}

@@ -66,7 +66,7 @@ export default function OrderFormScreen(): JSX.Element {
   };
 
   const form = useFormContext<OrderFormValues>();
-  const { subTotal, insuranceFee, codFee, totalDiscount, totalPrice } =
+  const { subTotal, insuranceFee, codFee, totalDiscount, grandTotal } =
     usePriceCalculations();
 
   const createOrderMutation = useMutation({
@@ -100,8 +100,9 @@ export default function OrderFormScreen(): JSX.Element {
         ...payload.price,
         sub_total_price: subTotal,
         total_discount_price: totalDiscount,
-        cod_price: codFee,
-        grand_total_order_price: totalPrice,
+        cod_fee: codFee,
+        cod_price: grandTotal,
+        grand_total_order_price: grandTotal,
         insurance_price: insuranceFee,
       },
     });

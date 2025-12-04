@@ -9,7 +9,7 @@ interface PriceCalculations {
   insuranceFee: number;
   codFee: number;
   totalDiscount: number;
-  totalPrice: number;
+  grandTotal: number;
 }
 
 const PriceCalculationsContext = createContext<PriceCalculations | undefined>(
@@ -73,7 +73,14 @@ export function PriceCalculationsProvider({
     if (!watchIsUsingInsurance) return 0;
 
     if (watchLogistics?.data?.insurance_percentage && subTotal > 0) {
-      return (subTotal * watchLogistics?.data.insurance_percentage) / 100;
+      const totalPrice =
+        subTotal +
+        Number(watchOtherFees || 0) -
+        Number(watchOrderDiscount || 0);
+
+      return (
+        (totalPrice * (watchLogistics?.data?.insurance_percentage || 0)) / 100
+      );
     }
 
     return 0;
@@ -85,16 +92,30 @@ export function PriceCalculationsProvider({
       watchLogistics?.data?.cod_percentage &&
       subTotal > 0
     ) {
-      return (subTotal * watchLogistics?.data.cod_percentage) / 100;
+      const priceTotal =
+        subTotal +
+        Number(watchShippingFee || 0) +
+        Number(watchOtherFees || 0) -
+        Number(watchOrderDiscount || 0);
+      const codPercentage = watchLogistics?.data?.cod_percentage || 0;
+
+      return Math.ceil((codPercentage / 100) * priceTotal);
     }
     return 0;
-  }, [watchPaymentMethod, watchLogistics, subTotal]);
+  }, [
+    watchPaymentMethod,
+    watchLogistics,
+    subTotal,
+    watchShippingFee,
+    watchOtherFees,
+    watchOrderDiscount,
+  ]);
 
   const totalDiscount = useMemo(() => {
     return Number(watchShippingDiscount || 0) + Number(watchOrderDiscount || 0);
   }, [watchShippingDiscount, watchOrderDiscount]);
 
-  const totalPrice = useMemo(() => {
+  const grandTotal = useMemo(() => {
     const total =
       subTotal +
       (Number(watchShippingFee) || 0) +
@@ -119,7 +140,7 @@ export function PriceCalculationsProvider({
     insuranceFee,
     codFee,
     totalDiscount,
-    totalPrice,
+    grandTotal,
   };
 
   return (

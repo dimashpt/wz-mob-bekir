@@ -41,7 +41,7 @@ function PriceInfo({
 export function FormStepSummary(): JSX.Element {
   const { t } = useTranslation();
   const { control } = useFormContext<OrderFormValues>();
-  const { subTotal, insuranceFee, codFee, totalDiscount, totalPrice } =
+  const { subTotal, insuranceFee, codFee, totalDiscount, grandTotal } =
     usePriceCalculations();
 
   const watchProducts = useWatch({
@@ -73,6 +73,7 @@ export function FormStepSummary(): JSX.Element {
               value={value?.toString()}
               onChangeText={onChange}
               placeholder="0"
+              keyboardType="numeric"
             />
           )}
         />
@@ -115,8 +116,8 @@ export function FormStepSummary(): JSX.Element {
       />
       <PriceInfo
         label={t('order_form.total')}
-        value={totalPrice}
-        error={totalPrice < 0}
+        value={grandTotal}
+        error={grandTotal < 0}
       />
     </Container.Scroll>
   );

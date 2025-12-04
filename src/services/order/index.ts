@@ -87,6 +87,7 @@ export async function createOrder(
   const response = await API.post<SuccessResponse<OrderResponse>>(
     ORDER_ENDPOINTS.CREATE_ORDER,
     payload,
+    { timeout: 20_000 },
   );
 
   return response.data.data;

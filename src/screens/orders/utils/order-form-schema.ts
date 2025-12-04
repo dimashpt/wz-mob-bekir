@@ -7,7 +7,7 @@ import { Warehouse } from '@/services/warehouse';
 import { required } from '@/utils/validation';
 
 const orderStepSchema = z.object({
-  order_code: z.string().optional(),
+  order_code: z.string({ error: required }),
   payment_type: z.object(
     {
       value: z.string(),
@@ -46,7 +46,7 @@ const orderStepSchema = z.object({
 
 const baseRecipientStepSchema = z.object({
   name: z.string({ error: required }),
-  phone: z.string({ error: required }),
+  phone: z.string({ error: required }).startsWith('+62').min(10),
   email: z.string({ error: required }).optional(),
   country: z.string({ error: required }),
   province: z.string({ error: required }),
@@ -69,7 +69,7 @@ const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({
   is_same_as_recipient: z.literal(false),
   customer: z.object({
     name: z.string(),
-    phone: z.string(),
+    phone: z.string().startsWith('+62').min(10),
     email: z.string(),
     full_address: z.string(),
   }),
@@ -79,7 +79,7 @@ const whenNotSameAsRecipientSchema = baseRecipientStepSchema.extend({
   is_same_as_recipient: z.literal(true),
   customer: z.object({
     name: z.string().optional(),
-    phone: z.string().optional(),
+    phone: z.string().startsWith('+62').min(10).optional(),
     email: z.string().optional(),
     full_address: z.string().optional(),
   }),

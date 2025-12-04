@@ -24,7 +24,7 @@ export const mapToOrderPayload = (
 
   return {
     order_code: step_order.order_code ?? '',
-    payment_method_type: step_order.payment_method.value,
+    payment_method_type: step_order.payment_type.value,
     payment_via: step_order.payment_method.value,
     store_id: step_order.store.value,
     location_id: step_order.warehouse.value,
