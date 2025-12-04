@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { BottomSheet, BottomSheetModal } from '@/components';
 import { screenHeight } from '@/hooks';
 import { ProductRepo } from '@/services';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 import { ProductItem } from './product-item';
 
 interface ProductSelectSheetProps {

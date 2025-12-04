@@ -17,7 +17,7 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { formatCurrency, formatNumber } from '@/utils/formatter';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 import { ProductItem } from './product-item';
 import { ProductSelectSheet } from './product-select-sheet';
 

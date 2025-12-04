@@ -15,7 +15,7 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { ShipmentRepo } from '@/services';
 import { LogisticProvider } from '@/services/shipment/types';
 import { formatCurrency } from '@/utils/formatter';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepShipment(): JSX.Element {
   const { t } = useTranslation();

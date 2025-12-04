@@ -24,7 +24,7 @@ import { FormStepOrder } from './components/form-step-order';
 import { FormStepRecipient } from './components/form-step-recipient';
 import { FormStepShipment } from './components/form-step-shipment';
 import { FormStepSummary } from './components/form-step-summary';
-import { orderFormSchema, OrderFormValues } from './helpers/order-form';
+import { orderFormSchema, OrderFormValues } from './utils/order-form-schema';
 
 const TabBar = withUniwind(RNTabBar);
 const MappedLinearGradient = withUniwind(LinearGradient);

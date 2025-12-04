@@ -24,7 +24,7 @@ import {
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useStoresInfiniteQuery } from '@/services/store/repository';
 import { useWarehousesInfiniteQuery } from '@/services/warehouse/repository';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 
 const Image = withUniwind(ExpoImage);
 

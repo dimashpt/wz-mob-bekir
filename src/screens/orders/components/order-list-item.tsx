@@ -14,7 +14,7 @@ import {
 import { Order } from '@/services/order/types';
 import { formatDisplayDate } from '@/utils/date';
 import { formatCurrency } from '@/utils/formatter';
-import { statusToTranslationKey } from '../helpers/order-helpers';
+import { statusToTranslationKey } from '../utils/order-helpers';
 
 const Image = withUniwind(ExpoImage);
 

@@ -15,7 +15,7 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
 import { Address } from '@/services/order';
 import { useAddressQuery } from '@/services/order/repository';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
   const { t } = useTranslation();

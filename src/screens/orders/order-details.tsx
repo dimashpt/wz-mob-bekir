@@ -20,7 +20,7 @@ import {
   useOrderHistoriesQuery,
 } from '@/services/order/repository';
 import { formatCurrency } from '@/utils/formatter';
-import { statusToTranslationKey } from './helpers/order-helpers';
+import { statusToTranslationKey } from './utils/order-helpers';
 
 const Image = withUniwind(ExpoImage);
 

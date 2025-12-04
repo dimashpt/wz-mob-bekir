@@ -131,6 +131,10 @@
   "select_input": {
     "placeholder": "Pilih opsi"
   },
+  "validation": {
+    "required": "Bidang wajib diisi",
+    "invalid": "Input tidak valid"
+  },
   "update": {
     "message": "Pembaruan Tersedia",
     "description": "Versi baru ({{version}}) tersedia. Apakah Anda ingin memperbarui sekarang?",

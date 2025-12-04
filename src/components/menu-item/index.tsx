@@ -100,7 +100,7 @@ export function MenuItemAction({
         <Icon
           name="chevron"
           transform={[{ rotate: '270deg' }]}
-          className="text-muted"
+          className="text-muted-foreground"
         />
       )}
     </Clickable>

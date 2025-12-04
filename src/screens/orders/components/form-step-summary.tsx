@@ -8,7 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import { Container, Divider, InputField, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { formatCurrency } from '@/utils/formatter';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 
 function PriceInfo({
   label,

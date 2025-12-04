@@ -10,7 +10,7 @@ import { withUniwind } from 'uniwind';
 
 import { Chip, Clickable, Icon, Text } from '@/components';
 import { formatCurrency, formatNumber } from '@/utils/formatter';
-import { OrderFormValues } from '../helpers/order-form';
+import { OrderFormValues } from '../utils/order-form-schema';
 
 const Image = withUniwind(ExpoImage);
 

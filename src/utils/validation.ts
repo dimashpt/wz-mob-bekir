@@ -1,3 +1,7 @@
+import { z } from 'zod';
+
+import { i18n } from '@/lib/i18n';
+
 /**
  * Compares two version strings and returns a number indicating their relationship.
  * @param v1 - The first version string to compare.
@@ -22,4 +26,15 @@ export function compareVersions(v1: string, v2: string): number {
   }
 
   return 0;
+}
+
+/**
+ * Returns a validation error message for a required field.
+ * @param iss - The issue object from Zod
+ * @returns The validation error message
+ */
+export function required(iss: z.core.$ZodRawIssue): string {
+  return iss.input === undefined
+    ? i18n.t('validation.required')
+    : i18n.t('validation.invalid');
 }

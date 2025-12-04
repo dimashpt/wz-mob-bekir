@@ -133,6 +133,10 @@
   "select_input": {
     "placeholder": "Select an option"
   },
+  "validation": {
+    "required": "Field is required",
+    "invalid": "Invalid input"
+  },
   "update": {
     "message": "Update Available",
     "description": "A new version ({{version}}) is available. Would you like to update now?",
