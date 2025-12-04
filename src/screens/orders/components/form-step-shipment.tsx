@@ -80,7 +80,9 @@ export function FormStepShipment(): JSX.Element {
   }
 
   function handleLogisticSelect(value: Option<LogisticProvider> | null): void {
-    form.setValue('step_shipment.logistic', value!);
+    form.setValue('step_shipment.logistic', value!, {
+      shouldValidate: true,
+    });
     form.setValue(
       'step_shipment.logistic_provider_name',
       value?.data?.provider_name || '',

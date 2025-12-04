@@ -151,11 +151,14 @@ const itemStepSchema = z.discriminatedUnion('is_dropship', [
 const shipmentStepSchema = z.object({
   is_self_delivery: z.boolean().optional(),
   is_using_insurance: z.boolean().optional(),
-  logistic: z.object({
-    value: z.string(),
-    label: z.string(),
-    data: z.custom<LogisticProvider>().optional(),
-  }),
+  logistic: z.object(
+    {
+      value: z.string(),
+      label: z.string(),
+      data: z.custom<LogisticProvider>().optional(),
+    },
+    { error: required },
+  ),
   logistic_name: z.string().optional(),
   logistic_provider_name: z.string().optional(),
   logistic_service_name: z.string().optional(),
