@@ -1,5 +1,7 @@
 import { StorePlatform } from '../order';
 
+type StoreGroup = 'marketplace' | 'soscom';
+
 export interface DashboardPayload {
   date_from: string;
   date_to: string;
@@ -8,7 +10,7 @@ export interface DashboardPayload {
 export type ChartSummaryResponse = Array<{
   date: string;
   data: Array<{
-    store_group: string;
+    store_group: StoreGroup;
     total_order: number;
   }>;
 }>;
@@ -16,7 +18,7 @@ export type ChartSummaryResponse = Array<{
 export type ChartRevenueResponse = Array<{
   date: string;
   data: Array<{
-    store_group: string;
+    store_group: StoreGroup;
     total_revenue: number;
   }>;
 }>;
@@ -40,7 +42,7 @@ export interface TotalRevenueResponse {
 
 export type TopProductResponse = Array<{
   sku: string;
-  store_group: string;
+  store_group: StoreGroup;
   total_quantity: number;
 }>;
 
@@ -51,7 +53,7 @@ export interface ProcessSummaryResponse {
 }
 
 export type MarketplaceStatusResponse = Array<{
-  store_group: 'marketplace' | 'soscom';
+  store_group: StoreGroup;
   success: number;
   on_delivery: number;
   on_process: number;
