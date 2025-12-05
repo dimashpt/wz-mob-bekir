@@ -1,5 +1,5 @@
 import React, { JSX, useEffect } from 'react';
-import { LayoutChangeEvent, useWindowDimensions, View } from 'react-native';
+import { LayoutChangeEvent, useWindowDimensions } from 'react-native';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
@@ -13,82 +13,97 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { twMerge } from 'tailwind-merge';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
-import { Clickable } from '@/components/clickable';
-import { Text } from '@/components/text';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
-import { Icon, IconNames } from '../icon';
+import { TabItem } from './tab-item';
 
 const MappedLinearGradient = withUniwind(LinearGradient);
 
-interface TabItemProps {
-  route: BottomTabBarProps['state']['routes'][0];
-  isFocused: boolean;
-  descriptors: BottomTabBarProps['descriptors'];
-  navigation: BottomTabBarProps['navigation'];
-}
-
-interface TabItemPropsWithLayout extends TabItemProps {
-  onLayout: (event: LayoutChangeEvent) => void;
-  totalRoutes: number;
-  maxWidth: number;
+interface TabBarProps extends BottomTabBarProps {
+  hiddenRoutes?: string[];
 }
 
 export const TabBar = ({
   state,
   descriptors,
   navigation,
-}: BottomTabBarProps): JSX.Element => {
+  hiddenRoutes = [],
+}: TabBarProps): JSX.Element => {
   const { bottom } = useSafeAreaInsets();
   const { width: screenWidth } = useWindowDimensions();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
   const backgroundColor = useCSSVariable('--color-background') as string;
   const accentColor = useCSSVariable('--color-accent') as string;
 
-  // Shared values for dot indicator position
-  const dotX = useSharedValue(0);
-  const dotY = useSharedValue(0);
-
-  // Store layout measurements for each tab
+  // Store layout measurements for each tab using filtered indices
   const tabLayouts = React.useRef<
     Record<number, { x: number; centerX: number }>
   >({});
 
-  function handleTabLayout(index: number) {
+  // Shared values for dot indicator position
+  const dotX = useSharedValue(0);
+  const dotY = useSharedValue(0);
+
+  function handleTabLayout(filteredIndex: number) {
     return (event: LayoutChangeEvent): void => {
       const { x, width } = event.nativeEvent.layout;
       const centerX = x + width / 2;
-      tabLayouts.current[index] = { x, centerX };
+      tabLayouts.current[filteredIndex] = { x, centerX };
 
       // Initialize dot position on first layout
-      if (index === state.index) {
+      const stateIndex = filteredIndexToStateIndex[filteredIndex];
+      if (stateIndex === state.index) {
         dotX.value = centerX;
       }
     };
   }
+
+  // TODO: implement response-based feature flag
+  const tabItems = state.routes.filter(
+    (route) => !hiddenRoutes.includes(route.name),
+  );
+
+  // Create a mapping of filtered indices to original state indices
+  const filteredIndexToStateIndex = React.useMemo(() => {
+    const mapping: Record<number, number> = {};
+    let filteredIndex = 0;
+    for (let i = 0; i < state.routes.length; i++) {
+      if (!hiddenRoutes.includes(state.routes[i].name)) {
+        mapping[filteredIndex] = i;
+        filteredIndex++;
+      }
+    }
+    return mapping;
+  }, [state.routes, hiddenRoutes]);
 
   // Calculate max width for each tab item
   const tabItemMaxWidth = (screenWidth - spacingLg * 2) / 5;
 
   // Animate dot when active tab changes
   useEffect(() => {
-    const activeTabLayout = tabLayouts.current[state.index];
-    if (activeTabLayout) {
-      // Slide down, move horizontally at bottom, then slide up
-      dotY.value = withSequence(
-        withTiming(20, { duration: 200, easing: Easing.in(Easing.cubic) }),
-        withTiming(0, { duration: 200, easing: Easing.out(Easing.cubic) }),
-      );
+    // Find the filtered index of the active tab
+    const activeFilteredIndex = Object.entries(filteredIndexToStateIndex).find(
+      ([, stateIndex]) => stateIndex === state.index,
+    )?.[0];
 
-      // Move horizontally when dot reaches the bottom
-      dotX.value = withDelay(
-        200, // Wait for down animation to complete
-        withTiming(activeTabLayout.centerX, { duration: 0 }), // Instant move at bottom
-      );
+    if (activeFilteredIndex !== undefined) {
+      const activeTabLayout = tabLayouts.current[parseInt(activeFilteredIndex)];
+      if (activeTabLayout) {
+        // Slide down, move horizontally at bottom, then slide up
+        dotY.value = withSequence(
+          withTiming(20, { duration: 200, easing: Easing.in(Easing.cubic) }),
+          withTiming(0, { duration: 200, easing: Easing.out(Easing.cubic) }),
+        );
+
+        // Move horizontally when dot reaches the bottom
+        dotX.value = withDelay(
+          200, // Wait for down animation to complete
+          withTiming(activeTabLayout.centerX, { duration: 0 }), // Instant move at bottom
+        );
+      }
     }
-  }, [state.index, dotX, dotY]);
+  }, [state.index, dotX, dotY, filteredIndexToStateIndex]);
 
   // Animated style for the dot
   const dotAnimatedStyle = useAnimatedStyle(() => {
@@ -119,8 +134,9 @@ export const TabBar = ({
           className="absolute bottom-0 -left-[2.5px] h-1 w-1 rounded-full"
           style={[{ backgroundColor: accentColor }, dotAnimatedStyle]}
         />
-        {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
+        {tabItems.map((route, filteredIndex) => {
+          const stateIndex = filteredIndexToStateIndex[filteredIndex];
+          const isFocused = state.index === stateIndex;
 
           return (
             <TabItem
@@ -129,104 +145,13 @@ export const TabBar = ({
               isFocused={isFocused}
               descriptors={descriptors}
               navigation={navigation}
-              onLayout={handleTabLayout(index)}
-              totalRoutes={state.routes.length}
+              onLayout={handleTabLayout(filteredIndex)}
+              totalRoutes={tabItems.length}
               maxWidth={tabItemMaxWidth}
             />
           );
         })}
       </BlurView>
     </MappedLinearGradient>
-  );
-};
-
-const TabItem = ({
-  route,
-  isFocused,
-  descriptors,
-  navigation,
-  onLayout,
-  totalRoutes,
-  maxWidth,
-}: TabItemPropsWithLayout): JSX.Element => {
-  const { options } = descriptors[route.key];
-  const accentColor = useCSSVariable('--color-accent') as string;
-  const textColorMuted = useCSSVariable('--color-muted-foreground') as string;
-
-  const label =
-    options.tabBarLabel !== undefined
-      ? options.tabBarLabel.toString()
-      : options.title !== undefined
-        ? options.title.toString()
-        : route.name;
-
-  // Animated value for icon scale
-  const iconScale = useSharedValue(isFocused ? 1.3 : 1);
-
-  // Update icon scale when focus changes
-  useEffect(() => {
-    iconScale.value = withTiming(isFocused ? 1.3 : 1, {
-      duration: 300,
-      easing: Easing.bezier(0.4, 0, 0.2, 1),
-    });
-  }, [isFocused, iconScale]);
-
-  // Animated style for icon
-  const iconAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: iconScale.value }],
-    };
-  });
-
-  const onPress = (): void => {
-    const event = navigation.emit({
-      type: 'tabPress',
-      target: route.key,
-      canPreventDefault: true,
-    });
-
-    if (!isFocused && !event.defaultPrevented) {
-      navigation.navigate(route.name);
-    }
-  };
-
-  // Use flex: 1 when there are many items (5+) to distribute space evenly
-  const shouldFlex = totalRoutes >= 5;
-
-  return (
-    <View
-      className={twMerge('min-w-0 shrink', shouldFlex ? 'flex-1' : '')}
-      style={{ maxWidth }}
-      onLayout={onLayout}
-    >
-      <Clickable
-        key={route.key}
-        onPress={onPress}
-        className="py-xs px-xs gap-xs relative h-full flex-col items-center justify-center rounded-full"
-      >
-        <Animated.View className="items-center" style={iconAnimatedStyle}>
-          <Icon
-            name={
-              options.tabBarIcon?.({
-                focused: isFocused,
-                color: isFocused ? accentColor : textColorMuted,
-                size: 20,
-              }) as unknown as IconNames
-            }
-            size="xl"
-            color={isFocused ? accentColor : textColorMuted}
-          />
-        </Animated.View>
-        <Text
-          variant="labelXS"
-          color={isFocused ? 'accent' : 'muted'}
-          className="text-center text-xs"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
-          {label}
-        </Text>
-      </Clickable>
-    </View>
   );
 };

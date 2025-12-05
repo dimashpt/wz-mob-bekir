@@ -4,11 +4,14 @@ import { Redirect, Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { TabBar } from '@/components';
-import { useAuthStore } from '@/store';
+import { useAppStore, useAuthStore } from '@/store';
 
 export default function TabLayout(): JSX.Element {
+  const { showBetaFeatures } = useAppStore();
   const { status } = useAuthStore();
   const { t } = useTranslation();
+
+  const hiddenTabs = showBetaFeatures ? [] : ['chat'];
 
   if (status !== 'loggedIn') {
     return <Redirect href="/login" />;
@@ -18,17 +21,17 @@ export default function TabLayout(): JSX.Element {
   return (
     <Tabs
       initialRouteName="home"
-      tabBar={(props) => <TabBar {...props} />}
+      tabBar={(props) => <TabBar {...props} hiddenRoutes={hiddenTabs} />}
       screenOptions={{
         headerShown: false,
-        // Animation causes freezing, no github issue yet
-        // animation: 'fade',
-        // transitionSpec: {
-        //   animation: 'timing',
-        //   config: {
-        //     duration: 250,
-        //   },
-        // },
+        // Animation causes freezing sometimes, no github issue yet
+        animation: 'fade',
+        transitionSpec: {
+          animation: 'timing',
+          config: {
+            duration: 250,
+          },
+        },
       }}
     >
       <Tabs.Screen
@@ -36,6 +39,14 @@ export default function TabLayout(): JSX.Element {
         options={{
           title: t('tab.home'),
           tabBarIcon: () => 'home',
+        }}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: t('tab.chat'),
+          tabBarIcon: () => 'chat',
+          href: null,
         }}
       />
       <Tabs.Screen

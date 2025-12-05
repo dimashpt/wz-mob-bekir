@@ -71,9 +71,15 @@ export function UpdateButton(): React.JSX.Element | null {
       >
         <Loader
           spin={isDownloading}
-          icon={<Icon name="refresh" size={20} className="text-white" />}
+          icon={
+            <Icon
+              name="refresh"
+              size={20}
+              className="text-foreground-inverted"
+            />
+          }
         />
-        <Text variant="labelS" color="light">
+        <Text variant="labelS" className="text-foreground-inverted">
           {isDownloading
             ? t('general.updating', { progress })
             : t('general.update_available')}
