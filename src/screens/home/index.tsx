@@ -256,7 +256,7 @@ export default function HomeScreen(): JSX.Element {
                 {Object.keys(summaryStatusMarketplace?.marketplace ?? {})
                   .filter((key) => key !== 'store_group')
                   .map((key) => (
-                    <View className="gap-xs flex-row items-center">
+                    <View className="gap-xs flex-row items-center" key={key}>
                       <View
                         className={twMerge(
                           'size-4 rounded-xs',
