@@ -30,7 +30,7 @@ export interface SelectDateTimeProps extends Omit<
   enableRange?: boolean;
   placeholder?: string;
   label?: string;
-  mode?: 'calendar' | 'wheel' | 'time' | 'datetime';
+  mode?: 'calendar' | 'date-range' | 'wheel' | 'time' | 'datetime';
   mandatory?: boolean;
   hideTouchable?: boolean;
 
@@ -67,6 +67,8 @@ export const SelectDateTime = forwardRef<
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
 
+    const isRangeMode = enableRange || mode === 'date-range';
+
     const format =
       mode === 'time'
         ? 'HH : mm'
@@ -93,7 +95,7 @@ export const SelectDateTime = forwardRef<
       dateOrRange: Dayjs | { start: Dayjs; end: Dayjs },
     ): void {
       if (
-        enableRange &&
+        isRangeMode &&
         typeof dateOrRange === 'object' &&
         'start' in dateOrRange &&
         'end' in dateOrRange
@@ -116,7 +118,7 @@ export const SelectDateTime = forwardRef<
 
     function getDisplayValue(): string {
       // Handle range case
-      if (enableRange && rangeValue) {
+      if (isRangeMode && rangeValue) {
         const { start, end } = rangeValue;
         return formatSmartDateRange([start, end]);
       }
@@ -167,8 +169,8 @@ export const SelectDateTime = forwardRef<
             <DateTimePicker
               key={pickerKey}
               date={selectedValue ?? undefined}
-              mode={mode}
-              enableRange={enableRange}
+              mode={mode === 'date-range' ? 'calendar-range' : mode}
+              enableRange={isRangeMode}
               onCancel={closePicker}
               onDone={handleDateTimePickerDone}
               disabledDate={disabledDate}

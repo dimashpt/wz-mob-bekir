@@ -2,6 +2,10 @@
 export * as AuthService from './auth';
 export * as AuthRepo from './auth/repository';
 
+// Dashboard Service
+export * as DashboardService from './dashboard';
+export * as DashboardRepo from './dashboard/repository';
+
 // Order Service
 export * as OrderService from './order';
 export * as OrderRepo from './order/repository';
