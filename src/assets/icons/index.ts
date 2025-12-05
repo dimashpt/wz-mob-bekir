@@ -2,6 +2,8 @@ import appearance from './appearance.svg';
 import arrow from './arrow.svg';
 import attachment from './attachment.svg';
 import calendar from './calendar.svg';
+import cart from './cart.svg';
+import chartGrow from './chart-grow.svg';
 import chat from './chat.svg';
 import chevronCircle from './chevron-circle.svg';
 import chevron from './chevron.svg';
@@ -43,6 +45,8 @@ export const Icons = {
   arrow,
   attachment,
   calendar,
+  cart,
+  chartGrow,
   clock,
   chat,
   chevron,

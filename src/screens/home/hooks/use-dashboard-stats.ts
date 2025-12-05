@@ -1,9 +1,13 @@
-import { useMemo } from 'react';
-
 import dayjs from 'dayjs';
 
-import { DashboardRepo } from '@/services';
 import { DashboardPayload } from '@/services/dashboard';
+import {
+  useChartRevenueQuery,
+  useChartSummaryQuery,
+  useOrderMarketplaceQuery,
+  useOrderTotalQuery,
+  useTotalRevenueQuery,
+} from '@/services/dashboard/repository';
 import { StorePlatform } from '@/services/order';
 
 interface DashboardStatsData {
@@ -21,15 +25,46 @@ interface DashboardStatsData {
  * @returns Object containing mapped chart data (data1 for marketplace, data2 for soscom) and loading state
  */
 export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
-  const summaryChartQuery = DashboardRepo.useChartSummaryQuery(
-    { enabled },
+  const { data: summaryChartOrder } = useChartSummaryQuery(
+    {
+      enabled,
+      select: (data) => {
+        const mp: Array<{ value: number; label?: string }> = [];
+        const soscom: Array<{ value: number; label?: string }> = [];
+
+        data.forEach((item) => {
+          let marketplaceValue = 0;
+          let soscomValue = 0;
+
+          if (item.data && item.data.length > 0) {
+            const marketplaceData = item.data.find(
+              (store) => store.store_group === 'marketplace',
+            );
+            const soscomData = item.data.find(
+              (store) => store.store_group === 'soscom',
+            );
+
+            marketplaceValue = marketplaceData?.total_order || 0;
+            soscomValue = soscomData?.total_order || 0;
+          }
+
+          mp.push({
+            value: marketplaceValue,
+            label: dayjs(item.date).format('D MMM'),
+          });
+          soscom.push({
+            value: soscomValue,
+            label: dayjs(item.date).format('D MMM'),
+          });
+        });
+
+        return { mp, soscom };
+      },
+    },
     payload,
   );
-  const { data: summaryOrder } = DashboardRepo.useOrderTotalQuery(
-    { enabled },
-    payload,
-  );
-  const { data: summaryMpOrder } = DashboardRepo.useOrderMarketplaceQuery(
+  const { data: summaryOrder } = useOrderTotalQuery({ enabled }, payload);
+  const { data: summaryMpOrder } = useOrderMarketplaceQuery(
     {
       enabled,
       select: (data) => {
@@ -44,53 +79,64 @@ export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
     },
     payload,
   );
-  // DashboardRepo.useChartSummaryQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useChartRevenueQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useOrderMarketplaceQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useTotalRevenueQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useTopProductQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useProcessSummaryQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.useStatusMarketplaceQuery({ enabled: fetchEnabled }, payload);
-  // DashboardRepo.usePerformanceSummaryQuery({ enabled: fetchEnabled }, payload);
+  const { data: summaryChartRevenue } = useChartRevenueQuery(
+    {
+      enabled,
+      select: (data) => {
+        const mp: Array<{ value: number; label?: string }> = [];
+        const soscom: Array<{ value: number; label?: string }> = [];
 
-  const summaryChartData = useMemo<
-    DashboardStatsData['summaryChartData']
-  >(() => {
-    if (!summaryChartQuery?.data || summaryChartQuery?.data.length === 0) {
-      return { mp: [], soscom: [] };
-    }
+        data.forEach((item) => {
+          let marketplaceValue = 0;
+          let soscomValue = 0;
 
-    const mp: Array<{ value: number; label?: string }> = [];
-    const soscom: Array<{ value: number; label?: string }> = [];
+          if (item.data && item.data.length > 0) {
+            const marketplaceData = item.data.find(
+              (store) => store.store_group === 'marketplace',
+            );
+            const soscomData = item.data.find(
+              (store) => store.store_group === 'soscom',
+            );
 
-    summaryChartQuery?.data.forEach((item) => {
-      let marketplaceValue = 0;
-      let soscomValue = 0;
+            marketplaceValue = marketplaceData?.total_revenue || 0;
+            soscomValue = soscomData?.total_revenue || 0;
+          }
 
-      if (item.data && item.data.length > 0) {
-        const marketplaceData = item.data.find(
-          (store) => store.store_group === 'marketplace',
-        );
-        const soscomData = item.data.find(
-          (store) => store.store_group === 'soscom',
-        );
+          mp.push({
+            value: marketplaceValue,
+            label: dayjs(item.date).format('D MMM'),
+          });
+          soscom.push({
+            value: soscomValue,
+            label: dayjs(item.date).format('D MMM'),
+          });
+        });
 
-        marketplaceValue = marketplaceData?.total_order || 0;
-        soscomValue = soscomData?.total_order || 0;
-      }
+        return { mp, soscom };
+      },
+    },
+    payload,
+  );
+  const { data: summaryTotalRevenue } = useTotalRevenueQuery(
+    { enabled },
+    payload,
+  );
+  // const { data: summaryTopProduct } = useTopProductQuery({ enabled }, payload);
+  // const { data: summaryProcessSummary } = useProcessSummaryQuery({ enabled }, payload);
+  // const { data: summaryStatusMarketplace } = useStatusMarketplaceQuery({ enabled }, payload);
+  // const { data: summaryPerformanceSummary } = usePerformanceSummaryQuery({ enabled }, payload);
 
-      mp.push({
-        value: marketplaceValue,
-        label: dayjs(item.date).format('D MMM'),
-      });
-      soscom.push({
-        value: soscomValue,
-        label: dayjs(item.date).format('D MMM'),
-      });
-    });
+  // const summaryChartData = useMemo<
+  //   DashboardStatsData['summaryChartData']
+  // >(() => {
 
-    return { mp, soscom };
-  }, [summaryChartQuery.data]);
+  // }, [summaryChartQuery.data]);
 
-  return { summaryChartData, summaryOrder, summaryMpOrder };
+  return {
+    summaryChartOrder,
+    summaryOrder,
+    summaryMpOrder,
+    summaryTotalRevenue,
+    summaryChartRevenue,
+  };
 }

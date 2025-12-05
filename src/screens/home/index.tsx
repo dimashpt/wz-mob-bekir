@@ -5,19 +5,47 @@ import dayjs, { Dayjs } from 'dayjs';
 import { Image as ExpoImage } from 'expo-image';
 import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { LineChart } from 'react-native-gifted-charts';
+import { LineChart as GCLineChart } from 'react-native-gifted-charts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { withUniwind } from 'uniwind';
 
 import { Container, Icon, SelectDateTime, Text } from '@/components';
 import { ORDER_STORE_PLATFORMS_LOGOS } from '@/constants/order';
+import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useNotification } from '@/hooks';
 import { DashboardPayload } from '@/services/dashboard';
 import { StorePlatform } from '@/services/order';
-import { formatNumber } from '@/utils/formatter';
+import { formatCurrency, formatNumber } from '@/utils/formatter';
 import { useDashboardStats } from './hooks/use-dashboard-stats';
 
 const Image = withUniwind(ExpoImage);
+const LineChart = withUniwind(GCLineChart);
+
+const SOSCOM_COLOR = '#42B8D5';
+const MP_COLOR = '#FFAF13';
+const lineChartProps = {
+  areaChart: true,
+  curved: true,
+  overflowBottom: 8,
+  hideDataPoints: true,
+  color1: MP_COLOR,
+  color2: SOSCOM_COLOR,
+  startFillColor1: MP_COLOR,
+  startFillColor2: SOSCOM_COLOR,
+  endFillColor1: MP_COLOR,
+  endFillColor2: SOSCOM_COLOR,
+  startOpacity: 0.5,
+  endOpacity: 0,
+  isAnimated: true,
+  initialSpacing: 0,
+  noOfSections: 4,
+  yAxisThickness: 0,
+  xAxisThickness: 0,
+  xAxisIndicesHeight: 4,
+  xAxisLabelTextClassName: 'text-foreground',
+  yAxisTextClassName: 'text-foreground',
+  formatYLabel: (label: string) => formatNumber(label),
+};
 
 export default function HomeScreen(): JSX.Element {
   const { t } = useTranslation();
@@ -37,10 +65,13 @@ export default function HomeScreen(): JSX.Element {
   };
 
   // Dashboard queries
-  const { summaryChartData, summaryOrder, summaryMpOrder } = useDashboardStats(
-    fetchEnabled,
-    payload,
-  );
+  const {
+    summaryChartOrder,
+    summaryOrder,
+    summaryMpOrder,
+    summaryChartRevenue,
+    summaryTotalRevenue,
+  } = useDashboardStats(fetchEnabled, payload);
 
   /**
    * Handle back press to exit app, if not handled, the expo router will throw error:
@@ -66,10 +97,11 @@ export default function HomeScreen(): JSX.Element {
   }
 
   return (
-    <Container
-      className="bg-background p-lg gap-md flex-1"
-      style={{
+    <Container.Scroll
+      contentContainerClassName="bg-background p-lg gap-md"
+      contentContainerStyle={{
         paddingTop: insets.top + 20,
+        paddingBottom: TAB_BAR_HEIGHT,
       }}
     >
       <Text variant="headingL">{t('home.title')}</Text>
@@ -79,67 +111,93 @@ export default function HomeScreen(): JSX.Element {
         enableRange
         onRangeSelect={setRange}
       />
-      <View className="flex-1">
+      <View className="gap-md flex-1">
+        {/** REVENUE SUMMARY */}
         <Container.Card className="gap-lg shrink overflow-hidden">
-          <View className="flex-row items-center justify-between">
-            <View className="gap-xs flex-row items-center">
-              <Icon name="order" className="text-foreground" size={24} />
-              <Text variant="headingXS">Order Summary</Text>
+          <View className="gap-md">
+            <View className="gap-sm flex-row items-center">
+              <Icon name="chartGrow" className="text-foreground" size="xl" />
+              <Text variant="labelL">Revenue Summary</Text>
             </View>
-            <Text variant="labelM">
-              {formatNumber(summaryOrder?.total_order ?? 0)} Orders
-            </Text>
+            <View>
+              <Text variant="bodyS" color="muted">
+                Total Revenue
+              </Text>
+              <Text variant="headingS">
+                {formatCurrency(summaryTotalRevenue?.total_revenue ?? 0)}
+              </Text>
+            </View>
+            <View className="gap-sm flex-row">
+              <View className="gap-sm flex-1 flex-row">
+                <View className="h-full w-2 rounded-full bg-[#FFAF13]" />
+                <View className="gap-xxs">
+                  <Text variant="bodyS" color="muted">
+                    Revenue (MP)
+                  </Text>
+                  <Text variant="labelL">
+                    {formatCurrency(summaryTotalRevenue?.total_revenue_mp ?? 0)}
+                  </Text>
+                </View>
+              </View>
+              <View className="gap-sm flex-1 flex-row">
+                <View className="h-full w-2 rounded-full bg-[#42B8D5]" />
+                <View className="gap-xxs">
+                  <Text variant="bodyS" color="muted">
+                    Revenue (Soscom)
+                  </Text>
+                  <Text variant="labelL">
+                    {formatCurrency(
+                      summaryTotalRevenue?.total_revenue_soscom ?? 0,
+                    )}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
           <LineChart
-            endSpacing={0}
-            areaChart
-            curved
-            data={summaryChartData.mp}
-            data2={summaryChartData.soscom}
-            hideDataPoints
-            // spacing={12}
-            color1="#FFAF13"
-            color2="#42B8D5"
-            startFillColor1="#FFAF13"
-            startFillColor2="#42B8D5"
-            endFillColor1="#FFAF13"
-            endFillColor2="#42B8D5"
-            startOpacity={0.5}
-            endOpacity={0}
-            isAnimated
-            initialSpacing={0}
-            noOfSections={4}
-            yAxisColor="white"
-            yAxisThickness={0}
-            // rulesType="solid"
-            // rulesColor="transparent"
-            // yAxisTextStyle={{ color: 'gray' }}
-            xAxisColor="transparent"
-            // pointerConfig={{
-            //   pointerStripUptoDataPoint: true,
-            //   pointerStripColor: 'black',
-            //   pointerStripWidth: 2,
-            //   strokeDashArray: [2, 5],
-            //   pointerColor: 'black',
-            //   radius: 4,
-            //   pointerLabelWidth: 100,
-            //   pointerLabelHeight: 120,
-            // }}
+            data={summaryChartRevenue?.mp}
+            data2={summaryChartRevenue?.soscom}
+            {...lineChartProps}
           />
-          <View className="gap-md flex-row items-center">
-            <View className="gap-xs flex-row items-center">
-              <View className="size-2 rounded-full bg-[#FFAF13]" />
-              <Text variant="labelXS" color="muted">
-                Marketplace
+        </Container.Card>
+
+        {/** ORDER SUMMARY */}
+        <Container.Card className="gap-lg shrink overflow-hidden">
+          <View className="gap-sm flex-row items-center">
+            <Icon name="cart" className="text-foreground" size="xl" />
+            <Text variant="labelL">Order Summary</Text>
+          </View>
+          <View className="gap-xs">
+            <Text variant="bodyS" color="muted">
+              Total Order
+            </Text>
+            <View className="gap-sm flex-row">
+              <Text variant="headingS">
+                {formatNumber(summaryOrder?.total_order ?? 0)}
               </Text>
-            </View>
-            <View className="gap-xs flex-row items-center">
-              <View className="size-2 rounded-full bg-[#42B8D5]" />
-              <Text variant="labelXS" color="muted">
-                Soscom
-              </Text>
+              <View>
+                <View className="gap-xs flex-row items-center">
+                  <View className="size-2 rounded-full bg-[#FFAF13]" />
+                  <Text variant="bodyXS" color="muted">
+                    Marketplace (
+                    {formatNumber(summaryOrder?.total_order_marketplace ?? 0)})
+                  </Text>
+                </View>
+                <View className="gap-xs flex-row items-center">
+                  <View className="size-2 rounded-full bg-[#42B8D5]" />
+                  <Text variant="bodyXS" color="muted">
+                    Soscom (
+                    {formatNumber(summaryOrder?.total_order_soscom ?? 0)})
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
+          <LineChart
+            data={summaryChartOrder?.mp}
+            data2={summaryChartOrder?.soscom}
+            {...lineChartProps}
+          />
           <View className="gap-xs flex-row items-center">
             {Object.entries(ORDER_STORE_PLATFORMS_LOGOS).map(
               ([store, image]) => (
@@ -160,7 +218,69 @@ export default function HomeScreen(): JSX.Element {
             )}
           </View>
         </Container.Card>
+
+        <View className="gap-md flex-row">
+          <Container.Card className="flex-1 self-start">
+            <Text variant="labelS">Status Summary</Text>
+          </Container.Card>
+          <Container.Card className="flex-1">
+            <Text variant="labelS">Performance Summary</Text>
+            <View className="gap-sm flex-row items-center">
+              <View className="bg-success p-sm rounded-full">
+                <Icon name="truck" size="xl" className="text-white" />
+              </View>
+              <View>
+                <Text variant="bodyXS" className="font-medium">
+                  Delivery Success
+                </Text>
+                <View className="gap-xs flex-row items-center">
+                  <Text variant="headingXS">3</Text>
+                  <Text variant="bodyM" color="success">
+                    (3.67%)
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View className="gap-sm flex-row items-center">
+              <View className="bg-danger p-sm rounded-full">
+                <Icon name="close" size="xl" className="text-white" />
+              </View>
+              <View>
+                <Text variant="bodyXS" className="font-medium">
+                  Order Canceled
+                </Text>
+                <View className="gap-xs flex-row items-center">
+                  <Text variant="headingXS">5</Text>
+                  <Text variant="bodyM" color="danger">
+                    (3.67%)
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View className="gap-sm flex-row items-center">
+              <View className="bg-accent p-sm rounded-full">
+                <Icon
+                  name="refresh"
+                  size="xl"
+                  className="text-white"
+                  transform="scale(-1,1)"
+                />
+              </View>
+              <View>
+                <Text variant="bodyXS" className="font-medium">
+                  Order Returned
+                </Text>
+                <View className="gap-xs flex-row items-center">
+                  <Text variant="headingXS">5</Text>
+                  <Text variant="bodyM" color="accent">
+                    (3.67%)
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </Container.Card>
+        </View>
       </View>
-    </Container>
+    </Container.Scroll>
   );
 }
