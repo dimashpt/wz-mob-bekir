@@ -60,7 +60,11 @@ export default function OrderDetailsScreen(): JSX.Element {
               />
             )}
             <View className="gap-xxs">
-              <Text variant="labelM" loading={isLoading}>
+              <Text
+                variant="labelM"
+                loading={isLoading}
+                sharedTransitionTag={`store-${data?.store_id}`}
+              >
                 {data?.store_name}
               </Text>
               <Text variant="bodyXS" color="muted" loading={isLoading}>

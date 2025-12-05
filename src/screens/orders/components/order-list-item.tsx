@@ -40,7 +40,9 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
           ) : (
             <Icon name="store" size="base" className="text-foreground" />
           )}
-          <Text variant="labelM">{item.store_name}</Text>
+          <Text variant="labelM" sharedTransitionTag={`store-${item.store_id}`}>
+            {item.store_name}
+          </Text>
         </View>
         <Text variant="labelL" className="font-extrabold">
           {formatCurrency(item.grand_total_order_price)}

@@ -1,8 +1,10 @@
 import React, { ComponentProps, ReactNode } from 'react';
 import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
 
-import { ScrollView } from 'react-native-gesture-handler';
-import { KeyboardAwareScrollView as KeyboardAwareScrollViewRNK } from 'react-native-keyboard-controller';
+import {
+  KeyboardAwareScrollViewRef,
+  KeyboardAwareScrollView as KeyboardAwareScrollViewRNK,
+} from 'react-native-keyboard-controller';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 import { withUniwind } from 'uniwind';
@@ -40,7 +42,7 @@ interface KeyboardAwareScrollViewProps extends ComponentProps<
   children: ReactNode;
   contentContainerClassName?: string;
   contentContainerStyle?: StyleProp<ViewStyle>;
-  ref?: React.Ref<ScrollView>;
+  ref?: React.Ref<KeyboardAwareScrollViewRef>;
 }
 
 const ContainerComponent = ({
