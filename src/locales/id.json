@@ -360,6 +360,12 @@
     "packing_fee_label": "Biaya Packing",
     "discount": "Diskon",
     "total": "Total",
+    "confirmation": {
+      "title": "Konfirmasi Pesanan",
+      "description": "Apakah Anda yakin ingin mengirim pesanan ini?",
+      "submit": "Konfirmasi",
+      "cancel": "Batal"
+    },
     "message": {
       "success": "Order berhasil dibuat"
     }

@@ -356,6 +356,12 @@
     "packing_fee_label": "Packing Fee",
     "discount": "Discount",
     "total": "Total",
+    "confirmation": {
+      "title": "Confirm Order",
+      "description": "Are you sure you want to submit this order?",
+      "submit": "Confirm",
+      "cancel": "Cancel"
+    },
     "message": {
       "success": "Order created successfully"
     }

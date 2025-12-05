@@ -148,7 +148,8 @@ function SelectInputInner<TData = unknown>(
                         />
                       }
                       bottomSheet
-                      className="gap-xs py-sm rounded-full"
+                      className="rounded-full"
+                      inputClassName="py-sm"
                       loading={props.search?.isLoading ?? false}
                       onChangeText={props.search?.onSearchChange}
                       placeholder={

@@ -1,4 +1,4 @@
-import React, { JSX, useState } from 'react';
+import React, { JSX, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
@@ -19,6 +19,8 @@ import {
 import { useCSSVariable, withUniwind } from 'uniwind';
 
 import {
+  BottomSheet,
+  BottomSheetModal,
   Button,
   Container,
   Header,
@@ -60,6 +62,7 @@ export default function OrderFormScreen(): JSX.Element {
   const backgroundColor = useCSSVariable('--color-background') as string;
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const confirmationSheetRef = useRef<BottomSheetModal>(null);
   const [routes] = useState<TabRoute[]>([
     { key: 'order', title: t('order_form.steps.order_details') },
     { key: 'recipient', title: t('order_form.steps.recipient_info') },
@@ -90,6 +93,7 @@ export default function OrderFormScreen(): JSX.Element {
         queryKey: [ORDER_ENDPOINTS.LIST_ORDERS],
       });
     },
+    onSettled: () => confirmationSheetRef.current?.close(),
   });
 
   async function handleNext(): Promise<void> {
@@ -107,6 +111,10 @@ export default function OrderFormScreen(): JSX.Element {
     if (activeIndex > 0) {
       setActiveIndex(activeIndex - 1);
     }
+  }
+
+  function confirmSubmission(_: OrderFormValues): void {
+    confirmationSheetRef.current?.present();
   }
 
   function handleSubmit(values: OrderFormValues): void {
@@ -271,7 +279,9 @@ export default function OrderFormScreen(): JSX.Element {
             variant="filled"
             className="flex-1"
             loading={createOrderMutation.isPending}
-            onPress={isLastStep ? form.handleSubmit(handleSubmit) : handleNext}
+            onPress={
+              isLastStep ? form.handleSubmit(confirmSubmission) : handleNext
+            }
             text={
               isLastStep
                 ? t('order_form.navigation.submit')
@@ -280,6 +290,21 @@ export default function OrderFormScreen(): JSX.Element {
           />
         </View>
       </MappedLinearGradient>
+      <BottomSheet.Confirm
+        ref={confirmationSheetRef}
+        variant="info"
+        title={t('order_form.confirmation.title')}
+        description={t('order_form.confirmation.description')}
+        dismissable={!createOrderMutation.isPending}
+        handleSubmit={form.handleSubmit(handleSubmit)}
+        submitButtonProps={{
+          loading: createOrderMutation.isPending,
+          text: t('order_form.confirmation.submit'),
+        }}
+        closeButtonProps={{
+          text: t('order_form.confirmation.cancel'),
+        }}
+      />
     </Container>
   );
 }

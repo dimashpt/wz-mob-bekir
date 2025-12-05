@@ -1,5 +1,11 @@
 import React, { forwardRef, RefObject, useState } from 'react';
-import { Dimensions, TextInput, TextInputProps, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { twMerge } from 'tailwind-merge';
@@ -8,7 +14,6 @@ import { useCSSVariable } from 'uniwind';
 
 import { Clickable } from '@/components/clickable';
 import { Icon } from '@/components/icon';
-import { Loader } from '@/components/loader';
 import { Text } from '@/components/text';
 
 const { width } = Dimensions.get('window');
@@ -160,7 +165,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               <Clickable
                 disabled={!onPressLeft}
                 onPress={onPressLeft}
-                className="pr-xs items-center justify-center"
+                className="pr-xs pl-md py-sm items-center justify-center rounded-md"
               >
                 {left}
               </Clickable>
@@ -175,6 +180,8 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                 className={twMerge(
                   'p-md flex-1 rounded-md',
                   'android:font-map-normal font-sans text-sm/tight',
+                  left ? 'pl-xs' : '',
+                  right ? 'pr-xs' : '',
                   props.disabled || transparent
                     ? 'text-muted-foreground'
                     : 'text-field-foreground',
@@ -197,6 +204,8 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                 className={twMerge(
                   'p-md flex-1 rounded-md',
                   'android:font-map-normal font-sans text-sm/tight',
+                  left ? 'pl-xs' : '',
+                  right ? 'pr-xs' : '',
                   props.disabled || transparent
                     ? 'text-muted-foreground'
                     : 'text-field-foreground',
@@ -221,7 +230,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                 className="pr-md pl-xs py-md items-center justify-center rounded-md"
               >
                 {loading ? (
-                  <Loader />
+                  <ActivityIndicator size={8} />
                 ) : secret ? (
                   <Icon
                     name={isSecureTextVisible ? 'eye' : 'eyeSlash'}

@@ -80,7 +80,7 @@ export const Loader: React.FC<LoaderProps> = ({
       style={style}
     >
       <Animated.View style={spin ? animatedStyle : undefined}>
-        {IconComponent ?? <ActivityIndicator />}
+        {IconComponent ?? <ActivityIndicator size="small" />}
       </Animated.View>
     </View>
   );
