@@ -7,6 +7,7 @@ import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LineChart as GCLineChart } from 'react-native-gifted-charts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { twMerge } from 'tailwind-merge';
 import { withUniwind } from 'uniwind';
 
 import { Container, Icon, SelectDateTime, Text } from '@/components';
@@ -47,6 +48,29 @@ const lineChartProps = {
   formatYLabel: (label: string) => formatNumber(label),
 };
 
+type OrderStatus =
+  | 'success'
+  | 'on_delivery'
+  | 'on_process'
+  | 'return'
+  | 'cancel';
+
+const statusColorClassName: Record<OrderStatus, string> = {
+  success: 'bg-success',
+  on_delivery: 'bg-warning',
+  on_process: 'bg-info',
+  return: 'bg-accent',
+  cancel: 'bg-danger',
+};
+
+const statusLabel: Record<OrderStatus, string> = {
+  success: 'Sukses',
+  on_delivery: 'Dikirim',
+  on_process: 'Diproses',
+  return: 'Dikembalikan',
+  cancel: 'Dibatalkan',
+};
+
 export default function HomeScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -71,6 +95,8 @@ export default function HomeScreen(): JSX.Element {
     summaryMpOrder,
     summaryChartRevenue,
     summaryTotalRevenue,
+    summaryStatusMarketplace,
+    summaryPerformanceSummary,
   } = useDashboardStats(fetchEnabled, payload);
 
   /**
@@ -220,8 +246,28 @@ export default function HomeScreen(): JSX.Element {
         </Container.Card>
 
         <View className="gap-md flex-row">
-          <Container.Card className="flex-1 self-start">
+          <Container.Card className="flex-1">
             <Text variant="labelS">Status Summary</Text>
+            <View className="gap-sm flex-row">
+              <View className="bg-muted h-36 w-12 rounded-sm" />
+              <View className="justify-between">
+                {Object.keys(summaryStatusMarketplace?.marketplace ?? {})
+                  .filter((key) => key !== 'store_group')
+                  .map((key) => (
+                    <View className="gap-xs flex-row items-center">
+                      <View
+                        className={twMerge(
+                          'size-4 rounded-xs',
+                          statusColorClassName[key as OrderStatus],
+                        )}
+                      />
+                      <Text variant="labelXS">
+                        {statusLabel[key as OrderStatus]}
+                      </Text>
+                    </View>
+                  ))}
+              </View>
+            </View>
           </Container.Card>
           <Container.Card className="flex-1">
             <Text variant="labelS">Performance Summary</Text>
@@ -234,9 +280,13 @@ export default function HomeScreen(): JSX.Element {
                   Delivery Success
                 </Text>
                 <View className="gap-xs flex-row items-center">
-                  <Text variant="headingXS">3</Text>
+                  <Text variant="headingXS">
+                    {formatNumber(
+                      summaryPerformanceSummary?.delivery_success ?? 0,
+                    )}
+                  </Text>
                   <Text variant="bodyM" color="success">
-                    (3.67%)
+                    ({summaryPerformanceSummary?.delivery_success_rate}%)
                   </Text>
                 </View>
               </View>
@@ -250,9 +300,11 @@ export default function HomeScreen(): JSX.Element {
                   Order Canceled
                 </Text>
                 <View className="gap-xs flex-row items-center">
-                  <Text variant="headingXS">5</Text>
+                  <Text variant="headingXS">
+                    {formatNumber(summaryPerformanceSummary?.order_cancel ?? 0)}
+                  </Text>
                   <Text variant="bodyM" color="danger">
-                    (3.67%)
+                    ({summaryPerformanceSummary?.order_cancel_rate}%)
                   </Text>
                 </View>
               </View>
@@ -271,9 +323,11 @@ export default function HomeScreen(): JSX.Element {
                   Order Returned
                 </Text>
                 <View className="gap-xs flex-row items-center">
-                  <Text variant="headingXS">5</Text>
+                  <Text variant="headingXS">
+                    {formatNumber(summaryPerformanceSummary?.order_return ?? 0)}
+                  </Text>
                   <Text variant="bodyM" color="accent">
-                    (3.67%)
+                    ({summaryPerformanceSummary?.order_return_rate}%)
                   </Text>
                 </View>
               </View>

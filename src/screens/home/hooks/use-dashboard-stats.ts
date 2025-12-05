@@ -6,6 +6,8 @@ import {
   useChartSummaryQuery,
   useOrderMarketplaceQuery,
   useOrderTotalQuery,
+  usePerformanceSummaryQuery,
+  useStatusMarketplaceQuery,
   useTotalRevenueQuery,
 } from '@/services/dashboard/repository';
 import { StorePlatform } from '@/services/order';
@@ -121,16 +123,31 @@ export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
     { enabled },
     payload,
   );
+  const { data: summaryStatusMarketplace } = useStatusMarketplaceQuery(
+    {
+      enabled,
+      select: (data) => {
+        const mappedData: Partial<
+          Record<(typeof data)[number]['store_group'], (typeof data)[number]>
+        > = {};
+
+        data.forEach((item) => {
+          mappedData[item.store_group] = item;
+        });
+
+        return mappedData;
+      },
+    },
+    payload,
+  );
+
+  const { data: summaryPerformanceSummary } = usePerformanceSummaryQuery(
+    { enabled },
+    payload,
+  );
+
   // const { data: summaryTopProduct } = useTopProductQuery({ enabled }, payload);
   // const { data: summaryProcessSummary } = useProcessSummaryQuery({ enabled }, payload);
-  // const { data: summaryStatusMarketplace } = useStatusMarketplaceQuery({ enabled }, payload);
-  // const { data: summaryPerformanceSummary } = usePerformanceSummaryQuery({ enabled }, payload);
-
-  // const summaryChartData = useMemo<
-  //   DashboardStatsData['summaryChartData']
-  // >(() => {
-
-  // }, [summaryChartQuery.data]);
 
   return {
     summaryChartOrder,
@@ -138,5 +155,7 @@ export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
     summaryMpOrder,
     summaryTotalRevenue,
     summaryChartRevenue,
+    summaryStatusMarketplace,
+    summaryPerformanceSummary,
   };
 }
