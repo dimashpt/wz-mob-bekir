@@ -97,6 +97,7 @@ export default function HomeScreen(): JSX.Element {
     summaryTotalRevenue,
     summaryStatusMarketplace,
     summaryPerformanceSummary,
+    summaryProcessSummary,
   } = useDashboardStats(fetchEnabled, payload);
 
   /**
@@ -134,6 +135,7 @@ export default function HomeScreen(): JSX.Element {
       <SelectDateTime
         placeholder="Select Period"
         mode="date-range"
+        className="bg-surface"
         enableRange
         onRangeSelect={setRange}
       />
@@ -332,6 +334,26 @@ export default function HomeScreen(): JSX.Element {
                 </View>
               </View>
             </View>
+          </Container.Card>
+        </View>
+        <View className="gap-md flex-row">
+          <Container.Card className="flex-1">
+            <Text variant="labelXS">Problem Processed</Text>
+            <Text variant="headingXS">
+              {formatNumber(summaryProcessSummary?.problem_process ?? 0)}
+            </Text>
+          </Container.Card>
+          <Container.Card className="flex-1">
+            <Text variant="labelXS">Cancel Request</Text>
+            <Text variant="headingXS">
+              {formatNumber(summaryProcessSummary?.request_cancel ?? 0)}
+            </Text>
+          </Container.Card>
+          <Container.Card className="flex-1">
+            <Text variant="labelXS">Delivery Issue</Text>
+            <Text variant="headingXS">
+              {formatNumber(summaryProcessSummary?.delivery_issue ?? 0)}
+            </Text>
           </Container.Card>
         </View>
       </View>

@@ -7,6 +7,7 @@ import {
   useOrderMarketplaceQuery,
   useOrderTotalQuery,
   usePerformanceSummaryQuery,
+  useProcessSummaryQuery,
   useStatusMarketplaceQuery,
   useTotalRevenueQuery,
 } from '@/services/dashboard/repository';
@@ -146,8 +147,12 @@ export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
     payload,
   );
 
+  const { data: summaryProcessSummary } = useProcessSummaryQuery(
+    { enabled },
+    payload,
+  );
+
   // const { data: summaryTopProduct } = useTopProductQuery({ enabled }, payload);
-  // const { data: summaryProcessSummary } = useProcessSummaryQuery({ enabled }, payload);
 
   return {
     summaryChartOrder,
@@ -157,5 +162,6 @@ export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
     summaryChartRevenue,
     summaryStatusMarketplace,
     summaryPerformanceSummary,
+    summaryProcessSummary,
   };
 }
