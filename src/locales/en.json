@@ -363,7 +363,8 @@
       "cancel": "Cancel"
     },
     "message": {
-      "success": "Order created successfully"
+      "success": "Order created successfully",
+      "form_error": "Please fix the form errors and try again"
     }
   }
 }

@@ -4,7 +4,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useFormContext } from 'react-hook-form';
+import { FieldErrors, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -132,6 +132,13 @@ export default function OrderFormScreen(): JSX.Element {
         insurance_price: insuranceFee,
       },
     });
+  }
+
+  function handleFormError(errors: FieldErrors<OrderFormValues>): void {
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length > 0) {
+      snackbar.error(t('order_form.message.form_error'));
+    }
   }
 
   const tabIconNames: Record<RouteKey, IconNames> = {
@@ -280,7 +287,9 @@ export default function OrderFormScreen(): JSX.Element {
             className="flex-1"
             loading={createOrderMutation.isPending}
             onPress={
-              isLastStep ? form.handleSubmit(confirmSubmission) : handleNext
+              isLastStep
+                ? form.handleSubmit(confirmSubmission, handleFormError)
+                : handleNext
             }
             text={
               isLastStep

@@ -367,7 +367,8 @@
       "cancel": "Batal"
     },
     "message": {
-      "success": "Order berhasil dibuat"
+      "success": "Order berhasil dibuat",
+      "form_error": "Perbaiki kesalahan pada form dan coba lagi"
     }
   }
 }
