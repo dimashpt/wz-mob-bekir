@@ -319,7 +319,7 @@
     "enter_recipient_address": "Masukkan alamat lengkap penerima",
     "enter_recipient_remarks": "Masukkan catatan penerima",
     "customer_information": "Informasi Pelanggan",
-    "is_same_as_recipient": "Samakan dengan penerima",
+    "is_same_as_customer": "Samakan dengan penerima",
     "customer": {
       "name": "Nama Pelanggan",
       "phone": "No. HP Pelanggan",

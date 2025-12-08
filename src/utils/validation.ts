@@ -34,7 +34,7 @@ export function compareVersions(v1: string, v2: string): number {
  * @returns The validation error message
  */
 export function required(iss: z.core.$ZodRawIssue): string {
-  return iss.input === undefined
+  return [undefined, ''].includes(iss.input as string)
     ? i18n.t('validation.required')
     : i18n.t('validation.invalid');
 }

@@ -43,9 +43,9 @@ export function FormStepRecipient(): JSX.Element {
   );
 
   const { control, ...form } = useFormContext<OrderFormValues>();
-  const isSameAsRecipient = useWatch({
+  const isSameAsCustomer = useWatch({
     control,
-    name: 'step_recipient.is_same_as_recipient',
+    name: 'step_recipient.is_same_as_customer',
   });
 
   function onSubdistrictChange(value: Option<Address> | null): void {
@@ -76,7 +76,105 @@ export function FormStepRecipient(): JSX.Element {
       contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
+      <Text variant="labelL">{t('order_form.customer_information')}</Text>
+
+      <Container.Card className="p-lg gap-md">
+        <Controller
+          control={control}
+          name="step_recipient.customer.name"
+          render={({
+            field: { onChange, value, onBlur },
+            fieldState: { error },
+          }) => (
+            <InputField
+              mandatory
+              label={t('order_form.customer.name')}
+              value={value}
+              errors={error?.message}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder={t('order_form.enter_customer_name')}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="step_recipient.customer.phone"
+          render={({
+            field: { onChange, value, onBlur },
+            fieldState: { error },
+          }) => (
+            <InputField
+              mandatory
+              label={t('order_form.customer.phone')}
+              value={value}
+              errors={error?.message}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder={t('order_form.enter_customer_phone')}
+              keyboardType="phone-pad"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="step_recipient.customer.email"
+          render={({
+            field: { onChange, value, onBlur },
+            fieldState: { error },
+          }) => (
+            <InputField
+              mandatory
+              label={t('order_form.customer.email')}
+              value={value}
+              errors={error?.message}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder={t('order_form.enter_customer_email')}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="step_recipient.customer.full_address"
+          render={({
+            field: { onChange, value, onBlur },
+            fieldState: { error },
+          }) => (
+            <InputField
+              mandatory
+              label={t('order_form.customer.full_address')}
+              value={value}
+              errors={error?.message}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              placeholder={t('order_form.enter_customer_address')}
+              multiline
+              inputClassName="min-h-20"
+            />
+          )}
+        />
+      </Container.Card>
+
       <Text variant="labelL">{t('order_form.recipient_information')}</Text>
+      <Container.Card className="gap-sm flex-row items-center justify-between">
+        <Text variant="bodyS" className="font-medium">
+          {t('order_form.is_same_as_customer')}
+        </Text>
+        <Controller
+          control={control}
+          name="step_recipient.is_same_as_customer"
+          render={({ field: { onChange, value } }) => (
+            <ToggleSwitch value={value} size="small" onValueChange={onChange} />
+          )}
+        />
+      </Container.Card>
+
       <Container.Card className="p-lg gap-md">
         <Controller
           control={control}
@@ -87,7 +185,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label={t('order_form.name')}
-              mandatory
+              mandatory={!isSameAsCustomer}
+              disabled={isSameAsCustomer}
               value={value}
               errors={error?.message}
               onChangeText={onChange}
@@ -106,7 +205,8 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label={t('order_form.phone')}
-              mandatory
+              mandatory={!isSameAsCustomer}
+              disabled={isSameAsCustomer}
               value={value}
               errors={error?.message}
               onChangeText={onChange}
@@ -127,6 +227,7 @@ export function FormStepRecipient(): JSX.Element {
             <InputField
               label={t('order_form.email')}
               value={value}
+              disabled={isSameAsCustomer}
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -268,9 +369,10 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              mandatory
+              mandatory={!isSameAsCustomer}
               label={t('order_form.full_address')}
               value={value}
+              disabled={isSameAsCustomer}
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -301,105 +403,6 @@ export function FormStepRecipient(): JSX.Element {
           )}
         />
       </Container.Card>
-
-      <Text variant="labelL">{t('order_form.customer_information')}</Text>
-      <Container.Card className="gap-sm flex-row items-center justify-between">
-        <Text variant="bodyS" className="font-medium">
-          {t('order_form.is_same_as_recipient')}
-        </Text>
-        <Controller
-          control={control}
-          name="step_recipient.is_same_as_recipient"
-          render={({ field: { onChange, value } }) => (
-            <ToggleSwitch value={value} size="small" onValueChange={onChange} />
-          )}
-        />
-      </Container.Card>
-
-      {!isSameAsRecipient && (
-        <Container.Card className="p-lg gap-md">
-          <Controller
-            control={control}
-            name="step_recipient.customer.name"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputField
-                mandatory
-                label={t('order_form.customer.name')}
-                value={value}
-                errors={error?.message}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder={t('order_form.enter_customer_name')}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="step_recipient.customer.phone"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputField
-                mandatory
-                label={t('order_form.customer.phone')}
-                value={value}
-                errors={error?.message}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder={t('order_form.enter_customer_phone')}
-                keyboardType="phone-pad"
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="step_recipient.customer.email"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputField
-                mandatory
-                label={t('order_form.customer.email')}
-                value={value}
-                errors={error?.message}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder={t('order_form.enter_customer_email')}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="step_recipient.customer.full_address"
-            render={({
-              field: { onChange, value, onBlur },
-              fieldState: { error },
-            }) => (
-              <InputField
-                mandatory
-                label={t('order_form.customer.full_address')}
-                value={value}
-                errors={error?.message}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                placeholder={t('order_form.enter_customer_address')}
-                multiline
-                inputClassName="min-h-20"
-              />
-            )}
-          />
-        </Container.Card>
-      )}
     </Container.Scroll>
   );
 }

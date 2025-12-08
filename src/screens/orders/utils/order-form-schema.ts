@@ -6,6 +6,50 @@ import { LogisticProvider } from '@/services/shipment';
 import { Warehouse } from '@/services/warehouse';
 import { required } from '@/utils/validation';
 
+const baseRecipientStepSchema = z.object({
+  customer: z.object({
+    name: z.string({ error: required }),
+    phone: z.string({ error: required }).startsWith('+62').min(10),
+    email: z.email({ error: required }),
+    full_address: z.string({ error: required }),
+  }),
+  country: z.string({ error: required }),
+  province: z.string({ error: required }),
+  city: z.string({ error: required }),
+  subdistrict: z.object(
+    {
+      value: z.string(),
+      label: z.string(),
+      data: z.custom<Address>().optional(),
+    },
+    { error: required },
+  ),
+  district: z.string({ error: required }),
+  postal_code: z.string({ error: required }),
+  remarks: z.string().optional(),
+});
+
+const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({
+  is_same_as_customer: z.literal(true),
+  name: z.string().optional(),
+  phone: z.string().startsWith('+62').min(10).optional(),
+  email: z.email().optional().optional(),
+  full_address: z.string().optional(),
+});
+
+const whenNotSameAsRecipientSchema = baseRecipientStepSchema.extend({
+  is_same_as_customer: z.literal(false),
+  name: z.string({ error: required }),
+  phone: z.string({ error: required }).startsWith('+62').min(10),
+  email: z.email({ error: required }).optional(),
+  full_address: z.string({ error: required }),
+});
+
+const recipientStepSchema = z.discriminatedUnion('is_same_as_customer', [
+  whenSameAsRecipientSchema,
+  whenNotSameAsRecipientSchema,
+]);
+
 const orderStepSchema = z.object({
   order_code: z.string({ error: required }),
   payment_type: z.object(
@@ -43,52 +87,6 @@ const orderStepSchema = z.object({
   sales: z.string().optional(),
   remarks: z.string().optional(),
 });
-
-const baseRecipientStepSchema = z.object({
-  name: z.string({ error: required }),
-  phone: z.string({ error: required }).startsWith('+62').min(10),
-  email: z.email({ error: required }).optional(),
-  country: z.string({ error: required }),
-  province: z.string({ error: required }),
-  city: z.string({ error: required }),
-  subdistrict: z.object(
-    {
-      value: z.string(),
-      label: z.string(),
-      data: z.custom<Address>().optional(),
-    },
-    { error: required },
-  ),
-  district: z.string({ error: required }),
-  postal_code: z.string({ error: required }),
-  full_address: z.string({ error: required }),
-  remarks: z.string().optional(),
-});
-
-const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({
-  is_same_as_recipient: z.literal(false),
-  customer: z.object({
-    name: z.string(),
-    phone: z.string().startsWith('+62').min(10),
-    email: z.email(),
-    full_address: z.string(),
-  }),
-});
-
-const whenNotSameAsRecipientSchema = baseRecipientStepSchema.extend({
-  is_same_as_recipient: z.literal(true),
-  customer: z.object({
-    name: z.string().optional(),
-    phone: z.string().startsWith('+62').min(10).optional(),
-    email: z.email().optional(),
-    full_address: z.string().optional(),
-  }),
-});
-
-const recipientStepSchema = z.discriminatedUnion('is_same_as_recipient', [
-  whenSameAsRecipientSchema,
-  whenNotSameAsRecipientSchema,
-]);
 
 const baseItemStepSchema = z.object({
   products: z

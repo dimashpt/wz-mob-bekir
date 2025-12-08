@@ -14,7 +14,7 @@ export default function OrderFormRoute(): React.JSX.Element {
     mode: 'onChange',
     defaultValues: {
       step_recipient: {
-        is_same_as_recipient: false,
+        is_same_as_customer: false,
       },
       step_item: {
         is_dropship: false,

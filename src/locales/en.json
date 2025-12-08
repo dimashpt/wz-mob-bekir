@@ -315,7 +315,7 @@
     "enter_recipient_address": "Enter recipient full address",
     "enter_recipient_remarks": "Enter recipient remarks",
     "customer_information": "Customer Information",
-    "is_same_as_recipient": "Same as Recipient",
+    "is_same_as_customer": "Same as Customer",
     "customer": {
       "name": "Customer Name",
       "phone": "Customer Phone",

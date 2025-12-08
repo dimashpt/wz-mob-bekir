@@ -42,34 +42,34 @@ export const mapToOrderPayload = (
     is_draft: false,
     is_unpaid: false,
     recipient: {
-      name: step_recipient.name,
-      phone: step_recipient.phone,
-      email: step_recipient.email ?? '',
+      name: step_recipient.is_same_as_customer
+        ? step_recipient.customer.name
+        : (step_recipient.name ?? ''),
+      phone: step_recipient.is_same_as_customer
+        ? step_recipient.customer.phone
+        : (step_recipient.phone ?? ''),
+      email: step_recipient.is_same_as_customer
+        ? step_recipient.customer.email
+        : (step_recipient.email ?? ''),
       country: step_recipient.subdistrict.data?.country ?? '',
       province: step_recipient.subdistrict.data?.state ?? '',
       city: step_recipient.subdistrict.data?.city ?? '',
       sub_district: step_recipient.subdistrict.data?.subdistrict ?? '',
       district: step_recipient.district,
       postal_code: step_recipient.postal_code,
-      full_address: step_recipient.full_address,
+      full_address: step_recipient.is_same_as_customer
+        ? step_recipient.customer.full_address
+        : (step_recipient.full_address ?? ''),
       sub_district_id: step_recipient.subdistrict.data?.subdistrict ?? '',
       remarks: step_recipient.remarks ?? '',
       recipient_sub_district_id:
         step_recipient.subdistrict.data?.subdistrict_code ?? '',
     },
     buyer: {
-      name: step_recipient.is_same_as_recipient
-        ? (step_recipient.name ?? '')
-        : step_recipient.customer?.name,
-      phone: step_recipient.is_same_as_recipient
-        ? (step_recipient.phone ?? '')
-        : step_recipient.customer?.phone,
-      email: step_recipient.is_same_as_recipient
-        ? (step_recipient.email ?? '')
-        : step_recipient.customer?.email,
-      full_address: step_recipient.is_same_as_recipient
-        ? (step_recipient.full_address ?? '')
-        : step_recipient.customer?.full_address,
+      name: step_recipient.customer?.name ?? '',
+      phone: step_recipient.customer?.phone ?? '',
+      email: step_recipient.customer?.email ?? '',
+      full_address: step_recipient.customer?.full_address ?? '',
     },
     delivery: {
       logistic: step_shipment.logistic.data?.pattern ?? '',
