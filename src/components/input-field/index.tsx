@@ -253,7 +253,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                     key={`helper-${helper}`}
                     className="gap-xs flex-row items-center"
                   >
-                    <Text variant="bodyS" color="muted">
+                    <Text variant="bodyXS" color="muted">
                       {helper}
                     </Text>
                   </View>
