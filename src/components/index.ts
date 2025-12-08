@@ -3,6 +3,7 @@ export * from './banner';
 export * from './bottom-sheet';
 export * from './button';
 export * from './chip';
+export * from './coming-soon';
 export * from './clickable';
 export * from './container';
 export * from './divider';
