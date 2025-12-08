@@ -235,78 +235,45 @@ export function FormStepShipment(): JSX.Element {
 
       <Text variant="labelL">{t('order_form.fees')}</Text>
       <Container.Card className="p-lg gap-sm">
-        <Controller
+        <InputField
           control={control}
           name="step_shipment.shipping_fee"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <InputField
-              label={t('order_form.shipping_fee')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              disabled={Boolean(watchLogistics?.value)}
-              placeholder="0"
-              errors={error?.message}
-            />
-          )}
+          label={t('order_form.shipping_fee')}
+          disabled={Boolean(watchLogistics?.value)}
+          placeholder="0"
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_shipment.packing_fee"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <InputField
-              label={t('order_form.packing_fee')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              placeholder="0"
-              errors={error?.message}
-            />
-          )}
+          label={t('order_form.packing_fee')}
+          keyboardType="numeric"
+          placeholder="0"
         />
-        <Controller
+        <InputField
           control={control}
           name="step_shipment.other_fee"
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label={t('order_form.other_fee')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              placeholder="0"
-              keyboardType="numeric"
-            />
-          )}
+          label={t('order_form.other_fee')}
+          placeholder="0"
+          keyboardType="numeric"
         />
       </Container.Card>
 
       <Text variant="labelL">{t('order_form.discounts')}</Text>
       <Container.Card className="p-lg gap-sm">
-        <Controller
+        <InputField
           control={control}
           name="step_shipment.order_discount"
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label={t('order_form.order_discount')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              placeholder="0"
-            />
-          )}
+          label={t('order_form.order_discount')}
+          keyboardType="numeric"
+          placeholder="0"
         />
-        <Controller
+        <InputField
           control={control}
           name="step_shipment.shipping_discount"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <InputField
-              label={t('order_form.shipping_discount')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              placeholder="0"
-              errors={error?.message}
-            />
-          )}
+          label={t('order_form.shipping_discount')}
+          keyboardType="numeric"
+          placeholder="0"
         />
       </Container.Card>
     </Container.Scroll>

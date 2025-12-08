@@ -93,23 +93,12 @@ export function FormStepOrder(): JSX.Element {
     >
       <Text variant="labelL">{t('order_form.order_information')}</Text>
       <Container.Card className="p-md gap-sm">
-        <Controller
+        <InputField
           control={control}
           name="step_order.order_code"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.order_code')}
-              value={value}
-              mandatory
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_order_number')}
-            />
-          )}
+          label={t('order_form.order_code')}
+          mandatory
+          placeholder={t('order_form.enter_order_number')}
         />
         <Controller
           control={control}
@@ -262,41 +251,19 @@ export function FormStepOrder(): JSX.Element {
             />
           )}
         />
-        <Controller
+        <InputField
           control={control}
           name="step_order.sales"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.sales')}
-              value={value}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              errors={error?.message}
-              placeholder={t('order_form.enter_sales_pic')}
-            />
-          )}
+          label={t('order_form.sales')}
+          placeholder={t('order_form.enter_sales_pic')}
         />
-        <Controller
+        <InputField
           control={control}
           name="step_order.remarks"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.remarks')}
-              value={value}
-              multiline
-              inputClassName="min-h-20"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              errors={error?.message}
-              placeholder={t('order_form.enter_remarks')}
-            />
-          )}
+          label={t('order_form.remarks')}
+          multiline
+          inputClassName="min-h-20"
+          placeholder={t('order_form.enter_remarks')}
         />
       </Container.Card>
     </Container.Scroll>

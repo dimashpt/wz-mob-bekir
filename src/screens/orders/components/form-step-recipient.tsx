@@ -79,85 +79,41 @@ export function FormStepRecipient(): JSX.Element {
       <Text variant="labelL">{t('order_form.customer_information')}</Text>
 
       <Container.Card className="p-lg gap-md">
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.customer.name"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory
-              label={t('order_form.customer.name')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_customer_name')}
-            />
-          )}
+          mandatory
+          label={t('order_form.customer.name')}
+          placeholder={t('order_form.enter_customer_name')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.customer.phone"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory
-              label={t('order_form.customer.phone')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_customer_phone')}
-              keyboardType="phone-pad"
-            />
-          )}
+          mandatory
+          label={t('order_form.customer.phone')}
+          placeholder={t('order_form.enter_customer_phone')}
+          keyboardType="phone-pad"
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.customer.email"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory
-              label={t('order_form.customer.email')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_customer_email')}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          )}
+          mandatory
+          label={t('order_form.customer.email')}
+          placeholder={t('order_form.enter_customer_email')}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.customer.full_address"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory
-              label={t('order_form.customer.full_address')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_customer_address')}
-              multiline
-              inputClassName="min-h-20"
-            />
-          )}
+          mandatory
+          label={t('order_form.customer.full_address')}
+          placeholder={t('order_form.enter_customer_address')}
+          multiline
+          inputClassName="min-h-20"
         />
       </Container.Card>
 
@@ -176,66 +132,33 @@ export function FormStepRecipient(): JSX.Element {
       </Container.Card>
 
       <Container.Card className="p-lg gap-md">
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.name"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.name')}
-              mandatory={!isSameAsCustomer}
-              disabled={isSameAsCustomer}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_name')}
-            />
-          )}
+          label={t('order_form.name')}
+          mandatory={!isSameAsCustomer}
+          disabled={isSameAsCustomer}
+          placeholder={t('order_form.enter_name')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.phone"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.phone')}
-              mandatory={!isSameAsCustomer}
-              disabled={isSameAsCustomer}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_phone')}
-              keyboardType="phone-pad"
-            />
-          )}
+          label={t('order_form.phone')}
+          mandatory={!isSameAsCustomer}
+          disabled={isSameAsCustomer}
+          placeholder={t('order_form.enter_phone')}
+          keyboardType="phone-pad"
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.email"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.email')}
-              value={value}
-              disabled={isSameAsCustomer}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.enter_email')}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          )}
+          label={t('order_form.email')}
+          disabled={isSameAsCustomer}
+          placeholder={t('order_form.enter_email')}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
 
         <Controller
@@ -260,147 +183,69 @@ export function FormStepRecipient(): JSX.Element {
           )}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.country"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.country')}
-              mandatory
-              disabled
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.country')}
-            />
-          )}
+          label={t('order_form.country')}
+          mandatory
+          disabled
+          placeholder={t('order_form.country')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.province"
+          label={t('order_form.province')}
+          mandatory
           disabled
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.province')}
-              mandatory
-              disabled
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.province')}
-            />
-          )}
+          placeholder={t('order_form.province')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.city"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.city')}
-              mandatory
-              disabled
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.city')}
-            />
-          )}
+          label={t('order_form.city')}
+          mandatory
+          disabled
+          placeholder={t('order_form.city')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.district"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.district')}
-              mandatory
-              disabled
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.district')}
-            />
-          )}
+          label={t('order_form.district')}
+          mandatory
+          disabled
+          placeholder={t('order_form.district')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.postal_code"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.postal_code')}
-              mandatory
-              disabled
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              placeholder={t('order_form.postal_code')}
-            />
-          )}
+          label={t('order_form.postal_code')}
+          mandatory
+          disabled
+          placeholder={t('order_form.postal_code')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.full_address"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory={!isSameAsCustomer}
-              label={t('order_form.full_address')}
-              value={value}
-              disabled={isSameAsCustomer}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              multiline
-              inputClassName="min-h-20"
-              placeholder={t('order_form.enter_full_address')}
-            />
-          )}
+          mandatory={!isSameAsCustomer}
+          label={t('order_form.full_address')}
+          disabled={isSameAsCustomer}
+          multiline
+          inputClassName="min-h-20"
+          placeholder={t('order_form.enter_full_address')}
         />
 
-        <Controller
+        <InputField
           control={control}
           name="step_recipient.remarks"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              label={t('order_form.remarks')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              multiline
-              inputClassName="min-h-20"
-              placeholder={t('order_form.enter_remarks')}
-            />
-          )}
+          label={t('order_form.remarks')}
+          multiline
+          inputClassName="min-h-20"
+          placeholder={t('order_form.enter_remarks')}
         />
       </Container.Card>
     </Container.Scroll>
