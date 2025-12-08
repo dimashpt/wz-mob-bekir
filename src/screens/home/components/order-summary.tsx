@@ -3,13 +3,20 @@ import { View } from 'react-native';
 
 import { Image as ExpoImage } from 'expo-image';
 import { useTranslation } from 'react-i18next';
-import { LineChart as GCLineChart } from 'react-native-gifted-charts';
+import {
+  LineChart as GCLineChart,
+  lineDataItem,
+} from 'react-native-gifted-charts';
 import { withUniwind } from 'uniwind';
 
 import { Container, Icon, Skeleton, Text } from '@/components';
 import { ORDER_STORE_PLATFORMS_LOGOS } from '@/constants/order';
 import { StorePlatform } from '@/services/order';
 import { formatNumber } from '@/utils/formatter';
+
+interface ExtendedLineDataItem extends lineDataItem {
+  date?: string;
+}
 
 const LineChart = withUniwind(GCLineChart);
 const Image = withUniwind(ExpoImage);
@@ -40,6 +47,32 @@ const lineChartProps = {
   formatYLabel: (label: string) => formatNumber(label),
   disableScroll: true,
   adjustToWidth: true,
+  pointerConfig: {
+    pointerStripHeight: 160,
+    pointerStripColor: 'navy',
+    pointerColor: 'navy',
+    pointerLabelWidth: 150,
+    pointerLabelHeight: 50,
+    activatePointersOnLongPress: true,
+    autoAdjustPointerLabelPosition: false,
+    pointerLabelComponent: (items: ExtendedLineDataItem[]) => {
+      return (
+        <View className="p-sm bg-background border-border mt-9 -ml-15 h-[50px] w-[150px] rounded-sm border">
+          <Text variant="labelS">{items[0].date}</Text>
+          <View className="gap-sm flex-row">
+            <View className="gap-xs flex-row items-center">
+              <View className="size-2 rounded-full bg-[#FFAF13]" />
+              <Text variant="labelS">{formatNumber(items[0].value ?? 0)}</Text>
+            </View>
+            <View className="gap-xs flex-row items-center">
+              <View className="size-2 rounded-full bg-[#42B8D5]" />
+              <Text variant="labelS">{formatNumber(items[1].value ?? 0)}</Text>
+            </View>
+          </View>
+        </View>
+      );
+    },
+  },
 };
 
 interface OrderSummaryProps {
@@ -50,8 +83,8 @@ interface OrderSummaryProps {
     total_order_soscom?: number;
   };
   summaryChartOrder?: {
-    mp: Array<{ value: number; label?: string }>;
-    soscom: Array<{ value: number; label?: string }>;
+    mp: ExtendedLineDataItem[];
+    soscom: ExtendedLineDataItem[];
   };
   summaryMpOrder?: Partial<Record<StorePlatform, number>>;
 }

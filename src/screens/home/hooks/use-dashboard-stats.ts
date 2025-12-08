@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { lineDataItem } from 'react-native-gifted-charts';
 
 import { DashboardPayload } from '@/services/dashboard';
 import {
@@ -13,11 +14,15 @@ import {
 } from '@/services/dashboard/repository';
 import { StorePlatform } from '@/services/order';
 
+interface ExtendedLineDataItem extends lineDataItem {
+  date?: string;
+}
+
 interface DashboardStatsReturn {
   summaryChartOrder:
     | {
-        mp: Array<{ value: number; label?: string }>;
-        soscom: Array<{ value: number; label?: string }>;
+        mp: ExtendedLineDataItem[];
+        soscom: ExtendedLineDataItem[];
       }
     | undefined;
   summaryOrder:
@@ -37,8 +42,8 @@ interface DashboardStatsReturn {
     | undefined;
   summaryChartRevenue:
     | {
-        mp: Array<{ value: number; label?: string }>;
-        soscom: Array<{ value: number; label?: string }>;
+        mp: Array<{ value: number; label?: string; date?: string }>;
+        soscom: Array<{ value: number; label?: string; date?: string }>;
       }
     | undefined;
   summaryStatusMarketplace:
@@ -94,8 +99,8 @@ export function useDashboardStats(
     {
       enabled,
       select: (data) => {
-        const mp: Array<{ value: number; label?: string }> = [];
-        const soscom: Array<{ value: number; label?: string }> = [];
+        const mp: ExtendedLineDataItem[] = [];
+        const soscom: ExtendedLineDataItem[] = [];
 
         data.forEach((item) => {
           let marketplaceValue = 0;
@@ -116,10 +121,12 @@ export function useDashboardStats(
           mp.push({
             value: marketplaceValue,
             label: dayjs(item.date).format('D MMM'),
+            date: dayjs(item.date).format('D MMMM YYYY'),
           });
           soscom.push({
             value: soscomValue,
             label: dayjs(item.date).format('D MMM'),
+            date: dayjs(item.date).format('D MMMM YYYY'),
           });
         });
 
@@ -148,8 +155,9 @@ export function useDashboardStats(
     {
       enabled,
       select: (data) => {
-        const mp: Array<{ value: number; label?: string }> = [];
-        const soscom: Array<{ value: number; label?: string }> = [];
+        const mp: Array<{ value: number; label?: string; date?: string }> = [];
+        const soscom: Array<{ value: number; label?: string; date?: string }> =
+          [];
 
         data.forEach((item) => {
           let marketplaceValue = 0;
@@ -170,10 +178,12 @@ export function useDashboardStats(
           mp.push({
             value: marketplaceValue,
             label: dayjs(item.date).format('D MMM'),
+            date: dayjs(item.date).format('D MMMM YYYY'),
           });
           soscom.push({
             value: soscomValue,
             label: dayjs(item.date).format('D MMM'),
+            date: dayjs(item.date).format('D MMMM YYYY'),
           });
         });
 
