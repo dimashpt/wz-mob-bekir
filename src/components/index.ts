@@ -19,6 +19,7 @@ export * from './input-field';
 export * from './menu-item';
 export * from './option-bottom-sheet';
 export * from './password-complexity';
+export * from './price-info';
 export * from './profile-picture';
 export * from './skeleton';
 export * from './snackbar';

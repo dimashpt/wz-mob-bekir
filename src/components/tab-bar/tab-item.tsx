@@ -39,7 +39,7 @@ export const TabItem = ({
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
   const textColorMuted = useCSSVariable('--color-muted-foreground') as string;
-  const spacingLg = useCSSVariable('--color-spacing-lg') as number;
+  const spacingLg = useCSSVariable('--spacing-lg') as number;
 
   const label =
     options.tabBarLabel !== undefined

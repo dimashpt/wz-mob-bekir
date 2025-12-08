@@ -1,42 +1,12 @@
 import React, { JSX } from 'react';
-import { View } from 'react-native';
 
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { twMerge } from 'tailwind-merge';
 
-import { Container, Divider, Text } from '@/components';
+import { Container, PriceInfo, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
-import { formatCurrency } from '@/utils/formatter';
 import { usePriceCalculations } from '../context/price-calculations-context';
 import { OrderFormValues } from '../utils/order-form-schema';
-
-function PriceInfo({
-  label,
-  value,
-  error,
-}: {
-  label: string;
-  value: string | number;
-  error?: boolean;
-}): React.JSX.Element {
-  return (
-    <View className="gap-sm flex-row items-center justify-between">
-      <Text variant="labelS" color={error ? 'danger' : 'default'}>
-        {label}
-      </Text>
-      <Divider
-        className={twMerge(
-          'mx-sm bg-muted flex-1',
-          error ? 'bg-danger-soft' : '',
-        )}
-      />
-      <Text variant="labelS" color={error ? 'danger' : 'default'}>
-        {formatCurrency(value)}
-      </Text>
-    </View>
-  );
-}
 
 export function FormStepSummary(): JSX.Element {
   const { t } = useTranslation();

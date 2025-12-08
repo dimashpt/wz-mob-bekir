@@ -9,7 +9,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { twMerge } from 'tailwind-merge';
 import { useCSSVariable, withUniwind } from 'uniwind';
 
-import { Chip, Container, Divider, Header, Text, Timeline } from '@/components';
+import {
+  Chip,
+  Container,
+  Divider,
+  Header,
+  PriceInfo,
+  Text,
+  Timeline,
+} from '@/components';
 import {
   ORDER_STATUS_CHIP_VARIANTS,
   ORDER_STORE_PLATFORMS,
@@ -39,6 +47,10 @@ export default function OrderDetailsScreen(): JSX.Element {
   );
   const { data: historiesData, isLoading: isHistoriesLoading } =
     useOrderHistoriesQuery({ select: (data) => data.histories }, id);
+
+  const mappedItems = [data?.active_products, data?.cancel_products]
+    .flat()
+    .filter(Boolean);
 
   return (
     <Container className="bg-background flex-1">
@@ -159,9 +171,7 @@ export default function OrderDetailsScreen(): JSX.Element {
             {t('order_details.products')}
           </Text>
           <FlatList
-            data={[data?.active_products, data?.cancel_products]
-              .flat()
-              .filter(Boolean)}
+            data={mappedItems}
             contentContainerClassName="gap-sm"
             keyExtractor={(item) => item?.order_detail_id?.toString() ?? ''}
             scrollEnabled={false}
@@ -216,72 +226,46 @@ export default function OrderDetailsScreen(): JSX.Element {
         </Container.Card>
         <Container.Card>
           <Text variant="labelM" loading={isLoading}>
-            {t('order_details.fees')}
+            {t('order_form.order_summary')}
           </Text>
           <View className="gap-sm">
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.subtotal')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.sub_total_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.shipping_fee')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.shipping_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.other_fee')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.other_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.total_discount')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.total_discount_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.cod_fee')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.cod_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.seller_discount')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.discount_seller ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">
-                {t('order_details.shipping_discount')}
-              </Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.discount_shipping ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.packing_fee')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.packing_price ?? 0))}
-              </Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text variant="bodyS">{t('order_details.insurance_fee')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.insurance_price ?? 0))}
-              </Text>
-            </View>
-            <Divider />
-            <View className="flex-row items-center justify-between">
-              <Text variant="labelS">{t('order_details.grand_total')}</Text>
-              <Text variant="labelS" loading={isLoading}>
-                {formatCurrency(Number(data?.grand_total_order_price ?? 0))}
-              </Text>
-            </View>
+            <PriceInfo
+              label={`${t('order_form.subtotal')} (${mappedItems?.length || 0} ${t('order_form.item')})`}
+              value={Number(data?.sub_total_price ?? 0)}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.shipping_fee')}
+              value={Number(data?.shipping_price ?? 0)}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.insurance_fee')}
+              value={Number(data?.insurance_price ?? 0)}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.cod_fee')}
+              value={Number(data?.cod_price ?? 0)}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.packing_fee_label')}
+              value={Number(data?.packing_price ?? 0)}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.discount')}
+              value={Number(data?.total_discount_price ?? 0)}
+              error={Number(data?.total_discount_price ?? 0) > 0}
+              loading={isLoading}
+            />
+            <PriceInfo
+              label={t('order_form.total')}
+              value={Number(data?.grand_total_order_price ?? 0)}
+              error={Number(data?.grand_total_order_price ?? 0) < 0}
+              loading={isLoading}
+            />
           </View>
         </Container.Card>
         <Container.Card>
