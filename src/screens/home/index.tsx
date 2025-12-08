@@ -73,7 +73,8 @@ export default function HomeScreen(): JSX.Element {
 
   return (
     <Container.Scroll
-      contentContainerClassName="bg-background p-lg gap-md"
+      className="bg-background"
+      contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{
         paddingTop: insets.top + 20,
         paddingBottom: TAB_BAR_HEIGHT,

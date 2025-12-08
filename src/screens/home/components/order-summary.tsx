@@ -7,10 +7,11 @@ import {
   LineChart as GCLineChart,
   lineDataItem,
 } from 'react-native-gifted-charts';
-import { withUniwind } from 'uniwind';
+import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Container, Icon, Skeleton, Text } from '@/components';
 import { ORDER_STORE_PLATFORMS_LOGOS } from '@/constants/order';
+import { screenWidth } from '@/hooks';
 import { StorePlatform } from '@/services/order';
 import { formatNumber } from '@/utils/formatter';
 
@@ -26,7 +27,7 @@ const MP_COLOR = '#FFAF13';
 
 const lineChartProps = {
   areaChart: true,
-  curved: true,
+  // curved: true,
   overflowBottom: 8,
   hideDataPoints: true,
   color1: MP_COLOR,
@@ -96,6 +97,15 @@ export function OrderSummary({
   summaryMpOrder,
 }: OrderSummaryProps): JSX.Element {
   const { t } = useTranslation();
+  const spacingLg = useCSSVariable('--spacing-lg') as number;
+  const spacingMd = useCSSVariable('--spacing-md') as number;
+  const maxValue =
+    Math.max(
+      ...[
+        (summaryChartOrder?.mp ?? []).map((v) => v.value ?? 0),
+        (summaryChartOrder?.soscom ?? []).map((v) => v.value ?? 0),
+      ].flat(),
+    ) * 1.2; // Add 20% gap
 
   return (
     <Container.Card className="gap-lg shrink overflow-hidden">
@@ -135,6 +145,9 @@ export function OrderSummary({
           data={summaryChartOrder?.mp}
           data2={summaryChartOrder?.soscom}
           {...lineChartProps}
+          maxValue={maxValue}
+          width={screenWidth - spacingLg * 2 - spacingMd * 2 - 50}
+          yAxisLabelWidth={40}
         />
       ) : (
         <Skeleton className="h-58" />

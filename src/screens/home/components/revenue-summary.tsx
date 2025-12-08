@@ -6,9 +6,10 @@ import {
   LineChart as GCLineChart,
   lineDataItem,
 } from 'react-native-gifted-charts';
-import { withUniwind } from 'uniwind';
+import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Container, Icon, Skeleton, Text } from '@/components';
+import { screenWidth } from '@/hooks';
 import { formatCurrency, formatNumber } from '@/utils/formatter';
 
 interface ExtendedLineDataItem extends lineDataItem {
@@ -20,9 +21,29 @@ const LineChart = withUniwind(GCLineChart);
 const SOSCOM_COLOR = '#42B8D5';
 const MP_COLOR = '#FFAF13';
 
+const formatCompactNumber = (value: string | number): string => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+
+  if (isNaN(num)) return '0';
+
+  const absNum = Math.abs(num);
+
+  if (absNum >= 1_000_000_000) {
+    return `${(num / 1_000_000_000).toFixed(1)}B`;
+  }
+  if (absNum >= 1_000_000) {
+    return `${(num / 1_000_000).toFixed(1)}M`;
+  }
+  if (absNum >= 1_000) {
+    return `${(num / 1_000).toFixed(0)}K`;
+  }
+
+  return formatNumber(num);
+};
+
 const lineChartProps = {
   areaChart: true,
-  curved: true,
+  // curved: true,
   overflowBottom: 8,
   hideDataPoints: true,
   color1: MP_COLOR,
@@ -40,7 +61,7 @@ const lineChartProps = {
   xAxisIndicesHeight: 4,
   xAxisLabelTextClassName: 'text-foreground',
   yAxisTextClassName: 'text-foreground',
-  formatYLabel: (label: string) => formatNumber(label),
+  formatYLabel: formatCompactNumber,
   disableScroll: true,
   adjustToWidth: true,
   pointerConfig: {
@@ -90,6 +111,16 @@ export function RevenueSummary({
   summaryChartRevenue,
 }: RevenueSummaryProps): JSX.Element {
   const { t } = useTranslation();
+  const spacingLg = useCSSVariable('--spacing-lg') as number;
+  const spacingMd = useCSSVariable('--spacing-md') as number;
+
+  const maxValue =
+    Math.max(
+      ...[
+        (summaryChartRevenue?.mp ?? []).map((v) => v.value ?? 0),
+        (summaryChartRevenue?.soscom ?? []).map((v) => v.value ?? 0),
+      ].flat(),
+    ) * 1.2; // Add 20% gap
 
   return (
     <Container.Card className="gap-lg shrink overflow-hidden">
@@ -137,6 +168,9 @@ export function RevenueSummary({
           data={summaryChartRevenue?.mp}
           data2={summaryChartRevenue?.soscom}
           {...lineChartProps}
+          maxValue={maxValue}
+          width={screenWidth - spacingLg * 2 - spacingMd * 2 - 50}
+          yAxisLabelWidth={40}
         />
       ) : (
         <Skeleton className="h-58" />

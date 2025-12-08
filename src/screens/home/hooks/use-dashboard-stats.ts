@@ -120,12 +120,12 @@ export function useDashboardStats(
 
           mp.push({
             value: marketplaceValue,
-            label: dayjs(item.date).format('D MMM'),
+            label: undefined,
             date: dayjs(item.date).format('D MMMM YYYY'),
           });
           soscom.push({
             value: soscomValue,
-            label: dayjs(item.date).format('D MMM'),
+            label: undefined,
             date: dayjs(item.date).format('D MMMM YYYY'),
           });
         });
@@ -177,12 +177,12 @@ export function useDashboardStats(
 
           mp.push({
             value: marketplaceValue,
-            label: dayjs(item.date).format('D MMM'),
+            label: undefined,
             date: dayjs(item.date).format('D MMMM YYYY'),
           });
           soscom.push({
             value: soscomValue,
-            label: dayjs(item.date).format('D MMM'),
+            label: undefined,
             date: dayjs(item.date).format('D MMMM YYYY'),
           });
         });
