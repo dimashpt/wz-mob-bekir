@@ -89,10 +89,12 @@ export default function HomeScreen(): JSX.Element {
       />
       <View className="gap-md flex-1">
         <RevenueSummary
+          range={[payload.date_from, payload.date_to].join('~')}
           summaryTotalRevenue={summaryTotalRevenue}
           summaryChartRevenue={summaryChartRevenue}
         />
         <OrderSummary
+          range={[payload.date_from, payload.date_to].join('~')}
           summaryOrder={summaryOrder}
           summaryChartOrder={summaryChartOrder}
           summaryMpOrder={summaryMpOrder}

@@ -13,6 +13,7 @@ import { useCSSVariable } from 'uniwind';
 
 import { Clickable } from '@/components/clickable';
 import { Text } from '@/components/text';
+import { screenWidth } from '@/hooks';
 import { Icon, IconNames } from '../icon';
 
 interface TabItemProps {
@@ -25,7 +26,6 @@ interface TabItemProps {
 interface TabItemPropsWithLayout extends TabItemProps {
   onLayout: (event: LayoutChangeEvent) => void;
   totalRoutes: number;
-  maxWidth: number;
 }
 
 export const TabItem = ({
@@ -35,11 +35,11 @@ export const TabItem = ({
   navigation,
   onLayout,
   totalRoutes,
-  maxWidth,
 }: TabItemPropsWithLayout): JSX.Element => {
   const { options } = descriptors[route.key];
   const accentColor = useCSSVariable('--color-accent') as string;
   const textColorMuted = useCSSVariable('--color-muted-foreground') as string;
+  const spacingLg = useCSSVariable('--color-spacing-lg') as number;
 
   const label =
     options.tabBarLabel !== undefined
@@ -80,6 +80,8 @@ export const TabItem = ({
 
   // Use flex: 1 when there are many items (5+) to distribute space evenly
   const shouldFlex = totalRoutes >= 5;
+  // Calculate max width for each tab item
+  const maxWidth = (screenWidth - spacingLg * 2) / 5;
 
   return (
     <View

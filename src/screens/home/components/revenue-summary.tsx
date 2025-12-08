@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { LineChart as GCLineChart } from 'react-native-gifted-charts';
 import { withUniwind } from 'uniwind';
 
-import { Container, Icon, Text } from '@/components';
+import { Container, Icon, Skeleton, Text } from '@/components';
 import { formatCurrency, formatNumber } from '@/utils/formatter';
 
 const LineChart = withUniwind(GCLineChart);
@@ -27,7 +27,6 @@ const lineChartProps = {
   startOpacity: 0.5,
   endOpacity: 0,
   isAnimated: true,
-  initialSpacing: 0,
   noOfSections: 4,
   yAxisThickness: 0,
   xAxisThickness: 0,
@@ -35,9 +34,12 @@ const lineChartProps = {
   xAxisLabelTextClassName: 'text-foreground',
   yAxisTextClassName: 'text-foreground',
   formatYLabel: (label: string) => formatNumber(label),
+  disableScroll: true,
+  adjustToWidth: true,
 };
 
 interface RevenueSummaryProps {
+  range: string;
   summaryTotalRevenue?: {
     total_revenue?: number;
     total_revenue_mp?: number;
@@ -50,6 +52,7 @@ interface RevenueSummaryProps {
 }
 
 export function RevenueSummary({
+  range,
   summaryTotalRevenue,
   summaryChartRevenue,
 }: RevenueSummaryProps): JSX.Element {
@@ -95,11 +98,16 @@ export function RevenueSummary({
           </View>
         </View>
       </View>
-      <LineChart
-        data={summaryChartRevenue?.mp}
-        data2={summaryChartRevenue?.soscom}
-        {...lineChartProps}
-      />
+      {summaryChartRevenue ? (
+        <LineChart
+          key={range}
+          data={summaryChartRevenue?.mp}
+          data2={summaryChartRevenue?.soscom}
+          {...lineChartProps}
+        />
+      ) : (
+        <Skeleton className="h-58" />
+      )}
     </Container.Card>
   );
 }

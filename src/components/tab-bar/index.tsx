@@ -77,9 +77,6 @@ export const TabBar = ({
     return mapping;
   }, [state.routes, hiddenRoutes]);
 
-  // Calculate max width for each tab item
-  const tabItemMaxWidth = (screenWidth - spacingLg * 2) / 5;
-
   // Animate dot when active tab changes
   useEffect(() => {
     // Find the filtered index of the active tab
@@ -147,7 +144,6 @@ export const TabBar = ({
               navigation={navigation}
               onLayout={handleTabLayout(filteredIndex)}
               totalRoutes={tabItems.length}
-              maxWidth={tabItemMaxWidth}
             />
           );
         })}

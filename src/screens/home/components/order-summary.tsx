@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { LineChart as GCLineChart } from 'react-native-gifted-charts';
 import { withUniwind } from 'uniwind';
 
-import { Container, Icon, Text } from '@/components';
+import { Container, Icon, Skeleton, Text } from '@/components';
 import { ORDER_STORE_PLATFORMS_LOGOS } from '@/constants/order';
 import { StorePlatform } from '@/services/order';
 import { formatNumber } from '@/utils/formatter';
@@ -31,7 +31,6 @@ const lineChartProps = {
   startOpacity: 0.5,
   endOpacity: 0,
   isAnimated: true,
-  initialSpacing: 0,
   noOfSections: 4,
   yAxisThickness: 0,
   xAxisThickness: 0,
@@ -39,9 +38,12 @@ const lineChartProps = {
   xAxisLabelTextClassName: 'text-foreground',
   yAxisTextClassName: 'text-foreground',
   formatYLabel: (label: string) => formatNumber(label),
+  disableScroll: true,
+  adjustToWidth: true,
 };
 
 interface OrderSummaryProps {
+  range: string;
   summaryOrder?: {
     total_order?: number;
     total_order_marketplace?: number;
@@ -55,6 +57,7 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({
+  range,
   summaryOrder,
   summaryChartOrder,
   summaryMpOrder,
@@ -93,11 +96,16 @@ export function OrderSummary({
           </View>
         </View>
       </View>
-      <LineChart
-        data={summaryChartOrder?.mp}
-        data2={summaryChartOrder?.soscom}
-        {...lineChartProps}
-      />
+      {summaryChartOrder ? (
+        <LineChart
+          key={range}
+          data={summaryChartOrder?.mp}
+          data2={summaryChartOrder?.soscom}
+          {...lineChartProps}
+        />
+      ) : (
+        <Skeleton className="h-58" />
+      )}
       <View className="gap-xs flex-row items-center">
         {Object.entries(ORDER_STORE_PLATFORMS_LOGOS).map(([store, image]) => (
           <View
