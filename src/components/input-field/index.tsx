@@ -8,13 +8,6 @@ import {
 } from 'react-native';
 
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
-import {
-  Control,
-  Controller,
-  FieldPath,
-  FieldValues,
-  PathValue,
-} from 'react-hook-form';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 import { useCSSVariable } from 'uniwind';
@@ -25,7 +18,7 @@ import { Text } from '@/components/text';
 
 const { width } = Dimensions.get('window');
 
-export interface InputFieldBaseProps extends Omit<TextInputProps, 'className'> {
+interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
   mandatory?: boolean;
   description?: string;
   helpers?: (string | undefined)[];
@@ -46,25 +39,6 @@ export interface InputFieldBaseProps extends Omit<TextInputProps, 'className'> {
   className?: string;
   inputClassName?: string;
 }
-
-interface UncontrolledInputProps extends InputFieldBaseProps {
-  control?: undefined;
-  name?: string;
-}
-
-interface ControlledInputProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends InputFieldBaseProps {
-  control: Control<TFieldValues>;
-  name: TName;
-  defaultValue?: PathValue<TFieldValues, TName>;
-}
-
-export type InputFieldProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = UncontrolledInputProps | ControlledInputProps<TFieldValues, TName>;
 
 const inputFieldVariants = tv({
   base: 'flex-row items-center rounded-md border',
@@ -92,12 +66,10 @@ const inputFieldVariants = tv({
  * @param {React.ReactNode} [props.left] - Content to be displayed on the left side of the input field.
  * @param {React.ReactNode} [props.right] - Content to be displayed on the right side of the input field.
  * @param {boolean} [props.bottomSheet=false] - When true, uses BottomSheetTextInput for bottom sheet compatibility.
- * @param {Control} [props.control] - React Hook Form control object. When provided, name is required.
- * @param {string} [props.name] - Field name for React Hook Form. Required when control is provided.
  * @param {React.RefObject<TextInput>} ref - The ref object for the native text input.
  * @returns {JSX.Element} The rendered CustomTextInput component.
  */
-const InputFieldInner = forwardRef<TextInput, InputFieldBaseProps>(
+export const InputField = forwardRef<TextInput, CustomTextInputProps>(
   (
     {
       mandatory = false,
@@ -305,49 +277,3 @@ const InputFieldInner = forwardRef<TextInput, InputFieldBaseProps>(
     );
   },
 );
-
-function InputFieldWithController<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  props: InputFieldProps<TFieldValues, TName>,
-  ref: React.ForwardedRef<TextInput>,
-): React.ReactElement {
-  if (props.control && props.name) {
-    const { control, name, defaultValue, ...rest } = props;
-    return (
-      <Controller
-        control={control}
-        name={name}
-        defaultValue={defaultValue}
-        render={({
-          field: { onChange, value, onBlur },
-          fieldState: { error },
-        }) => (
-          <InputFieldInner
-            {...rest}
-            ref={ref}
-            value={value}
-            onChangeText={onChange}
-            onBlur={(e) => {
-              onBlur();
-              rest.onBlur?.(e);
-            }}
-            errors={error?.message ?? rest.errors}
-          />
-        )}
-      />
-    );
-  }
-
-  return <InputFieldInner {...props} ref={ref} />;
-}
-
-export const InputField = forwardRef(InputFieldWithController) as <
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(
-  props: InputFieldProps<TFieldValues, TName> & {
-    ref?: React.ForwardedRef<TextInput>;
-  },
-) => React.ReactElement;

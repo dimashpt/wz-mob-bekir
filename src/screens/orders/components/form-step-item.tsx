@@ -150,44 +150,72 @@ export function FormStepItem(): JSX.Element {
 
       <Text variant="labelL">{t('order_form.package_information')}</Text>
       <Container.Card className="p-lg gap-md">
-        <InputField
+        <Controller
           control={control}
           name="step_item.package.weight"
-          label={t('order_form.package.weight')}
-          placeholder="0"
-          mandatory
-          keyboardType="numeric"
-          right={
-            <Icon
-              name="refresh"
-              size="lg"
-              className="text-field-placeholder"
-              transform="scale(-1,1)"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <InputField
+              label={t('order_form.package.weight')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              placeholder="0"
+              mandatory
+              keyboardType="numeric"
+              right={
+                <Icon
+                  name="refresh"
+                  size="lg"
+                  className="text-field-placeholder"
+                  transform="scale(-1,1)"
+                />
+              }
+              helpers={[t('order_form.weight_auto_calculated')]}
+              onPressRight={() => {}}
+              errors={error?.message}
             />
-          }
-          helpers={[t('order_form.weight_auto_calculated')]}
-          onPressRight={() => {}}
+          )}
         />
-        <InputField
+        <Controller
           control={control}
           name="step_item.package.length"
-          label={t('order_form.package.length')}
-          placeholder="0"
-          keyboardType="numeric"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <InputField
+              label={t('order_form.package.length')}
+              placeholder="0"
+              value={value?.toString()}
+              onChangeText={onChange}
+              keyboardType="numeric"
+              errors={error?.message}
+            />
+          )}
         />
-        <InputField
+        <Controller
           control={control}
           name="step_item.package.width"
-          label={t('order_form.package.width')}
-          keyboardType="numeric"
-          placeholder="0"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <InputField
+              label={t('order_form.package.width')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              keyboardType="numeric"
+              placeholder="0"
+              errors={error?.message}
+            />
+          )}
         />
-        <InputField
+        <Controller
           control={control}
           name="step_item.package.height"
-          label={t('order_form.package.height')}
-          keyboardType="numeric"
-          placeholder="0"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <InputField
+              label={t('order_form.package.height')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              keyboardType="numeric"
+              placeholder="0"
+              errors={error?.message}
+            />
+          )}
         />
       </Container.Card>
 
@@ -207,37 +235,81 @@ export function FormStepItem(): JSX.Element {
 
       {watchIsDropship && (
         <Container.Card className="p-lg gap-md">
-          <InputField
+          <Controller
             control={control}
             name="step_item.dropshipper_name"
-            label={t('order_form.dropshipper_name')}
-            placeholder={t('order_form.enter_dropshipper_name')}
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                label={t('order_form.dropshipper_name')}
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder={t('order_form.enter_dropshipper_name')}
+              />
+            )}
           />
 
-          <InputField
+          <Controller
             control={control}
             name="step_item.dropshipper_phone"
-            label={t('order_form.dropshipper_phone')}
-            placeholder={t('order_form.enter_dropshipper_phone')}
-            keyboardType="phone-pad"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                label={t('order_form.dropshipper_phone')}
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder={t('order_form.enter_dropshipper_phone')}
+                keyboardType="phone-pad"
+              />
+            )}
           />
 
-          <InputField
+          <Controller
             control={control}
             name="step_item.dropshipper_email"
-            label={t('order_form.dropshipper_email')}
-            placeholder={t('order_form.enter_dropshipper_email')}
-            keyboardType="email-address"
-            autoCapitalize="none"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                label={t('order_form.dropshipper_email')}
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder={t('order_form.enter_dropshipper_email')}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            )}
           />
 
-          <InputField
+          <Controller
             control={control}
             name="step_item.dropshipper_full_address"
-            label={t('order_form.dropshipper_full_address')}
-            placeholder={t('order_form.enter_dropshipper_address')}
-            multiline
-            inputClassName="min-h-20"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                label={t('order_form.dropshipper_full_address')}
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder={t('order_form.enter_dropshipper_address')}
+                multiline
+                inputClassName="min-h-20"
+              />
+            )}
           />
         </Container.Card>
       )}

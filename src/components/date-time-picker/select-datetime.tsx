@@ -12,7 +12,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { BottomSheet, BottomSheetModal } from '@/components/bottom-sheet';
 import { Icon } from '@/components/icon';
 import { formatSmartDateRange } from '@/utils/date';
-import { InputField, InputFieldBaseProps } from '../input-field';
+import { InputField } from '../input-field';
 import { DateTimePicker } from './date-time-picker';
 
 export interface SelectDateTimeRef {
@@ -21,7 +21,7 @@ export interface SelectDateTimeRef {
 }
 
 export interface SelectDateTimeProps extends Omit<
-  InputFieldBaseProps,
+  React.ComponentProps<typeof InputField>,
   'value' | 'mode'
 > {
   value?: Dayjs | null;

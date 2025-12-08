@@ -11,7 +11,7 @@ import { FlatListProps, Keyboard, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Icon } from '@/components/icon';
-import { InputField, InputFieldBaseProps } from '@/components/input-field';
+import { InputField } from '@/components/input-field';
 import { Clickable } from '../clickable';
 import {
   Option,
@@ -21,7 +21,9 @@ import {
 } from '../option-bottom-sheet';
 import { Text } from '../text';
 
-export interface SelectInputProps<TData = unknown> extends InputFieldBaseProps {
+export interface SelectInputProps<TData = unknown> extends React.ComponentProps<
+  typeof InputField
+> {
   options: Option<TData>[];
   onSelect: (value: Option<TData> | null) => void;
   selected?: Option<TData> | null;
