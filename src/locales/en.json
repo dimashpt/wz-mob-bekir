@@ -261,7 +261,7 @@
     "steps": {
       "recipient_info": "Recipient",
       "item": "Items",
-      "shipment": "Shipment",
+      "shipment": "Shipment & Fees",
       "summary": "Summary",
       "order_details": "Order Details",
       "review": "Review & Submit"
@@ -344,7 +344,7 @@
     "enter_sales_pic": "Select sales pic",
     "enter_remarks": "Enter remarks",
     "item_order": "Item Order",
-    "add_item": "Add Item",
+    "add_item": "Select Item",
     "total_weight": "Total Weight",
     "total_price": "Total Price",
     "dropshipping_information": "Dropshipper Information",
@@ -369,7 +369,6 @@
     "delete_product_confirmation": "Are you sure you want to delete this product?",
     "delete_products_confirmation": "Are you sure you want to remove these products:",
     "shipping_discount": "Shipping Discount",
-    "fees_and_discounts": "Shipping & Discounts",
     "subtotal": "Subtotal",
     "item": "item",
     "shipping_fee": "Shipping Fee",
@@ -387,6 +386,8 @@
     "message": {
       "success": "Order created successfully",
       "form_error": "Please fix the form errors and try again"
-    }
+    },
+    "fees": "Fees",
+    "discounts": "Discounts"
   }
 }

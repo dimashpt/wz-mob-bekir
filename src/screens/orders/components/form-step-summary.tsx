@@ -1,11 +1,11 @@
 import React, { JSX } from 'react';
 import { View } from 'react-native';
 
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { twMerge } from 'tailwind-merge';
 
-import { Container, Divider, InputField, Text } from '@/components';
+import { Container, Divider, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { formatCurrency } from '@/utils/formatter';
 import { usePriceCalculations } from '../context/price-calculations-context';
@@ -63,37 +63,6 @@ export function FormStepSummary(): JSX.Element {
       contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
     >
       <Text variant="labelL">{t('order_form.order_summary')}</Text>
-      <Container.Card className="p-lg gap-md">
-        <Controller
-          control={control}
-          name="step_summary.other_fee"
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label={t('order_form.other_fee')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              placeholder="0"
-              keyboardType="numeric"
-            />
-          )}
-        />
-      </Container.Card>
-
-      <Container.Card className="p-md gap-md">
-        <Controller
-          control={control}
-          name="step_summary.order_discount"
-          render={({ field: { value, onChange } }) => (
-            <InputField
-              label={t('order_form.order_discount')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              placeholder="0"
-            />
-          )}
-        />
-      </Container.Card>
 
       <PriceInfo
         label={`${t('order_form.subtotal')} (${watchProducts?.length || 0} ${t('order_form.item')})`}

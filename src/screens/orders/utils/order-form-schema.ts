@@ -47,7 +47,7 @@ const orderStepSchema = z.object({
 const baseRecipientStepSchema = z.object({
   name: z.string({ error: required }),
   phone: z.string({ error: required }).startsWith('+62').min(10),
-  email: z.string({ error: required }).optional(),
+  email: z.email({ error: required }).optional(),
   country: z.string({ error: required }),
   province: z.string({ error: required }),
   city: z.string({ error: required }),
@@ -70,7 +70,7 @@ const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({
   customer: z.object({
     name: z.string(),
     phone: z.string().startsWith('+62').min(10),
-    email: z.string(),
+    email: z.email(),
     full_address: z.string(),
   }),
 });
@@ -80,7 +80,7 @@ const whenNotSameAsRecipientSchema = baseRecipientStepSchema.extend({
   customer: z.object({
     name: z.string().optional(),
     phone: z.string().startsWith('+62').min(10).optional(),
-    email: z.string().optional(),
+    email: z.email().optional(),
     full_address: z.string().optional(),
   }),
 });
@@ -131,7 +131,7 @@ const whenDropshipperSchema = baseItemStepSchema.extend({
   is_dropship: z.literal(true),
   dropshipper_name: z.string({ error: required }),
   dropshipper_phone: z.string({ error: required }),
-  dropshipper_email: z.string({ error: required }),
+  dropshipper_email: z.email({ error: required }),
   dropshipper_full_address: z.string({ error: required }),
 });
 
@@ -139,7 +139,7 @@ const whenNotDropshipperSchema = baseItemStepSchema.extend({
   is_dropship: z.literal(false),
   dropshipper_name: z.string().optional(),
   dropshipper_phone: z.string().optional(),
-  dropshipper_email: z.string().optional(),
+  dropshipper_email: z.email().optional(),
   dropshipper_full_address: z.string().optional(),
 });
 
@@ -167,12 +167,11 @@ const shipmentStepSchema = z.object({
   shipping_fee: z.number({ error: required }),
   shipping_discount: z.coerce.number<number>().optional(),
   packing_fee: z.coerce.number<number>().optional(),
-});
-
-const summaryStepSchema = z.object({
   other_fee: z.coerce.number<number>().optional(),
   order_discount: z.coerce.number<number>().optional(),
 });
+
+const summaryStepSchema = z.object({});
 
 export const orderFormSchema = z.object({
   step_order: orderStepSchema,

@@ -265,7 +265,7 @@
     "steps": {
       "recipient_info": "Penerima",
       "item": "Produk & Paket",
-      "shipment": "Pengiriman",
+      "shipment": "Pengiriman & Biaya",
       "summary": "Ringkasan",
       "order_details": "Detail Pesanan",
       "review": "Tinjau & Kirim"
@@ -348,7 +348,7 @@
     "enter_sales_pic": "Masukkan PIC sales",
     "enter_remarks": "Masukkan catatan",
     "item_order": "Pesanan Produk",
-    "add_item": "Tambah Item",
+    "add_item": "Pilih Item",
     "total_weight": "Total Berat",
     "total_price": "Total Harga",
     "dropshipping_information": "Informasi Dropshipper",
@@ -373,7 +373,6 @@
     "delete_product_confirmation": "Apakah Anda yakin ingin menghapus produk ini?",
     "delete_products_confirmation": "Apakah Anda yakin ingin menghapus produk berikut:",
     "shipping_discount": "Diskon Pengiriman",
-    "fees_and_discounts": "Biaya Pengiriman & Diskon",
     "subtotal": "Subtotal",
     "item": "item",
     "shipping_fee": "Biaya Pengiriman",
@@ -391,6 +390,8 @@
     "message": {
       "success": "Order berhasil dibuat",
       "form_error": "Perbaiki kesalahan pada form dan coba lagi"
-    }
+    },
+    "fees": "Biaya",
+    "discounts": "Diskon"
   }
 }

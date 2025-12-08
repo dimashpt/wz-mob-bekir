@@ -32,7 +32,7 @@ export function PriceCalculationsProvider({
   });
   const watchOrderDiscount = useWatch({
     control,
-    name: 'step_summary.order_discount',
+    name: 'step_shipment.order_discount',
   });
   const watchProducts = useWatch({
     control,
@@ -52,7 +52,7 @@ export function PriceCalculationsProvider({
   });
   const watchOtherFees = useWatch({
     control,
-    name: 'step_summary.other_fee',
+    name: 'step_shipment.other_fee',
   });
   const watchPackingFee = useWatch({
     control,

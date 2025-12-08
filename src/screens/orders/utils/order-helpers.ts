@@ -19,8 +19,7 @@ export const statusToTranslationKey = (status: OrderInternalStatus): string => {
 export const mapToOrderPayload = (
   values: OrderFormValues,
 ): CreateOrderPayload => {
-  const { step_order, step_recipient, step_item, step_shipment, step_summary } =
-    values;
+  const { step_order, step_recipient, step_item, step_shipment } = values;
 
   return {
     order_code: step_order.order_code ?? '',
@@ -98,9 +97,9 @@ export const mapToOrderPayload = (
     },
     price: {
       shipping_price: step_shipment.shipping_fee,
-      other_price: step_summary.other_fee ?? 0,
+      other_price: step_shipment.other_fee ?? 0,
       cod_fee: step_shipment.logistic.data?.cod_percentage ?? 0,
-      discount_seller: step_summary.order_discount ?? 0,
+      discount_seller: step_shipment.order_discount ?? 0,
       discount_shipping: step_shipment.shipping_discount ?? 0,
       packing_price: step_shipment.packing_fee ?? 0,
       sub_total_price: 0,

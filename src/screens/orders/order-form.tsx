@@ -64,16 +64,16 @@ export default function OrderFormScreen(): JSX.Element {
   const [activeIndex, setActiveIndex] = useState(0);
   const confirmationSheetRef = useRef<BottomSheetModal>(null);
   const [routes] = useState<TabRoute[]>([
-    { key: 'order', title: t('order_form.steps.order_details') },
     { key: 'recipient', title: t('order_form.steps.recipient_info') },
+    { key: 'order', title: t('order_form.steps.order_details') },
     { key: 'item', title: t('order_form.steps.item') },
     { key: 'shipment', title: t('order_form.steps.shipment') },
     { key: 'summary', title: t('order_form.steps.summary') },
   ]);
 
   const stepFieldNames: Record<number, keyof OrderFormValues> = {
-    0: 'step_order',
-    1: 'step_recipient',
+    0: 'step_recipient',
+    1: 'step_order',
     2: 'step_item',
     3: 'step_shipment',
     4: 'step_summary',

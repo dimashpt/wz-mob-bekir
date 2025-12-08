@@ -216,7 +216,24 @@ export function FormStepShipment(): JSX.Element {
         />
       </Container.Card>
 
-      <Text variant="labelL">{t('order_form.fees_and_discounts')}</Text>
+      <Container.Card className="flex-row items-center justify-between">
+        <Text variant="bodyS" className="font-medium">
+          {t('order_form.use_insurance')}
+        </Text>
+        <Controller
+          control={control}
+          name="step_shipment.is_using_insurance"
+          render={({ field: { value, onChange } }) => (
+            <ToggleSwitch
+              value={!!value}
+              size="small"
+              onValueChange={onChange}
+            />
+          )}
+        />
+      </Container.Card>
+
+      <Text variant="labelL">{t('order_form.fees')}</Text>
       <Container.Card className="p-lg gap-sm">
         <Controller
           control={control}
@@ -235,20 +252,6 @@ export function FormStepShipment(): JSX.Element {
 
         <Controller
           control={control}
-          name="step_shipment.shipping_discount"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <InputField
-              label={t('order_form.shipping_discount')}
-              value={value?.toString()}
-              onChangeText={onChange}
-              keyboardType="numeric"
-              placeholder="0"
-              errors={error?.message}
-            />
-          )}
-        />
-        <Controller
-          control={control}
           name="step_shipment.packing_fee"
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <InputField
@@ -261,20 +264,47 @@ export function FormStepShipment(): JSX.Element {
             />
           )}
         />
-      </Container.Card>
-
-      <Container.Card className="flex-row items-center justify-between">
-        <Text variant="bodyS" className="font-medium">
-          {t('order_form.use_insurance')}
-        </Text>
         <Controller
           control={control}
-          name="step_shipment.is_using_insurance"
+          name="step_shipment.other_fee"
           render={({ field: { value, onChange } }) => (
-            <ToggleSwitch
-              value={!!value}
-              size="small"
-              onValueChange={onChange}
+            <InputField
+              label={t('order_form.other_fee')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              placeholder="0"
+              keyboardType="numeric"
+            />
+          )}
+        />
+      </Container.Card>
+
+      <Text variant="labelL">{t('order_form.discounts')}</Text>
+      <Container.Card className="p-lg gap-sm">
+        <Controller
+          control={control}
+          name="step_shipment.order_discount"
+          render={({ field: { value, onChange } }) => (
+            <InputField
+              label={t('order_form.order_discount')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              keyboardType="numeric"
+              placeholder="0"
+            />
+          )}
+        />
+        <Controller
+          control={control}
+          name="step_shipment.shipping_discount"
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <InputField
+              label={t('order_form.shipping_discount')}
+              value={value?.toString()}
+              onChangeText={onChange}
+              keyboardType="numeric"
+              placeholder="0"
+              errors={error?.message}
             />
           )}
         />
