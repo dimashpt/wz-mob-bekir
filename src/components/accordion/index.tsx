@@ -59,6 +59,10 @@ export interface AccordionProps {
    */
   className?: string;
   /**
+   * Custom trigger class name
+   */
+  triggerClassName?: string;
+  /**
    * Custom style for the accordion container
    */
   style?: StyleProp<ViewStyle>;
@@ -85,6 +89,7 @@ export function Accordion({
   onChange,
   variant = 'default',
   disabled = false,
+  triggerClassName,
 }: AccordionProps): JSX.Element {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(0);
@@ -177,32 +182,29 @@ export function Accordion({
 
   const accordionClassName = twMerge(accordionVariants({ variant }), className);
 
-  const headerClassName = twMerge(headerVariants({ variant }));
+  const _triggerClassName = twMerge(
+    headerVariants({ variant }),
+    triggerClassName,
+  );
 
   return (
     <View className={accordionClassName} style={style}>
       <Clickable
         onPress={handleToggle}
         disabled={disabled}
-        className={headerClassName}
+        className={_triggerClassName}
       >
         <View className="flex-1 flex-row items-center">
           {renderTitle ? renderTitle() : null}
         </View>
         <Animated.View style={chevronAnimatedStyle}>
-          <Icon name="chevron" size="lg" className="text-muted" />
+          <Icon name="chevron" size="lg" className="text-muted-foreground" />
         </Animated.View>
       </Clickable>
       {/* Hidden view to measure content height - always rendered off-screen */}
       <View
         onLayout={handleContentLayout}
-        className="px-md pb-md"
-        style={{
-          position: 'absolute',
-          opacity: 0,
-          zIndex: -1,
-          width: '100%',
-        }}
+        className="px-md pb-md pointer-events-none absolute -z-1 opacity-0"
         pointerEvents="none"
       >
         {children}

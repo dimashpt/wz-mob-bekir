@@ -37,7 +37,14 @@ export default function DetailItem({
         <Text variant="labelS" color="muted" {...labelProps}>
           {label}
         </Text>
-        <Text variant="labelM" {...valueProps}>
+        <Text
+          variant="labelM"
+          {...valueProps}
+          className={twMerge(
+            'android:font-map-medium font-medium',
+            valueProps?.className,
+          )}
+        >
           {value}
         </Text>
       </View>
