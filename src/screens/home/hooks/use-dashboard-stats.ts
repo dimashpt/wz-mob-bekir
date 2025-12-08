@@ -13,11 +13,70 @@ import {
 } from '@/services/dashboard/repository';
 import { StorePlatform } from '@/services/order';
 
-interface DashboardStatsData {
-  summaryChartData: {
-    mp: Array<{ value: number; label?: string }>;
-    soscom: Array<{ value: number; label?: string }>;
-  };
+interface DashboardStatsReturn {
+  summaryChartOrder:
+    | {
+        mp: Array<{ value: number; label?: string }>;
+        soscom: Array<{ value: number; label?: string }>;
+      }
+    | undefined;
+  summaryOrder:
+    | {
+        total_order: number;
+        total_order_marketplace: number;
+        total_order_soscom: number;
+      }
+    | undefined;
+  summaryMpOrder: Partial<Record<StorePlatform, number>> | undefined;
+  summaryTotalRevenue:
+    | {
+        total_revenue: number;
+        total_revenue_soscom: number;
+        total_revenue_mp: number;
+      }
+    | undefined;
+  summaryChartRevenue:
+    | {
+        mp: Array<{ value: number; label?: string }>;
+        soscom: Array<{ value: number; label?: string }>;
+      }
+    | undefined;
+  summaryStatusMarketplace:
+    | Partial<
+        Record<
+          string,
+          {
+            store_group: string;
+            success: number;
+            on_delivery: number;
+            on_process: number;
+            return: number;
+            cancel: number;
+          }
+        >
+      >
+    | undefined;
+  summaryPerformanceSummary:
+    | {
+        on_sla: number;
+        on_sla_rate: string;
+        over_sla: number;
+        over_sla_rate: string;
+        delivery_success: number;
+        delivery_success_rate: string;
+        order_cancel: number;
+        order_cancel_rate: string;
+        order_return: number;
+        order_return_rate: string;
+      }
+    | undefined;
+  summaryProcessSummary:
+    | {
+        problem_process: number;
+        request_cancel: number;
+        delivery_issue: number;
+      }
+    | undefined;
 }
 
 /**
@@ -27,7 +86,10 @@ interface DashboardStatsData {
  * @param payload - The payload containing date range for the request
  * @returns Object containing mapped chart data (data1 for marketplace, data2 for soscom) and loading state
  */
-export function useDashboardStats(enabled: boolean, payload: DashboardPayload) {
+export function useDashboardStats(
+  enabled: boolean,
+  payload: DashboardPayload,
+): DashboardStatsReturn {
   const { data: summaryChartOrder } = useChartSummaryQuery(
     {
       enabled,

@@ -148,7 +148,29 @@
     "stack_example": "Contoh Stack"
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "select_period": "Pilih Periode",
+    "revenue_summary": "Ringkasan Pendapatan",
+    "total_revenue": "Total Pendapatan",
+    "revenue_mp": "Pendapatan (MP)",
+    "revenue_soscom": "Pendapatan (Soscom)",
+    "order_summary": "Ringkasan Pesanan",
+    "total_order": "Total Pesanan",
+    "marketplace": "Marketplace",
+    "soscom": "Soscom",
+    "status_summary": "Ringkasan Status",
+    "status_success": "Sukses",
+    "status_on_delivery": "Dikirim",
+    "status_on_process": "Diproses",
+    "status_return": "Dikembalikan",
+    "status_cancel": "Dibatalkan",
+    "performance_summary": "Ringkasan Performa",
+    "delivery_success": "Pengiriman Berhasil",
+    "order_canceled": "Pesanan Dibatalkan",
+    "order_returned": "Pesanan Dikembalikan",
+    "problem_processed": "Masalah Diproses",
+    "cancel_request": "Permintaan Cancel",
+    "delivery_issue": "Masalah Pengiriman"
   },
   "orders": {
     "title": "Pesanan",

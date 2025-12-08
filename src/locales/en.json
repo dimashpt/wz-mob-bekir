@@ -150,7 +150,29 @@
     "stack_example": "Stack Example"
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "select_period": "Select Period",
+    "revenue_summary": "Revenue Summary",
+    "total_revenue": "Total Revenue",
+    "revenue_mp": "Revenue (MP)",
+    "revenue_soscom": "Revenue (Soscom)",
+    "order_summary": "Order Summary",
+    "total_order": "Total Order",
+    "marketplace": "Marketplace",
+    "soscom": "Soscom",
+    "status_summary": "Status Summary",
+    "status_success": "Success",
+    "status_on_delivery": "Shipped",
+    "status_on_process": "Processing",
+    "status_return": "Returned",
+    "status_cancel": "Cancelled",
+    "performance_summary": "Performance Summary",
+    "delivery_success": "Delivery Success",
+    "order_canceled": "Order Canceled",
+    "order_returned": "Order Returned",
+    "problem_processed": "Problem Processed",
+    "cancel_request": "Cancel Request",
+    "delivery_issue": "Delivery Issue"
   },
   "orders": {
     "title": "Orders",
