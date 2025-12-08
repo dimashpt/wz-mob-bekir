@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { PRODUCT_ENDPOINTS } from '@/constants/endpoints';
-import { ProductService } from '..';
+import * as ProductService from './index';
 import { ProductListRequestParams, ProductListResponse } from './types';
 
 /**

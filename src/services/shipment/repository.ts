@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 
 import { SHIPMENT_ENDPOINTS } from '@/constants/endpoints';
-import { ShipmentService } from '..';
+import * as ShipmentService from './index';
 import { LogisticProvidersParams, LogisticProvidersResponse } from './types';
 
 /**

@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { WAREHOUSE_ENDPOINTS } from '@/constants/endpoints';
-import { WarehouseService } from '..';
+import * as WarehouseService from './index';
 import { WarehouseListRequestParams, WarehouseListResponse } from './types';
 
 /**

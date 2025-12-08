@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 
 import { STORE_ENDPOINTS } from '@/constants/endpoints';
-import { StoreService } from '..';
+import * as StoreService from './index';
 import { StoreListRequestParams, StoreListResponse } from './types';
 
 /**
