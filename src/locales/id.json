@@ -211,7 +211,8 @@
       "tracking_number": "No. Resi",
       "buyer_name": "Nama Pembeli"
     },
-    "period": "Periode"
+    "period": "Periode",
+    "created_at": "Dibuat {{date}}"
   },
   "products": {
     "title": "Produk"

@@ -40,9 +40,7 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
           ) : (
             <Icon name="store" size="base" className="text-foreground" />
           )}
-          <Text variant="labelM" sharedTransitionTag={`store-${item.store_id}`}>
-            {item.store_name}
-          </Text>
+          <Text variant="labelM">{item.store_name}</Text>
         </View>
         <Text variant="labelL" className="font-extrabold">
           {formatCurrency(item.grand_total_order_price)}
@@ -64,7 +62,9 @@ export default function OrderListItem({ item }: { item: Order }): JSX.Element {
       <Divider className="my-xs -mx-md" />
       <View className="flex-row items-center justify-between">
         <Text variant="bodyXS" color="muted">
-          {formatDisplayDate(item.created_at, false)}
+          {t('orders.created_at', {
+            date: formatDisplayDate(item.created_at, false),
+          })}
         </Text>
         <Chip
           label={t(

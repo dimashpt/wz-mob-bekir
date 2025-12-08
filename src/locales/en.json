@@ -207,7 +207,8 @@
       "tracking_number": "Tracking Number",
       "buyer_name": "Buyer Name"
     },
-    "period": "Period"
+    "period": "Period",
+    "created_at": "Created {{date}}"
   },
   "products": {
     "title": "Products"
