@@ -29,6 +29,7 @@ import { Button } from '../button';
 export interface Option<TData = unknown> {
   value: string;
   label: string;
+  description?: string;
   data?: TData;
 }
 

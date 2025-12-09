@@ -14,7 +14,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { twMerge } from 'tailwind-merge';
+import { tv } from 'tailwind-variants';
 
 import { Text } from '@/components/text';
 
@@ -30,8 +32,27 @@ export interface DialogProps {
   dismissible?: boolean;
   containerClassName?: string;
   contentClassName?: string;
+  position?: 'top' | 'middle' | 'bottom';
   ref?: React.Ref<DialogRef>;
 }
+
+const dialogRoot = tv({
+  base: 'px-lg flex-1 items-center',
+  variants: {
+    position: {
+      top: 'justify-start',
+      middle: 'justify-center',
+      bottom: 'justify-end',
+    },
+  },
+  defaultVariants: {
+    position: 'middle',
+  },
+});
+
+const dialogContainer = tv({
+  base: 'bg-surface p-lg w-full rounded-lg',
+});
 
 export function Dialog({
   title,
@@ -40,12 +61,15 @@ export function Dialog({
   dismissible = true,
   containerClassName,
   contentClassName,
+  position = 'middle',
   ref,
 }: DialogProps): React.JSX.Element | null {
   const [isVisible, setIsVisible] = useState(false);
   const backdropOpacity = useSharedValue(0);
   const contentOpacity = useSharedValue(0);
   const keyboardOffset = useSharedValue(0);
+  const { top, bottom } = useSafeAreaInsets();
+  const baseVerticalSpacing = 16;
 
   function closeDialog(): void {
     backdropOpacity.value = withTiming(0, { duration: 200 });
@@ -61,6 +85,8 @@ export function Dialog({
     if (!dismissible) {
       return;
     }
+
+    Keyboard.dismiss();
 
     closeDialog();
   }
@@ -83,7 +109,8 @@ export function Dialog({
   }));
 
   const rootStyle = useAnimatedStyle(() => ({
-    paddingBottom: keyboardOffset.value,
+    paddingTop: top + baseVerticalSpacing,
+    paddingBottom: bottom + baseVerticalSpacing + keyboardOffset.value,
   }));
 
   useEffect(() => {
@@ -116,7 +143,7 @@ export function Dialog({
       onRequestClose={handleRequestClose}
     >
       <Animated.View
-        className="px-lg flex-1 items-center justify-center"
+        className={twMerge(dialogRoot({ position }))}
         style={rootStyle}
       >
         <Animated.View
@@ -137,14 +164,11 @@ export function Dialog({
           )}
         </Animated.View>
         <Animated.View
-          className={twMerge(
-            'bg-surface p-lg w-full rounded-lg',
-            containerClassName,
-          )}
+          className={twMerge(dialogContainer(), containerClassName)}
           style={contentStyle}
         >
           {title ? (
-            <Text variant="headingM" className="mb-sm">
+            <Text variant="headingXS" className="mb-sm">
               {title}
             </Text>
           ) : null}

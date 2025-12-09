@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useRef } from 'react';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -7,10 +7,11 @@ import {
   Container,
   InputField,
   Option,
+  SelectSearch,
+  SelectSearchRef,
   Text,
   ToggleSwitch,
 } from '@/components';
-import SelectInput from '@/components/select-input';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
 import { Address } from '@/services/order';
@@ -18,16 +19,19 @@ import { useAddressQuery } from '@/services/order/repository';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
+  const subdistrictSearchRef = useRef<SelectSearchRef>(null);
   const { t } = useTranslation();
-  const [, setSearch, debouncedSearch] = useDebounce();
+  const [, setSubdistrictSearch, debouncedSubdistrictSearch] = useDebounce();
   const { data: addresses, isFetching } = useAddressQuery(
     {
-      enabled: debouncedSearch?.length >= 3 || debouncedSearch.length === 0,
+      enabled:
+        debouncedSubdistrictSearch?.length >= 3 ||
+        debouncedSubdistrictSearch.length === 0,
       select: (data) =>
         data.destinations.map((address) => ({
           data: address,
-          label: [
-            address.subdistrict,
+          label: address.subdistrict,
+          description: [
             address.district,
             address.city,
             address.state,
@@ -39,7 +43,7 @@ export function FormStepRecipient(): JSX.Element {
           value: address.subdistrict_code,
         })),
     },
-    debouncedSearch,
+    debouncedSubdistrictSearch,
   );
 
   const { control, ...form } = useFormContext<OrderFormValues>();
@@ -49,23 +53,26 @@ export function FormStepRecipient(): JSX.Element {
   });
 
   function onSubdistrictChange(value: Option<Address> | null): void {
-    form.setValue('step_recipient.subdistrict', value!, {
+    if (!value) {
+      return;
+    }
+    form.setValue('step_recipient.subdistrict', value, {
       shouldValidate: true,
     });
-    if (value?.data) {
-      form.setValue('step_recipient.country', value?.data?.country, {
+    if (value.data) {
+      form.setValue('step_recipient.country', value.data.country, {
         shouldValidate: true,
       });
-      form.setValue('step_recipient.province', value?.data?.state, {
+      form.setValue('step_recipient.province', value.data.state, {
         shouldValidate: true,
       });
-      form.setValue('step_recipient.city', value?.data?.city, {
+      form.setValue('step_recipient.city', value.data.city, {
         shouldValidate: true,
       });
-      form.setValue('step_recipient.district', value?.data?.district, {
+      form.setValue('step_recipient.district', value.data.district, {
         shouldValidate: true,
       });
-      form.setValue('step_recipient.postal_code', value?.data?.postcode, {
+      form.setValue('step_recipient.postal_code', value.data.postcode, {
         shouldValidate: true,
       });
     }
@@ -242,19 +249,21 @@ export function FormStepRecipient(): JSX.Element {
           control={control}
           name="step_recipient.subdistrict"
           render={({ field: { value, onBlur }, fieldState: { error } }) => (
-            <SelectInput
+            <SelectSearch
+              ref={subdistrictSearchRef}
               label={t('order_form.subdistrict')}
-              onSelect={onSubdistrictChange}
               mandatory
-              options={addresses ?? []}
-              value={value?.label}
-              onBlur={onBlur}
-              errors={error?.message}
               placeholder={t('order_form.select_subdistrict')}
+              title={t('order_form.subdistrict')}
+              selected={value}
+              options={addresses ?? []}
+              errors={error?.message}
+              onBlur={onBlur}
+              onSelect={onSubdistrictChange}
               search={{
-                isLoading: isFetching,
+                onSearchChange: setSubdistrictSearch,
                 placeholder: t('order_form.search_subdistrict'),
-                onSearchChange: setSearch,
+                isLoading: isFetching,
               }}
             />
           )}
