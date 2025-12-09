@@ -1,7 +1,12 @@
 import type { IconNames } from '@/components/icon';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { PressableProps, StyleProp, ViewStyle } from 'react-native';
+import {
+  ActivityIndicator,
+  PressableProps,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import {
   interpolateColor,
@@ -429,6 +434,16 @@ export function Button({
     >
       {finalChildren ? (
         finalChildren
+      ) : loading ? (
+        <ActivityIndicator
+          size="small"
+          color={
+            variant === 'filled'
+              ? foregroundInvertedColor
+              : textColorMap[color] || textColorMap.primary
+          }
+          style={{ marginHorizontal: 8 }}
+        />
       ) : finalIcon ? (
         // Icon-only button
         renderIcon(finalIcon)
