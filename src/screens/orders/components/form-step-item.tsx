@@ -1,4 +1,4 @@
-import React, { JSX, useCallback, useEffect, useRef, useState } from 'react';
+import React, { JSX, useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
@@ -41,12 +41,6 @@ export function FormStepItem(): JSX.Element {
     control,
     name: 'step_item.products',
   });
-
-  // FIXME: This causes the weight to be recalculated
-  useEffect(() => {
-    // Update package weight in the form
-    form.setValue('step_item.package.weight', handleCalculateWeight());
-  }, [watchProducts]);
 
   const handleCalculateWeight = useCallback(() => {
     const totalWeight = watchProducts?.reduce((total, product) => {

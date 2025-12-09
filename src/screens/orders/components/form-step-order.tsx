@@ -123,7 +123,9 @@ export function FormStepOrder(): JSX.Element {
               label={t('order_form.payment_type')}
               onSelect={(value) => {
                 onChange(value);
-                form.resetField('step_order.payment_method');
+                form.resetField('step_order.payment_method', {
+                  keepError: true,
+                });
               }}
               options={PAYMENT_TYPE_OPTIONS}
               value={value?.value}
