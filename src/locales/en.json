@@ -132,7 +132,9 @@
     "storybook": "Storybook"
   },
   "select_input": {
-    "placeholder": "Select an option"
+    "placeholder": "Select an option",
+    "min_characters": "Please enter at least 3 characters",
+    "no_results": "No results available for '{{search}}'"
   },
   "validation": {
     "required": "Field is required",

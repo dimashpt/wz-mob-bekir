@@ -130,7 +130,9 @@
     "storybook": "Storybook"
   },
   "select_input": {
-    "placeholder": "Pilih opsi"
+    "placeholder": "Pilih opsi",
+    "min_characters": "Silakan masukkan minimal 3 karakter",
+    "no_results": "Tidak ada hasil untuk '{{search}}'"
   },
   "validation": {
     "required": "Bidang wajib diisi",

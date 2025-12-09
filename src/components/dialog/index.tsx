@@ -172,9 +172,7 @@ export function Dialog({
               {title}
             </Text>
           ) : null}
-          <View className={twMerge('gap-sm', contentClassName)}>
-            {children}
-          </View>
+          <View className={contentClassName}>{children}</View>
         </Animated.View>
       </Animated.View>
     </Modal>

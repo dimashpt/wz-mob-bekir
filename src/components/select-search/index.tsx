@@ -144,43 +144,60 @@ function SelectSearchInner<TData = unknown>(
             {title}
           </Text>
         )}
-        <InputField
-          placeholder={props.search?.placeholder || t('general.search')}
-          inputClassName="py-lg px-lg"
-          autoFocus
-          value={searchText}
-          onChangeText={handleSearchChange}
-          loading={props.search?.isLoading ?? false}
-          left={
-            <Icon name="search" size={20} className="text-field-placeholder" />
-          }
-        />
-
-        <View className="border-border bg-surface rounded-md border">
-          <FlatList
-            {...flatListProps}
-            data={options}
-            keyExtractor={(item) => item.value}
-            ItemSeparatorComponent={() => <Divider />}
-            renderItem={({ item, index }) =>
-              renderItem ? (
-                renderItem({ item, index, onSelect: () => handleSelect(item) })
-              ) : (
-                <Clickable
-                  onPress={() => handleSelect(item)}
-                  className="p-md rounded-md"
-                >
-                  <Text variant="bodyS">{item.label}</Text>
-                  {item.description ? (
-                    <Text variant="bodyXS" color="muted">
-                      {item.description}
-                    </Text>
-                  ) : null}
-                </Clickable>
-              )
+        <View className="z-1">
+          <InputField
+            placeholder={props.search?.placeholder || t('general.search')}
+            className="bg-surface border-border rounded-tl-md rounded-tr-md rounded-br-none rounded-bl-none border-0 border-b"
+            inputClassName="py-lg px-lg bg-surface rounded-"
+            autoFocus
+            value={searchText}
+            onChangeText={handleSearchChange}
+            loading={props.search?.isLoading ?? false}
+            left={
+              <Icon
+                name="search"
+                size={20}
+                className="text-field-placeholder"
+              />
             }
           />
         </View>
+
+        <FlatList
+          {...flatListProps}
+          data={options}
+          keyExtractor={(item) => item.value}
+          ItemSeparatorComponent={() => <Divider />}
+          className="bg-surface rounded-b-md"
+          ListEmptyComponent={
+            <View className="p-lg items-center justify-center">
+              <Text variant="bodyS" color="muted">
+                {searchText.length === 0
+                  ? t('select_input.min_characters')
+                  : searchText.length < 3
+                    ? t('select_input.min_characters')
+                    : t('select_input.no_results', { search: searchText })}
+              </Text>
+            </View>
+          }
+          renderItem={({ item, index }) =>
+            renderItem ? (
+              renderItem({ item, index, onSelect: () => handleSelect(item) })
+            ) : (
+              <Clickable
+                onPress={() => handleSelect(item)}
+                className="p-md rounded-md"
+              >
+                <Text variant="bodyS">{item.label}</Text>
+                {item.description ? (
+                  <Text variant="bodyXS" color="muted">
+                    {item.description}
+                  </Text>
+                ) : null}
+              </Clickable>
+            )
+          }
+        />
       </Dialog>
     </View>
   );
