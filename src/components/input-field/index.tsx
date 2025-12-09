@@ -21,7 +21,7 @@ const { width } = Dimensions.get('window');
 interface CustomTextInputProps extends Omit<TextInputProps, 'className'> {
   mandatory?: boolean;
   description?: string;
-  helpers?: (string | undefined)[];
+  helpers?: string;
   onPressLeft?: () => void;
   onPressRight?: () => void;
   transparent?: boolean;
@@ -60,7 +60,7 @@ const inputFieldVariants = tv({
  * @param {boolean} [props.dense=true] - Determines if the input field should be dense.
  * @param {string} [props.description] - Description text displayed below the label.
  * @param {string[]} [props.errors] - Array of error messages to be displayed.
- * @param {string[]} [props.helpers] - Array of helper texts to be displayed.
+ * @param {string} [props.helpers] - Helper text to be displayed.
  * @param {string} [props.mode="outlined"] - The mode of the TextInput (e.g., "outlined").
  * @param {string} [props.label] - The label text for the input field.
  * @param {React.ReactNode} [props.left] - Content to be displayed on the left side of the input field.
@@ -245,20 +245,13 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               </Clickable>
             )}
           </View>
-          {helpers?.length ? (
+          {helpers ? (
             <View style={{ maxWidth: width * 0.85 }}>
-              {helpers.map((helper) =>
-                helper ? (
-                  <View
-                    key={`helper-${helper}`}
-                    className="gap-xs flex-row items-center"
-                  >
-                    <Text variant="bodyXS" color="muted">
-                      {helper}
-                    </Text>
-                  </View>
-                ) : null,
-              )}
+              <View className="gap-xs flex-row items-center">
+                <Text variant="bodyXS" color="muted">
+                  {helpers}
+                </Text>
+              </View>
             </View>
           ) : null}
           {errors?.length ? (

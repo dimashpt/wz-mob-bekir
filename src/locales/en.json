@@ -393,6 +393,10 @@
       "form_error": "Please fix the form errors and try again"
     },
     "fees": "Fees",
-    "discounts": "Discounts"
+    "discounts": "Discounts",
+    "helpers": {
+      "warehouse_change": "Changing warehouse will change available products",
+      "recipient_address_change": "Changing recipient address will change shipment"
+    }
   }
 }

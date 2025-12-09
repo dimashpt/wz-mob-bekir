@@ -126,7 +126,7 @@ function SelectSearchInner<TData = unknown>(
               editable={false}
               right={
                 <Icon
-                  name="search"
+                  name="chevron"
                   size="base"
                   className="text-field-placeholder"
                 />

@@ -397,6 +397,10 @@
       "form_error": "Perbaiki kesalahan pada form dan coba lagi"
     },
     "fees": "Biaya",
-    "discounts": "Diskon"
+    "discounts": "Diskon",
+    "helpers": {
+      "warehouse_change": "Mengubah gudang akan mengubah produk yang tersedia",
+      "recipient_address_change": "Mengubah alamat penerima akan mengubah pengiriman"
+    }
   }
 }

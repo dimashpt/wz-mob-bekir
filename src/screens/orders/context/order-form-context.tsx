@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { OrderFormValues } from '../utils/order-form-schema';
 
-interface PriceCalculations {
+interface OrderFormContextValue {
   subTotal: number;
   insuranceFee: number;
   codFee: number;
@@ -12,11 +12,11 @@ interface PriceCalculations {
   grandTotal: number;
 }
 
-const PriceCalculationsContext = createContext<PriceCalculations | undefined>(
+const OrderFormContext = createContext<OrderFormContextValue | undefined>(
   undefined,
 );
 
-export function PriceCalculationsProvider({
+export function OrderFormProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -84,7 +84,13 @@ export function PriceCalculationsProvider({
     }
 
     return 0;
-  }, [watchLogistics, subTotal, watchIsUsingInsurance]);
+  }, [
+    watchLogistics,
+    subTotal,
+    watchIsUsingInsurance,
+    watchOtherFees,
+    watchOrderDiscount,
+  ]);
 
   const codFee = useMemo(() => {
     if (
@@ -135,7 +141,7 @@ export function PriceCalculationsProvider({
     insuranceFee,
   ]);
 
-  const value: PriceCalculations = {
+  const value: OrderFormContextValue = {
     subTotal,
     insuranceFee,
     codFee,
@@ -144,18 +150,16 @@ export function PriceCalculationsProvider({
   };
 
   return (
-    <PriceCalculationsContext.Provider value={value}>
+    <OrderFormContext.Provider value={value}>
       {children}
-    </PriceCalculationsContext.Provider>
+    </OrderFormContext.Provider>
   );
 }
 
-export function usePriceCalculations(): PriceCalculations {
-  const context = useContext(PriceCalculationsContext);
+export function useOrderForm(): OrderFormContextValue {
+  const context = useContext(OrderFormContext);
   if (context === undefined) {
-    throw new Error(
-      'usePriceCalculations must be used within a PriceCalculationsProvider',
-    );
+    throw new Error('useOrderForm must be used within an OrderFormProvider');
   }
   return context;
 }

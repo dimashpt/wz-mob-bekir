@@ -8,14 +8,14 @@ import { Accordion, Container, Icon, PriceInfo, Text } from '@/components';
 import DetailItem from '@/components/detail-item';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { formatCurrency, formatNumber } from '@/utils/formatter';
-import { usePriceCalculations } from '../context/price-calculations-context';
+import { useOrderForm } from '../context/order-form-context';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepSummary(): JSX.Element {
   const { t } = useTranslation();
   const { control } = useFormContext<OrderFormValues>();
   const { subTotal, insuranceFee, codFee, totalDiscount, grandTotal } =
-    usePriceCalculations();
+    useOrderForm();
 
   const watchProducts = useWatch({
     control,

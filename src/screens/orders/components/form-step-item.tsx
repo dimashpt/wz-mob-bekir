@@ -169,7 +169,7 @@ export function FormStepItem(): JSX.Element {
                   transform="scale(-1,1)"
                 />
               }
-              helpers={[t('order_form.weight_auto_calculated')]}
+              helpers={t('order_form.weight_auto_calculated')}
               onPressRight={() => {}}
               errors={error?.message}
             />

@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as Crypto from 'expo-crypto';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { PriceCalculationsProvider } from '@/screens/orders/context/price-calculations-context';
+import { OrderFormProvider } from '@/screens/orders/context/order-form-context';
 import OrderForm from '@/screens/orders/order-form';
 import {
   orderFormSchema,
@@ -36,9 +36,9 @@ export default function OrderFormRoute(): React.JSX.Element {
 
   return (
     <FormProvider {...form}>
-      <PriceCalculationsProvider>
+      <OrderFormProvider>
         <OrderForm />
-      </PriceCalculationsProvider>
+      </OrderFormProvider>
     </FormProvider>
   );
 }

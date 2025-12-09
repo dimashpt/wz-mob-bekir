@@ -270,6 +270,7 @@ export function FormStepRecipient(): JSX.Element {
                 placeholder: t('order_form.search_subdistrict'),
                 isLoading: isFetching || isSearchDebouncing,
               }}
+              helpers={t('order_form.helpers.recipient_address_change')}
             />
           )}
         />

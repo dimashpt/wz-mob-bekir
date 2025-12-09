@@ -38,7 +38,7 @@ import { FormStepOrder } from './components/form-step-order';
 import { FormStepRecipient } from './components/form-step-recipient';
 import { FormStepShipment } from './components/form-step-shipment';
 import { FormStepSummary } from './components/form-step-summary';
-import { usePriceCalculations } from './context/price-calculations-context';
+import { useOrderForm } from './context/order-form-context';
 import { OrderFormValues } from './utils/order-form-schema';
 import { mapToOrderPayload } from './utils/order-helpers';
 
@@ -81,7 +81,7 @@ export default function OrderFormScreen(): JSX.Element {
 
   const form = useFormContext<OrderFormValues>();
   const { subTotal, insuranceFee, codFee, totalDiscount, grandTotal } =
-    usePriceCalculations();
+    useOrderForm();
 
   const createOrderMutation = useMutation({
     mutationKey: [ORDER_ENDPOINTS.CREATE_ORDER],

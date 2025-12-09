@@ -239,6 +239,7 @@ export function FormStepOrder(): JSX.Element {
                 ) : null,
               }}
               placeholder={t('order_form.select_warehouse')}
+              helpers={t('order_form.helpers.warehouse_change')}
             />
           )}
         />
