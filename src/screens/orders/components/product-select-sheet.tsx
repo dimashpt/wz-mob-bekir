@@ -1,10 +1,11 @@
 import type { Product } from '@/services/products/types';
 
 import { forwardRef, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { FlatList } from 'react-native-gesture-handler';
 
 import { BottomSheet, BottomSheetModal } from '@/components';
 import { screenHeight } from '@/hooks';
