@@ -6,6 +6,7 @@ export * from './chip';
 export * from './coming-soon';
 export * from './clickable';
 export * from './container';
+export * from './dialog';
 export * from './divider';
 export * from './devtools';
 export * from './date-time-picker';

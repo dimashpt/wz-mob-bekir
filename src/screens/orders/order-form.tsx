@@ -137,7 +137,9 @@ export default function OrderFormScreen(): JSX.Element {
   function handleFormError(errors: FieldErrors<OrderFormValues>): void {
     const errorKeys = Object.keys(errors);
     if (errorKeys.length > 0) {
-      snackbar.error(t('order_form.message.form_error'));
+      snackbar.error(
+        t('order_form.message.form_error') + ' ' + errorKeys.join(', '),
+      );
     }
   }
 
