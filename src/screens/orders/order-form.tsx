@@ -182,11 +182,7 @@ export default function OrderFormScreen(): JSX.Element {
       <Text
         variant="labelS"
         color={hasErrors ? 'danger' : focused ? 'accent' : 'muted'}
-        className={
-          focused
-            ? 'android:font-map-semibold font-semibold'
-            : 'android:font-map-medium font-medium'
-        }
+        className="android:font-map-medium font-medium"
       >
         {labelText}
       </Text>
