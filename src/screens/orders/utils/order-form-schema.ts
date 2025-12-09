@@ -169,7 +169,7 @@ const shipmentStepSchema = z.object({
   order_discount: z.coerce.number<number>().optional(),
 });
 
-const summaryStepSchema = z.object({});
+const summaryStepSchema = z.object({}).optional();
 
 export const orderFormSchema = z.object({
   step_order: orderStepSchema,
