@@ -21,7 +21,8 @@
     "no_data_description": "Nothing to see here!\nAdd some orders to begin",
     "no_data_found": "No results found for '{{search}}'",
     "continue": "Continue",
-    "search": "Search"
+    "search": "Search",
+    "create": "Create"
   },
   "tab": {
     "home": "Home",

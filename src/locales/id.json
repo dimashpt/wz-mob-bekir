@@ -20,7 +20,8 @@
     "no_data_description": "Tidak ada data yang tersedia saat ini",
     "no_data_found": "Tidak ada hasil yang ditemukan untuk '{{search}}'",
     "continue": "Lanjutkan",
-    "search": "Cari"
+    "search": "Cari",
+    "create": "Tambahkan"
   },
   "tab": {
     "home": "Home",

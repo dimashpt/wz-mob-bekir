@@ -16,6 +16,7 @@ import { Icon } from '@/components/icon';
 import { InputField } from '@/components/input-field';
 import { Option } from '@/components/option-bottom-sheet';
 import { Text } from '@/components/text';
+import { Button } from '../button';
 
 export interface SelectSearchProps<TData = unknown> extends Omit<
   React.ComponentPropsWithoutRef<typeof InputField>,
@@ -38,6 +39,7 @@ export interface SelectSearchProps<TData = unknown> extends Omit<
     placeholder?: string;
     isLoading?: boolean;
   };
+  allowCreation?: boolean;
 }
 
 export interface SelectSearchRef {
@@ -57,6 +59,7 @@ function SelectSearchInner<TData = unknown>(
     hideTouchable = false,
     renderItem,
     flatListProps,
+    allowCreation,
     ...props
   }: SelectSearchProps<TData>,
   ref: React.ForwardedRef<SelectSearchRef>,
@@ -170,14 +173,34 @@ function SelectSearchInner<TData = unknown>(
           ItemSeparatorComponent={() => <Divider />}
           className="bg-surface rounded-b-md"
           ListEmptyComponent={
-            <View className="p-lg items-center justify-center">
+            <View className="p-lg gap-sm items-center justify-center">
               <Text variant="bodyS" color="muted">
                 {searchText.length === 0
                   ? t('select_input.min_characters')
-                  : searchText.length < 3
-                    ? t('select_input.min_characters')
-                    : t('select_input.no_results', { search: searchText })}
+                  : props.search?.isLoading
+                    ? t('general.loading')
+                    : searchText.length < 3
+                      ? t('select_input.min_characters')
+                      : t('select_input.no_results', { search: searchText })}
               </Text>
+              {allowCreation &&
+                searchText.length > 0 &&
+                !props.search?.isLoading && (
+                  <Button
+                    onPress={() => {
+                      const newOption: Option<TData> = {
+                        value: searchText,
+                        label: searchText,
+                      };
+                      onSelect(newOption);
+                      dialogRef.current?.close();
+                      setSearchText('');
+                    }}
+                    prefixIcon="plus"
+                    size="small"
+                    text={t('general.create')}
+                  />
+                )}
             </View>
           }
           renderItem={({ item, index }) =>

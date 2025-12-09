@@ -21,7 +21,12 @@ import { OrderFormValues } from '../utils/order-form-schema';
 export function FormStepRecipient(): JSX.Element {
   const subdistrictSearchRef = useRef<SelectSearchRef>(null);
   const { t } = useTranslation();
-  const [, setSubdistrictSearch, debouncedSubdistrictSearch] = useDebounce();
+  const [
+    ,
+    setSubdistrictSearch,
+    debouncedSubdistrictSearch,
+    isSearchDebouncing,
+  ] = useDebounce();
   const { data: addresses, isFetching } = useAddressQuery(
     {
       enabled:
@@ -263,7 +268,7 @@ export function FormStepRecipient(): JSX.Element {
               search={{
                 onSearchChange: setSubdistrictSearch,
                 placeholder: t('order_form.search_subdistrict'),
-                isLoading: isFetching,
+                isLoading: isFetching || isSearchDebouncing,
               }}
             />
           )}
