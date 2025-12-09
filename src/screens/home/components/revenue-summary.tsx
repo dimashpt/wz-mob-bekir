@@ -66,8 +66,6 @@ const lineChartProps = {
   adjustToWidth: true,
   pointerConfig: {
     pointerStripHeight: 160,
-    pointerStripColor: 'navy',
-    pointerColor: 'navy',
     pointerLabelWidth: 150,
     pointerLabelHeight: 50,
     activatePointersOnLongPress: true,
@@ -113,6 +111,7 @@ export function RevenueSummary({
   const { t } = useTranslation();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
   const spacingMd = useCSSVariable('--spacing-md') as number;
+  const accentColor = useCSSVariable('--color-accent') as string;
 
   const maxValue =
     Math.max(
@@ -120,7 +119,7 @@ export function RevenueSummary({
         (summaryChartRevenue?.mp ?? []).map((v) => v.value ?? 0),
         (summaryChartRevenue?.soscom ?? []).map((v) => v.value ?? 0),
       ].flat(),
-    ) * 1.2; // Add 20% gap
+    ) * 1.5; // Add 50% gap
 
   return (
     <Container.Card className="gap-lg shrink overflow-hidden">
@@ -171,6 +170,11 @@ export function RevenueSummary({
           maxValue={maxValue}
           width={screenWidth - spacingLg * 2 - spacingMd * 2 - 50}
           yAxisLabelWidth={40}
+          pointerConfig={{
+            ...lineChartProps.pointerConfig,
+            pointerStripColor: accentColor,
+            pointerColor: accentColor,
+          }}
         />
       ) : (
         <Skeleton className="h-58" />

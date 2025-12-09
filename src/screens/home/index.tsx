@@ -85,8 +85,8 @@ export default function HomeScreen(): JSX.Element {
         placeholder={t('home.select_period')}
         mode="date-range"
         className="bg-surface"
-        enableRange
-        onRangeSelect={setRange}
+        onChange={setRange}
+        value={range}
       />
       <View className="gap-md flex-1">
         <RevenueSummary

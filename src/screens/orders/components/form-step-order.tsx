@@ -252,7 +252,7 @@ export function FormStepOrder(): JSX.Element {
             <SelectDateTime
               mandatory
               value={value ? dayjs(value) : undefined}
-              onSelect={onChange}
+              onChange={onChange}
               onBlur={onBlur}
               label={t('order_form.checkout_time')}
               placeholder={t('order_form.select_checkout_date')}

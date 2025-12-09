@@ -9,13 +9,14 @@ import { Button } from '@/components/button';
 import { CalendarPicker } from '@/components/date-time-picker/calendar';
 import { WheelTimePicker } from '@/components/date-time-picker/wheel-time-picker';
 
-interface DateTimePickerProps {
+export interface DateTimePickerProps {
   date?: Dayjs;
-  mode?: 'calendar' | 'calendar-range' | 'wheel' | 'time' | 'datetime';
+  initialRange?: { start: Dayjs; end: Dayjs };
+  mode?: 'date' | 'date-range' | 'wheel' | 'time' | 'datetime';
   onDateChange?: (date: Dayjs) => void;
   onRangeChange?: (start: Dayjs, end: Dayjs | null) => void;
   enableRange?: boolean;
-  onModeChange?: (mode: 'calendar' | 'wheel' | 'time') => void;
+  onModeChange?: (mode: 'date' | 'wheel' | 'time') => void;
   onCancel?: () => void;
   onDone?: (date: Dayjs | { start: Dayjs; end: Dayjs }) => void;
 
@@ -24,7 +25,8 @@ interface DateTimePickerProps {
 
 export function DateTimePicker({
   date,
-  mode = 'calendar',
+  initialRange,
+  mode = 'date',
   onCancel,
   onDone,
   onDateChange,
@@ -35,11 +37,15 @@ export function DateTimePicker({
   const { t } = useTranslation();
 
   const [selectedDate, setSelectedDate] = useState<Dayjs>(date || dayjs());
-  const [rangeStart, setRangeStart] = useState<Dayjs | null>(null);
-  const [rangeEnd, setRangeEnd] = useState<Dayjs | null>(null);
+  const [rangeStart, setRangeStart] = useState<Dayjs | null>(
+    initialRange?.start || null,
+  );
+  const [rangeEnd, setRangeEnd] = useState<Dayjs | null>(
+    initialRange?.end || null,
+  );
   const [datetimeStep, setDatetimeStep] = useState<'date' | 'time'>('date');
 
-  const enableRange = mode === 'calendar-range';
+  const enableRange = mode === 'date-range';
   const isDateTimeMode = mode === 'datetime';
 
   // Reset datetime step when date prop changes (picker reopened)
@@ -120,11 +126,16 @@ export function DateTimePicker({
         />
       )}
 
-      {(mode === 'calendar' ||
+      {(mode === 'date' ||
         enableRange ||
         (isDateTimeMode && datetimeStep === 'date')) && (
         <CalendarPicker
           initialDate={selectedDate}
+          initialRange={
+            initialRange && rangeStart && rangeEnd
+              ? { start: rangeStart, end: rangeEnd }
+              : undefined
+          }
           enableRange={enableRange}
           onSingleSelect={handleDateChange}
           onRangeSelect={handleRangeSelect}

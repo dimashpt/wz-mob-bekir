@@ -10,23 +10,33 @@ import { formatSmartDateRange } from '@/utils/date';
 import { FilterChip } from './filter-chip';
 import { useFilterContext } from './filter-context';
 
-export interface FilterDateProps {
+type BaseFilterDateProps = {
   name: string;
   label: string;
-  value?: Dayjs | { start: Dayjs; end: Dayjs } | null;
-  onChange?: (value: Dayjs | { start: Dayjs; end: Dayjs } | null) => void;
   disabledDate?: (date: Dayjs) => boolean;
-  mode?: 'single' | 'range';
+};
+
+// Single date mode props
+interface SingleDateModeProps extends BaseFilterDateProps {
+  mode?: 'single';
+  value?: Dayjs | null;
+  onChange?: (value: Dayjs | null) => void;
 }
 
-export function FilterDate({
-  name,
-  label,
-  value: controlledValue,
-  onChange,
-  disabledDate,
-  mode = 'single',
-}: FilterDateProps): React.ReactNode {
+// Range date mode props
+interface RangeDateModeProps extends BaseFilterDateProps {
+  mode: 'range';
+  value?: { start: Dayjs; end: Dayjs } | null;
+  onChange?: (value: { start: Dayjs; end: Dayjs } | null) => void;
+}
+
+export type FilterDateProps = SingleDateModeProps | RangeDateModeProps;
+
+export function FilterDate(props: FilterDateProps): React.ReactNode {
+  const { name, label, disabledDate, mode = 'single' } = props;
+  const controlledValue = props.value;
+  const onChange = props.onChange;
+
   const [internalValue, setInternalValue] = useState<
     Dayjs | { start: Dayjs; end: Dayjs } | null
   >(null);
@@ -52,7 +62,10 @@ export function FilterDate({
     if (!isControlled) {
       setInternalValue(newValue);
     }
-    onChange?.(newValue);
+    if (onChange) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onChange(newValue as any);
+    }
     updateActiveState?.(name, false);
   }
 
@@ -90,7 +103,9 @@ export function FilterDate({
     if (!isControlled) {
       setInternalValue(date);
     }
-    onChange?.(date);
+    if (mode === 'single' && onChange) {
+      (onChange as (value: Dayjs | null) => void)(date);
+    }
     updateActiveState?.(name, Boolean(date));
   }
 
@@ -98,7 +113,9 @@ export function FilterDate({
     if (!isControlled) {
       setInternalValue(range);
     }
-    onChange?.(range);
+    if (mode === 'range' && onChange) {
+      (onChange as (value: { start: Dayjs; end: Dayjs } | null) => void)(range);
+    }
     updateActiveState?.(name, true);
   }
 
@@ -127,8 +144,8 @@ export function FilterDate({
         <DatePickerModal
           ref={datePickerRef}
           title={label}
-          value={null}
-          mode="calendar-range"
+          value={(value as { start: Dayjs; end: Dayjs } | null) ?? null}
+          mode="date-range"
           disabledDate={disabledDate}
           onRangeSelect={handleDateRangeSelect}
         />
@@ -137,7 +154,7 @@ export function FilterDate({
           ref={datePickerRef}
           title={label}
           value={value as Dayjs | null}
-          mode="calendar"
+          mode="date"
           disabledDate={disabledDate}
           onSelect={handleDateSelect}
         />

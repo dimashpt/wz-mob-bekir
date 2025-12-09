@@ -18,6 +18,7 @@ dayjs.extend(isSameOrBefore);
 
 interface CalendarPickerProps {
   initialDate?: Dayjs;
+  initialRange?: { start: Dayjs; end: Dayjs };
   enableRange?: boolean;
   onSingleSelect?: (date: Dayjs) => void;
   onRangeSelect?: (start: Dayjs, end: Dayjs | null) => void;
@@ -27,6 +28,7 @@ interface CalendarPickerProps {
 
 export const CalendarPicker: React.FC<CalendarPickerProps> = ({
   initialDate,
+  initialRange,
   enableRange = false,
   onSingleSelect,
   onRangeSelect,
@@ -34,13 +36,17 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
   disabledDate,
 }) => {
   const [currentMonth, setCurrentMonth] = useState<Dayjs>(
-    initialDate || dayjs(),
+    initialDate || initialRange?.start || dayjs(),
   );
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(
     initialDate || null,
   );
-  const [rangeStart, setRangeStart] = useState<Dayjs | null>(null);
-  const [rangeEnd, setRangeEnd] = useState<Dayjs | null>(null);
+  const [rangeStart, setRangeStart] = useState<Dayjs | null>(
+    initialRange?.start || null,
+  );
+  const [rangeEnd, setRangeEnd] = useState<Dayjs | null>(
+    initialRange?.end || null,
+  );
 
   function handleDayPress(date: Dayjs): void {
     // Check if date is disabled
