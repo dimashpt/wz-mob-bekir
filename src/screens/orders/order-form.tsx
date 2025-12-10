@@ -304,6 +304,7 @@ export default function OrderFormScreen(): JSX.Element {
         description={t('order_form.confirmation.description')}
         dismissable={!createOrderMutation.isPending}
         handleSubmit={form.handleSubmit(handleSubmit)}
+        showCloseButton
         submitButtonProps={{
           loading: createOrderMutation.isPending,
           text: t('order_form.confirmation.submit'),
