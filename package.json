@@ -91,7 +91,7 @@
     "tailwind-merge": "3.4.0",
     "tailwind-variants": "3.2.2",
     "tailwindcss": "4.1.17",
-    "uniwind": "1.1.0",
+    "uniwind": "1.2.1",
     "zod": "4.1.13",
     "zustand": "5.0.9"
   },

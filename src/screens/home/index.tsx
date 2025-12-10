@@ -4,7 +4,6 @@ import { BackHandler, View } from 'react-native';
 import dayjs, { Dayjs } from 'dayjs';
 import { useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, SelectDateTime, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
@@ -21,7 +20,6 @@ import { useDashboardStats } from './hooks/use-dashboard-stats';
 
 export default function HomeScreen(): JSX.Element {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const [range, setRange] = useState<{ start: Dayjs; end: Dayjs } | null>({
     start: dayjs('2025-11-01'),
     end: dayjs('2025-11-30'),
@@ -73,10 +71,9 @@ export default function HomeScreen(): JSX.Element {
 
   return (
     <Container.Scroll
-      className="bg-background"
+      className="bg-background mt-safe"
       contentContainerClassName="p-lg gap-md"
       contentContainerStyle={{
-        paddingTop: insets.top + 20,
         paddingBottom: TAB_BAR_HEIGHT,
       }}
     >

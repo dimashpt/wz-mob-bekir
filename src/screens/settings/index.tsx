@@ -3,17 +3,11 @@ import React, { ReactElement, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import Animated from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  BottomSheet,
-  BottomSheetModal,
-  Button,
-  Container,
-  Text,
-} from '@/components';
+import { BottomSheet, BottomSheetModal, Button, Text } from '@/components';
 import { snackbar } from '@/components/snackbar';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
+import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { AuthService } from '@/services';
 import { useAppStore, useAuthStore } from '@/store';
 import { DeveloperFeaturesSection } from './components/developer-features-section';
@@ -25,7 +19,6 @@ function SettingsScreen(): ReactElement {
   const logoutDialogRef = useRef<BottomSheetModal>(null);
   const { logout } = useAuthStore();
   const { showBetaFeatures } = useAppStore();
-  const insets = useSafeAreaInsets();
 
   const logoutMutation = useMutation({
     mutationKey: [AUTH_ENDPOINTS.LOGOUT],
@@ -38,20 +31,15 @@ function SettingsScreen(): ReactElement {
   });
 
   return (
-    <Container
-      className="bg-background p-lg flex-1"
-      style={{
-        paddingTop: insets.top + 20,
-      }}
-    >
-      <Text variant="headingL" className="mb-lg">
-        {t('settings.title')}
-      </Text>
+    <>
       <Animated.ScrollView
-        contentContainerClassName="gap-lg"
-        className="z-4 grow"
-        scrollEventThrottle={16}
+        className="bg-background mt-safe"
+        contentContainerClassName="p-lg gap-md flex-1"
+        contentContainerStyle={{
+          paddingBottom: TAB_BAR_HEIGHT,
+        }}
       >
+        <Text variant="headingL">{t('settings.title')}</Text>
         <PreferencesSection />
         {showBetaFeatures && <DeveloperFeaturesSection />}
         <Button
@@ -78,7 +66,7 @@ function SettingsScreen(): ReactElement {
         closeButtonProps={{ text: t('general.cancel') }}
         description={t('profile.logout_confirmation_description')}
       />
-    </Container>
+    </>
   );
 }
 
