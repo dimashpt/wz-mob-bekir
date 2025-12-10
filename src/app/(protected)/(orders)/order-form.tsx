@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as Crypto from 'expo-crypto';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, Resolver, useForm } from 'react-hook-form';
 
 import { OrderFormProvider } from '@/screens/orders/context/order-form-context';
 import OrderForm from '@/screens/orders/order-form';
@@ -11,7 +11,7 @@ import {
 
 export default function OrderFormRoute(): React.JSX.Element {
   const form = useForm<OrderFormValues>({
-    resolver: zodResolver(orderFormSchema),
+    resolver: zodResolver(orderFormSchema) as Resolver<OrderFormValues>,
     mode: 'onChange',
     defaultValues: {
       step_recipient: {
