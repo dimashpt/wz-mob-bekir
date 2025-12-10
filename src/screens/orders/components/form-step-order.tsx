@@ -24,6 +24,7 @@ import {
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useStoresInfiniteQuery } from '@/services/store/repository';
 import { useWarehousesInfiniteQuery } from '@/services/warehouse/repository';
+import { useOrderForm } from '../context/order-form-context';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 const Image = withUniwind(ExpoImage);
@@ -42,6 +43,7 @@ export function FormStepOrder(): JSX.Element {
     hasNextPage: hasNextWarehousePage,
     isFetchingNextPage: isFetchingNextWarehousePage,
   } = useWarehousesInfiniteQuery();
+  const { resetProducts, resetLogistic } = useOrderForm();
 
   const storeOptions = useMemo(
     () =>
@@ -222,7 +224,11 @@ export function FormStepOrder(): JSX.Element {
             <SelectInput
               mandatory
               label={t('order_form.warehouse')}
-              onSelect={onChange}
+              onSelect={(value) => {
+                onChange(value);
+                resetProducts();
+                resetLogistic();
+              }}
               options={warehouseOptions}
               value={value?.label}
               onBlur={onBlur}

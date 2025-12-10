@@ -16,6 +16,7 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
 import { Address } from '@/services/order';
 import { useAddressQuery } from '@/services/order/repository';
+import { useOrderForm } from '../context/order-form-context';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
@@ -52,6 +53,7 @@ export function FormStepRecipient(): JSX.Element {
   );
 
   const { control, ...form } = useFormContext<OrderFormValues>();
+  const { resetLogistic } = useOrderForm();
   const isSameAsCustomer = useWatch({
     control,
     name: 'step_recipient.is_same_as_customer',
@@ -61,9 +63,13 @@ export function FormStepRecipient(): JSX.Element {
     if (!value) {
       return;
     }
+
     form.setValue('step_recipient.subdistrict', value, {
       shouldValidate: true,
     });
+
+    resetLogistic();
+
     if (value.data) {
       form.setValue('step_recipient.country', value.data.country, {
         shouldValidate: true,

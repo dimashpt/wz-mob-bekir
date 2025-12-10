@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 
 import { useFormContext, useWatch } from 'react-hook-form';
 
@@ -16,6 +10,8 @@ interface OrderFormContextValue {
   codFee: number;
   totalDiscount: number;
   grandTotal: number;
+  resetProducts: () => void;
+  resetLogistic: () => void;
 }
 
 const OrderFormContext = createContext<OrderFormContextValue | undefined>(
@@ -73,45 +69,11 @@ export function OrderFormProvider({
     name: 'step_shipment.packing_fee',
     exact: true,
   });
-
-  const watchWarehouse = useWatch({
-    control,
-    name: 'step_order.warehouse',
-    exact: true,
-  });
-
-  const watchRecipientSubDistrict = useWatch({
-    control,
-    name: 'step_recipient.subdistrict',
-    exact: true,
-  });
-
   const watchSelfDelivery = useWatch({
     control,
     name: 'step_shipment.is_self_delivery',
     exact: true,
   });
-
-  useEffect(() => {
-    // Update package weight in the form
-    form.setValue('step_item.package.weight', handleCalculateWeight());
-  }, [watchProducts]);
-
-  useEffect(() => {
-    // Reset products when warehouse changes
-    form.setValue('step_item.products', []);
-  }, [watchWarehouse]);
-
-  useEffect(() => {
-    if (watchSelfDelivery) return;
-
-    // Reset logistic when recipient subdistrict or warehouse changes
-    form.resetField('step_shipment.logistic');
-    form.resetField('step_shipment.logistic_name');
-    form.resetField('step_shipment.logistic_provider_name');
-    form.resetField('step_shipment.logistic_service_name');
-    form.resetField('step_shipment.logistic_carrier');
-  }, [watchRecipientSubDistrict, watchWarehouse, watchSelfDelivery]);
 
   const subTotal = useMemo(() => {
     const totalPrice = watchProducts?.reduce((total, product) => {
@@ -195,23 +157,29 @@ export function OrderFormProvider({
     insuranceFee,
   ]);
 
+  function resetProducts(): void {
+    form.setValue('step_item.products', []);
+  }
+
+  function resetLogistic(): void {
+    if (watchSelfDelivery) return;
+
+    form.resetField('step_shipment.logistic');
+    form.resetField('step_shipment.logistic_name');
+    form.resetField('step_shipment.logistic_provider_name');
+    form.resetField('step_shipment.logistic_service_name');
+    form.resetField('step_shipment.logistic_carrier');
+  }
+
   const value: OrderFormContextValue = {
     subTotal,
     insuranceFee,
     codFee,
     totalDiscount,
     grandTotal,
+    resetProducts,
+    resetLogistic,
   };
-
-  const handleCalculateWeight = useCallback(() => {
-    const totalWeight = watchProducts?.reduce((total, product) => {
-      const productWeight = Number(product.weight) || 0;
-      const quantity = product.quantity || 0;
-      return total + productWeight * quantity;
-    }, 0);
-
-    return totalWeight || 0;
-  }, [watchProducts]);
 
   return (
     <OrderFormContext.Provider value={value}>
