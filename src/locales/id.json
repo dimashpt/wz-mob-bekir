@@ -135,10 +135,6 @@
     "min_characters": "Silakan masukkan minimal 3 karakter",
     "no_results": "Tidak ada hasil untuk '{{search}}'"
   },
-  "validation": {
-    "required": "Bidang wajib diisi",
-    "invalid": "Input tidak valid"
-  },
   "update": {
     "message": "Pembaruan Tersedia",
     "description": "Versi baru ({{version}}) tersedia. Apakah Anda ingin memperbarui sekarang?",
@@ -402,5 +398,12 @@
       "warehouse_change": "Mengubah gudang akan mengubah produk yang tersedia",
       "recipient_address_change": "Mengubah alamat penerima akan mengubah pengiriman"
     }
+  },
+  "validation": {
+    "required": "Input wajib diisi",
+    "invalid": "Input tidak valid",
+    "minimum": "Input minimal {{minimum}} karakter",
+    "startsWith": "Input harus diawali dengan {{startsWith}}",
+    "email": "Alamat email tidak valid"
   }
 }

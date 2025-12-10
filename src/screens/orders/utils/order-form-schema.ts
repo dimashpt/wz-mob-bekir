@@ -4,45 +4,53 @@ import { z } from 'zod';
 import { Address } from '@/services/order';
 import { LogisticProvider } from '@/services/shipment';
 import { Warehouse } from '@/services/warehouse';
-import { required } from '@/utils/validation';
+import {
+  emailSchema,
+  numberSchema,
+  optionalEmailSchema,
+  optionalPhoneSchema,
+  optionalStringSchema,
+  phoneSchema,
+  required,
+  stringSchema,
+} from '@/utils/validation';
 
 const baseRecipientStepSchema = z.object({
   customer: z.object({
-    name: z.string({ error: required }),
-    phone: z.string({ error: required }).startsWith('+62').min(10),
-    email: z.email({ error: required }),
-    full_address: z.string({ error: required }),
+    name: stringSchema,
+    phone: phoneSchema,
+    email: emailSchema,
+    full_address: stringSchema,
   }),
-  country: z.string({ error: required }),
-  province: z.string({ error: required }),
-  city: z.string({ error: required }),
+  email: optionalEmailSchema,
+  country: stringSchema,
+  province: stringSchema,
+  city: stringSchema,
   subdistrict: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
       data: z.custom<Address>().optional(),
     },
     { error: required },
   ),
-  district: z.string({ error: required }),
-  postal_code: z.string({ error: required }),
-  remarks: z.string().optional(),
+  district: stringSchema,
+  postal_code: stringSchema,
+  remarks: optionalStringSchema,
 });
 
 const whenSameAsRecipientSchema = baseRecipientStepSchema.extend({
   is_same_as_customer: z.literal(true),
-  name: z.string().optional(),
-  phone: z.string().startsWith('+62').min(10).optional(),
-  email: z.email().optional().optional(),
-  full_address: z.string().optional(),
+  name: optionalStringSchema,
+  phone: optionalPhoneSchema,
+  full_address: optionalStringSchema,
 });
 
 const whenNotSameAsRecipientSchema = baseRecipientStepSchema.extend({
   is_same_as_customer: z.literal(false),
-  name: z.string({ error: required }),
-  phone: z.string({ error: required }).startsWith('+62').min(10),
-  email: z.email({ error: required }).optional(),
-  full_address: z.string({ error: required }),
+  name: stringSchema,
+  phone: phoneSchema,
+  full_address: stringSchema,
 });
 
 const recipientStepSchema = z.discriminatedUnion('is_same_as_customer', [
@@ -51,32 +59,32 @@ const recipientStepSchema = z.discriminatedUnion('is_same_as_customer', [
 ]);
 
 const orderStepSchema = z.object({
-  order_code: z.string({ error: required }),
+  order_code: stringSchema,
   payment_type: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
     },
     { error: required },
   ),
   payment_method: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
     },
     { error: required },
   ),
   store: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
     },
     { error: required },
   ),
   warehouse: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
       data: z.custom<Warehouse>(),
     },
     { error: required },
@@ -84,8 +92,8 @@ const orderStepSchema = z.object({
   checkout_time: z.custom<Dayjs>((val) => dayjs.isDayjs(val) && val.isValid(), {
     error: required,
   }),
-  sales: z.string().optional(),
-  remarks: z.string().optional(),
+  sales: optionalStringSchema,
+  remarks: optionalStringSchema,
 });
 
 const baseItemStepSchema = z.object({
@@ -93,26 +101,26 @@ const baseItemStepSchema = z.object({
     .array(
       z.object({
         quantity: z.number().optional(),
-        product_id: z.number(),
-        name: z.string(),
-        sku: z.string(),
+        product_id: numberSchema,
+        name: stringSchema,
+        sku: stringSchema,
         brand: z.string().nullable(),
-        category_name: z.string(),
+        category_name: stringSchema,
         featured_image_url: z.string().nullable(),
-        weight: z.string(),
-        width: z.string(),
-        height: z.string(),
-        length: z.string(),
-        volume: z.number(),
+        weight: stringSchema,
+        width: stringSchema,
+        height: stringSchema,
+        length: stringSchema,
+        volume: numberSchema,
         is_bundle: z.boolean(),
-        cost_price: z.string(),
-        published_price: z.string(),
-        status: z.string(),
-        created_at: z.string(),
-        created_by: z.string(),
-        updated_at: z.string(),
-        updated_by: z.string(),
-        mapping_count: z.number(),
+        cost_price: stringSchema,
+        published_price: stringSchema,
+        status: stringSchema,
+        created_at: stringSchema,
+        created_by: stringSchema,
+        updated_at: stringSchema,
+        updated_by: stringSchema,
+        mapping_count: numberSchema,
         available: z.number().nullable(),
       }),
     )
@@ -127,18 +135,18 @@ const baseItemStepSchema = z.object({
 
 const whenDropshipperSchema = baseItemStepSchema.extend({
   is_dropship: z.literal(true),
-  dropshipper_name: z.string({ error: required }),
-  dropshipper_phone: z.string({ error: required }),
-  dropshipper_email: z.email({ error: required }),
-  dropshipper_full_address: z.string({ error: required }),
+  dropshipper_name: stringSchema,
+  dropshipper_phone: phoneSchema,
+  dropshipper_email: emailSchema,
+  dropshipper_full_address: stringSchema,
 });
 
 const whenNotDropshipperSchema = baseItemStepSchema.extend({
   is_dropship: z.literal(false),
-  dropshipper_name: z.string().optional(),
-  dropshipper_phone: z.string().optional(),
-  dropshipper_email: z.email().optional(),
-  dropshipper_full_address: z.string().optional(),
+  dropshipper_name: optionalStringSchema,
+  dropshipper_phone: optionalPhoneSchema,
+  dropshipper_email: optionalEmailSchema,
+  dropshipper_full_address: optionalStringSchema,
 });
 
 const itemStepSchema = z.discriminatedUnion('is_dropship', [
@@ -151,17 +159,17 @@ const shipmentStepSchema = z.object({
   is_using_insurance: z.boolean().optional(),
   logistic: z.object(
     {
-      value: z.string(),
-      label: z.string(),
+      value: stringSchema,
+      label: stringSchema,
       data: z.custom<LogisticProvider>().optional(),
     },
     { error: required },
   ),
-  logistic_name: z.string().optional(),
-  logistic_provider_name: z.string().optional(),
-  logistic_service_name: z.string().optional(),
-  logistic_carrier: z.string().optional(),
-  tracking_number: z.string().optional(),
+  logistic_name: optionalStringSchema,
+  logistic_provider_name: optionalStringSchema,
+  logistic_service_name: optionalStringSchema,
+  logistic_carrier: optionalStringSchema,
+  tracking_number: optionalStringSchema,
   shipping_fee: z.number({ error: required }),
   shipping_discount: z.coerce.number<number>().optional(),
   packing_fee: z.coerce.number<number>().optional(),

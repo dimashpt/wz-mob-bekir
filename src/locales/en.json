@@ -137,10 +137,6 @@
     "min_characters": "Please enter at least 3 characters",
     "no_results": "No results available for '{{search}}'"
   },
-  "validation": {
-    "required": "Field is required",
-    "invalid": "Invalid input"
-  },
   "update": {
     "message": "Update Available",
     "description": "A new version ({{version}}) is available. Would you like to update now?",
@@ -398,5 +394,12 @@
       "warehouse_change": "Changing warehouse will change available products",
       "recipient_address_change": "Changing recipient address will change shipment"
     }
+  },
+  "validation": {
+    "required": "Field is required",
+    "invalid": "Invalid input",
+    "minimum": "Field must be at least {{minimum}} characters",
+    "startsWith": "Field must start with {{startsWith}}",
+    "email": "Invalid email address"
   }
 }
