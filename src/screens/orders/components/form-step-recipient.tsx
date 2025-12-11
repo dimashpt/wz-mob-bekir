@@ -58,6 +58,10 @@ export function FormStepRecipient(): JSX.Element {
     control,
     name: 'step_recipient.is_same_as_customer',
   });
+  const watchCustomer = useWatch({
+    control,
+    name: 'step_recipient.customer',
+  });
 
   function onSubdistrictChange(value: Option<Address> | null): void {
     if (!value) {
@@ -205,7 +209,7 @@ export function FormStepRecipient(): JSX.Element {
               label={t('order_form.name')}
               mandatory={!isSameAsCustomer}
               disabled={isSameAsCustomer}
-              value={value}
+              value={isSameAsCustomer ? watchCustomer?.name : value}
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -225,7 +229,7 @@ export function FormStepRecipient(): JSX.Element {
               label={t('order_form.phone')}
               mandatory={!isSameAsCustomer}
               disabled={isSameAsCustomer}
-              value={value}
+              value={isSameAsCustomer ? watchCustomer?.phone : value}
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -244,7 +248,7 @@ export function FormStepRecipient(): JSX.Element {
           }) => (
             <InputField
               label={t('order_form.email')}
-              value={value}
+              value={isSameAsCustomer ? watchCustomer?.email : value}
               disabled={isSameAsCustomer}
               errors={error?.message}
               onChangeText={onChange}
@@ -392,7 +396,7 @@ export function FormStepRecipient(): JSX.Element {
             <InputField
               mandatory={!isSameAsCustomer}
               label={t('order_form.full_address')}
-              value={value}
+              value={isSameAsCustomer ? watchCustomer?.full_address : value}
               disabled={isSameAsCustomer}
               errors={error?.message}
               onChangeText={onChange}
