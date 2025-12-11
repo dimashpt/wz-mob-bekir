@@ -7,8 +7,8 @@ import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { FlatList } from 'react-native-gesture-handler';
 
-import { BottomSheet, BottomSheetModal } from '@/components';
-import { screenHeight } from '@/hooks';
+import { BottomSheet, BottomSheetModal, Icon, InputField } from '@/components';
+import { screenHeight, useDebounce } from '@/hooks';
 import { ProductRepo } from '@/services';
 import { OrderFormValues } from '../utils/order-form-schema';
 import { ProductItem } from './product-item';
@@ -24,8 +24,10 @@ export const ProductSelectSheet = forwardRef<
 >(({ locationId, selectedProducts: initialSelectedProducts }, ref) => {
   const { t } = useTranslation();
   const form = useFormContext<OrderFormValues>();
+  const [, setSearch, debouncedSearch, isSearchDebouncing] = useDebounce();
 
   const removeConfirmRef = useRef<BottomSheetModal>(null);
+
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [productsToRemove, setProductsToRemove] = useState<Product[]>([]);
 
@@ -36,7 +38,7 @@ export const ProductSelectSheet = forwardRef<
     isFetchingNextPage,
   } = ProductRepo.useProductsInfiniteQuery(
     { enabled: Boolean(locationId) },
-    { location_id: Number(locationId), per_page: 10 },
+    { location_id: Number(locationId), per_page: 10, search: debouncedSearch },
   );
 
   function handleSelectProduct(product: Product): void {
@@ -145,7 +147,7 @@ export const ProductSelectSheet = forwardRef<
         handleClose={handleCloseAndReset}
         title={t('order_form.add_item')}
         contentContainerStyle={{
-          maxHeight: screenHeight / 2,
+          maxHeight: screenHeight * 0.7,
         }}
         submitButtonProps={{ text: t('general.done') }}
         handleSubmit={handleUpdateSelectedProducts}
@@ -156,6 +158,21 @@ export const ProductSelectSheet = forwardRef<
           keyExtractor={(item, index) => `${item.product_id}-${index}`}
           contentContainerClassName="gap-sm"
           showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={[0]}
+          ListHeaderComponent={
+            <InputField
+              onChangeText={setSearch}
+              placeholder="Search product"
+              left={
+                <Icon
+                  name="search"
+                  size="lg"
+                  className="text-muted-foreground"
+                />
+              }
+              loading={isSearchDebouncing}
+            />
+          }
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) {
               fetchNextPage();

@@ -72,7 +72,7 @@ export function ProductItem({
     >
       <View
         className={twMerge(
-          'gap-sm border-border p-sm pb-sm border-border flex-row items-center rounded-md border',
+          'gap-sm border-border p-sm pb-sm flex-row items-center rounded-md border',
           selected && 'border-accent bg-accent/10',
           !product.available && 'opacity-50',
         )}

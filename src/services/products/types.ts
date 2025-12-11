@@ -6,6 +6,7 @@ export interface ProductListRequestParams {
   sort_by?: 'created_at';
   sort_direction?: 'asc' | 'desc';
   search_by?: 'name';
+  search?: string;
   status?: string;
   is_stock?: boolean;
   location_id?: number;
