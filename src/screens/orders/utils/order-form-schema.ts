@@ -8,6 +8,7 @@ import {
   emailSchema,
   numberSchema,
   optionalEmailSchema,
+  optionalNumberSchema,
   optionalPhoneSchema,
   optionalStringSchema,
   phoneSchema,
@@ -100,13 +101,13 @@ const baseItemStepSchema = z.object({
   products: z
     .array(
       z.object({
-        quantity: z.number().optional(),
+        quantity: optionalNumberSchema,
         product_id: numberSchema,
         name: stringSchema,
         sku: stringSchema,
-        brand: z.string().nullable(),
+        brand: stringSchema.nullable(),
         category_name: stringSchema,
-        featured_image_url: z.string().nullable(),
+        featured_image_url: stringSchema.nullable(),
         weight: stringSchema,
         width: stringSchema,
         height: stringSchema,
@@ -121,7 +122,7 @@ const baseItemStepSchema = z.object({
         updated_at: stringSchema,
         updated_by: stringSchema,
         mapping_count: numberSchema,
-        available: z.number().nullable(),
+        available: numberSchema.nullable(),
       }),
     )
     .min(1),
@@ -170,7 +171,7 @@ const shipmentStepSchema = z.object({
   logistic_service_name: optionalStringSchema,
   logistic_carrier: optionalStringSchema,
   tracking_number: optionalStringSchema,
-  shipping_fee: z.number({ error: required }),
+  shipping_fee: numberSchema,
   shipping_discount: z.coerce.number<number>().optional(),
   packing_fee: z.coerce.number<number>().optional(),
   other_fee: z.coerce.number<number>().optional(),
