@@ -15,15 +15,17 @@ import {
 import { snackbar } from '@/components/snackbar';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
 import { AuthService } from '@/services';
-import { useProfileQuery } from '@/services/user/repository';
+import { ProfileResponse } from '@/services/user';
 import { useAuthStore } from '@/store';
 
-export function ProfileCard(): JSX.Element | null {
+interface ProfileCardProps {
+  profile?: ProfileResponse;
+}
+
+export function ProfileCard({ profile }: ProfileCardProps): JSX.Element | null {
   const { t } = useTranslation();
   const logoutDialogRef = useRef<BottomSheetModal>(null);
   const { logout, user: _user } = useAuthStore();
-
-  const { data: profile } = useProfileQuery();
 
   const user = profile?.user ?? _user;
 
