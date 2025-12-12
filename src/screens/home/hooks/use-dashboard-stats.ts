@@ -82,6 +82,8 @@ interface DashboardStatsReturn {
         delivery_issue: number;
       }
     | undefined;
+  refetchAll: () => Promise<void>;
+  isRefetching: boolean;
 }
 
 /**
@@ -95,7 +97,11 @@ export function useDashboardStats(
   enabled: boolean,
   payload: DashboardPayload,
 ): DashboardStatsReturn {
-  const { data: summaryChartOrder } = useChartSummaryQuery(
+  const {
+    data: summaryChartOrder,
+    refetch: refetchChartOrder,
+    isRefetching: isRefetchingChartOrder,
+  } = useChartSummaryQuery(
     {
       enabled,
       select: (data) => {
@@ -135,8 +141,16 @@ export function useDashboardStats(
     },
     payload,
   );
-  const { data: summaryOrder } = useOrderTotalQuery({ enabled }, payload);
-  const { data: summaryMpOrder } = useOrderMarketplaceQuery(
+  const {
+    data: summaryOrder,
+    refetch: refetchOrder,
+    isRefetching: isRefetchingOrder,
+  } = useOrderTotalQuery({ enabled }, payload);
+  const {
+    data: summaryMpOrder,
+    refetch: refetchMpOrder,
+    isRefetching: isRefetchingMpOrder,
+  } = useOrderMarketplaceQuery(
     {
       enabled,
       select: (data) => {
@@ -151,7 +165,11 @@ export function useDashboardStats(
     },
     payload,
   );
-  const { data: summaryChartRevenue } = useChartRevenueQuery(
+  const {
+    data: summaryChartRevenue,
+    refetch: refetchChartRevenue,
+    isRefetching: isRefetchingChartRevenue,
+  } = useChartRevenueQuery(
     {
       enabled,
       select: (data) => {
@@ -192,11 +210,16 @@ export function useDashboardStats(
     },
     payload,
   );
-  const { data: summaryTotalRevenue } = useTotalRevenueQuery(
-    { enabled },
-    payload,
-  );
-  const { data: summaryStatusMarketplace } = useStatusMarketplaceQuery(
+  const {
+    data: summaryTotalRevenue,
+    refetch: refetchTotalRevenue,
+    isRefetching: isRefetchingTotalRevenue,
+  } = useTotalRevenueQuery({ enabled }, payload);
+  const {
+    data: summaryStatusMarketplace,
+    refetch: refetchStatusMarketplace,
+    isRefetching: isRefetchingStatusMarketplace,
+  } = useStatusMarketplaceQuery(
     {
       enabled,
       select: (data) => {
@@ -214,17 +237,42 @@ export function useDashboardStats(
     payload,
   );
 
-  const { data: summaryPerformanceSummary } = usePerformanceSummaryQuery(
-    { enabled },
-    payload,
-  );
+  const {
+    data: summaryPerformanceSummary,
+    refetch: refetchPerformanceSummary,
+    isRefetching: isRefetchingPerformanceSummary,
+  } = usePerformanceSummaryQuery({ enabled }, payload);
 
-  const { data: summaryProcessSummary } = useProcessSummaryQuery(
-    { enabled },
-    payload,
-  );
+  const {
+    data: summaryProcessSummary,
+    refetch: refetchProcessSummary,
+    isRefetching: isRefetchingProcessSummary,
+  } = useProcessSummaryQuery({ enabled }, payload);
 
   // const { data: summaryTopProduct } = useTopProductQuery({ enabled }, payload);
+
+  async function refetchAll(): Promise<void> {
+    await Promise.all([
+      refetchChartOrder(),
+      refetchOrder(),
+      refetchMpOrder(),
+      refetchChartRevenue(),
+      refetchTotalRevenue(),
+      refetchStatusMarketplace(),
+      refetchPerformanceSummary(),
+      refetchProcessSummary(),
+    ]);
+  }
+
+  const isRefetching =
+    isRefetchingChartOrder ||
+    isRefetchingOrder ||
+    isRefetchingMpOrder ||
+    isRefetchingChartRevenue ||
+    isRefetchingTotalRevenue ||
+    isRefetchingStatusMarketplace ||
+    isRefetchingPerformanceSummary ||
+    isRefetchingProcessSummary;
 
   return {
     summaryChartOrder,
@@ -235,5 +283,7 @@ export function useDashboardStats(
     summaryStatusMarketplace,
     summaryPerformanceSummary,
     summaryProcessSummary,
+    refetchAll,
+    isRefetching,
   };
 }

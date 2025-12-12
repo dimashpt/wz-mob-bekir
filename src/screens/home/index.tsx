@@ -1,5 +1,5 @@
 import React, { JSX, useState } from 'react';
-import { BackHandler, View } from 'react-native';
+import { BackHandler, RefreshControl, View } from 'react-native';
 
 import dayjs, { Dayjs } from 'dayjs';
 import { useFocusEffect } from 'expo-router';
@@ -44,6 +44,8 @@ export default function HomeScreen(): JSX.Element {
     summaryStatusMarketplace,
     summaryPerformanceSummary,
     summaryProcessSummary,
+    refetchAll,
+    isRefetching,
   } = useDashboardStats(fetchEnabled, payload);
 
   /**
@@ -77,6 +79,9 @@ export default function HomeScreen(): JSX.Element {
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,
         }}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetchAll} />
+        }
       >
         <Text variant="headingL">{t('home.title')}</Text>
         <SelectDateTime
