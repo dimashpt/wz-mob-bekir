@@ -2,9 +2,14 @@ import React, { ReactElement, useRef } from 'react';
 
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import Animated from 'react-native-reanimated';
 
-import { BottomSheet, BottomSheetModal, Button, Text } from '@/components';
+import {
+  BottomSheet,
+  BottomSheetModal,
+  Button,
+  Container,
+  Text,
+} from '@/components';
 import { snackbar } from '@/components/snackbar';
 import { AUTH_ENDPOINTS } from '@/constants/endpoints';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
@@ -31,10 +36,10 @@ function SettingsScreen(): ReactElement {
   });
 
   return (
-    <>
-      <Animated.ScrollView
-        className="bg-background mt-safe"
-        contentContainerClassName="p-lg gap-md flex-1"
+    <Container className="pt-safe">
+      <Container.Scroll
+        className="bg-background"
+        contentContainerClassName="p-lg gap-md"
         contentContainerStyle={{
           paddingBottom: TAB_BAR_HEIGHT,
         }}
@@ -52,7 +57,7 @@ function SettingsScreen(): ReactElement {
           loading={logoutMutation.isPending}
         />
         <VersionCode />
-      </Animated.ScrollView>
+      </Container.Scroll>
       <BottomSheet.Confirm
         ref={logoutDialogRef}
         title={t('profile.logout')}
@@ -66,7 +71,7 @@ function SettingsScreen(): ReactElement {
         closeButtonProps={{ text: t('general.cancel') }}
         description={t('profile.logout_confirmation_description')}
       />
-    </>
+    </Container>
   );
 }
 

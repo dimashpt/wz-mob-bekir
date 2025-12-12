@@ -70,41 +70,45 @@ export default function HomeScreen(): JSX.Element {
   }
 
   return (
-    <Container.Scroll
-      className="bg-background mt-safe"
-      contentContainerClassName="p-lg gap-md"
-      contentContainerStyle={{
-        paddingBottom: TAB_BAR_HEIGHT,
-      }}
-    >
-      <Text variant="headingL">{t('home.title')}</Text>
-      <SelectDateTime
-        placeholder={t('home.select_period')}
-        mode="date-range"
-        className="bg-surface"
-        onChange={setRange}
-        value={range}
-      />
-      <View className="gap-md flex-1">
-        <RevenueSummary
-          range={[payload.date_from, payload.date_to].join('~')}
-          summaryTotalRevenue={summaryTotalRevenue}
-          summaryChartRevenue={summaryChartRevenue}
+    <Container className="pt-safe">
+      <Container.Scroll
+        className="bg-background"
+        contentContainerClassName="p-lg gap-md"
+        contentContainerStyle={{
+          paddingBottom: TAB_BAR_HEIGHT,
+        }}
+      >
+        <Text variant="headingL">{t('home.title')}</Text>
+        <SelectDateTime
+          placeholder={t('home.select_period')}
+          mode="date-range"
+          className="bg-surface"
+          onChange={setRange}
+          value={range}
         />
-        <OrderSummary
-          range={[payload.date_from, payload.date_to].join('~')}
-          summaryOrder={summaryOrder}
-          summaryChartOrder={summaryChartOrder}
-          summaryMpOrder={summaryMpOrder}
-        />
-        <View className="gap-md flex-row">
-          <StatusSummary summaryStatusMarketplace={summaryStatusMarketplace} />
-          <PerformanceSummary
-            summaryPerformanceSummary={summaryPerformanceSummary}
+        <View className="gap-md flex-1">
+          <RevenueSummary
+            range={[payload.date_from, payload.date_to].join('~')}
+            summaryTotalRevenue={summaryTotalRevenue}
+            summaryChartRevenue={summaryChartRevenue}
           />
+          <OrderSummary
+            range={[payload.date_from, payload.date_to].join('~')}
+            summaryOrder={summaryOrder}
+            summaryChartOrder={summaryChartOrder}
+            summaryMpOrder={summaryMpOrder}
+          />
+          <View className="gap-md flex-row">
+            <StatusSummary
+              summaryStatusMarketplace={summaryStatusMarketplace}
+            />
+            <PerformanceSummary
+              summaryPerformanceSummary={summaryPerformanceSummary}
+            />
+          </View>
+          <ProcessSummary summaryProcessSummary={summaryProcessSummary} />
         </View>
-        <ProcessSummary summaryProcessSummary={summaryProcessSummary} />
-      </View>
-    </Container.Scroll>
+      </Container.Scroll>
+    </Container>
   );
 }

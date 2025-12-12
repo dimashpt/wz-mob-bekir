@@ -134,6 +134,7 @@ function App(): React.ReactNode {
       <QueryClientProvider client={queryClient}>
         <SafeAreaListener
           onChange={({ insets }) => Uniwind.updateInsets(insets)}
+          style={{ backgroundColor }}
         >
           <KeyboardProvider>
             <BottomSheetModalProvider>
