@@ -2,11 +2,17 @@ import React, { useState } from 'react';
 import { Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 import * as Haptics from 'expo-haptics';
-import Animated, { AnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  AnimatedProps,
+  AnimatedStyle,
+} from 'react-native-reanimated';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export interface ClickableProps extends Omit<PressableProps, 'style'> {
+export interface ClickableProps extends Omit<
+  AnimatedProps<PressableProps>,
+  'style'
+> {
   children: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;

@@ -112,6 +112,7 @@ export function FormStepItem(): JSX.Element {
           ? watchProducts.map((product, index) => (
               <ProductItem
                 key={index}
+                index={index}
                 product={product}
                 onQuantityChange={(updatedProduct) =>
                   onQuantityChange(updatedProduct, index)

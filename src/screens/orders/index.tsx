@@ -64,6 +64,7 @@ export default function OrdersScreen(): JSX.Element {
     paymentMethod: [],
     period: null,
   });
+  const [isRefreshingManually, setIsRefreshingManually] = useState(false);
   const floatingActionButtonRef = useRef<FloatingActionButton>(null);
   const {
     data,
@@ -91,7 +92,9 @@ export default function OrdersScreen(): JSX.Element {
     [data],
   );
 
-  function handleRefresh(): void {
+  async function handleRefresh(): Promise<void> {
+    setIsRefreshingManually(true);
+
     // Set the query data to only contain the first page
     queryClient.setQueryData(
       [ORDER_ENDPOINTS.LIST_ORDERS, 'infinite', { per_page: 10 }],
@@ -102,7 +105,8 @@ export default function OrdersScreen(): JSX.Element {
     );
 
     // Refetch the query to update the UI
-    refetch();
+    await refetch();
+    setIsRefreshingManually(false);
   }
 
   function setFilters(newFilters: Partial<OrderFilters>): void {
@@ -236,7 +240,9 @@ export default function OrdersScreen(): JSX.Element {
         onScroll={floatingActionButtonRef.current?.onScroll}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.order_header_id.toString()}
-        renderItem={({ item }) => <OrderListItem item={item} />}
+        renderItem={({ item, index }) => (
+          <OrderListItem item={item} index={index} />
+        )}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
@@ -274,7 +280,10 @@ export default function OrdersScreen(): JSX.Element {
         )}
         onEndReachedThreshold={0.5}
         refreshControl={
-          <RefreshControl refreshing={isRefetching} onRefresh={handleRefresh} />
+          <RefreshControl
+            refreshing={isRefreshingManually}
+            onRefresh={handleRefresh}
+          />
         }
         ListFooterComponent={
           isFetchingNextPage ? (

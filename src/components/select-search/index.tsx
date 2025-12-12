@@ -16,6 +16,7 @@ import { Icon } from '@/components/icon';
 import { InputField } from '@/components/input-field';
 import { Option } from '@/components/option-bottom-sheet';
 import { Text } from '@/components/text';
+import { AnimatedComponent } from '../animated-component';
 import { Button } from '../button';
 
 export interface SelectSearchProps<TData = unknown> extends Omit<
@@ -207,17 +208,19 @@ function SelectSearchInner<TData = unknown>(
             renderItem ? (
               renderItem({ item, index, onSelect: () => handleSelect(item) })
             ) : (
-              <Clickable
-                onPress={() => handleSelect(item)}
-                className="p-md rounded-md"
-              >
-                <Text variant="bodyS">{item.label}</Text>
-                {item.description ? (
-                  <Text variant="bodyXS" color="muted">
-                    {item.description}
-                  </Text>
-                ) : null}
-              </Clickable>
+              <AnimatedComponent index={index}>
+                <Clickable
+                  onPress={() => handleSelect(item)}
+                  className="p-md rounded-md"
+                >
+                  <Text variant="bodyS">{item.label}</Text>
+                  {item.description ? (
+                    <Text variant="bodyXS" color="muted">
+                      {item.description}
+                    </Text>
+                  ) : null}
+                </Clickable>
+              </AnimatedComponent>
             )
           }
         />

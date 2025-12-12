@@ -186,13 +186,14 @@ export const ProductSelectSheet = forwardRef<
               </View>
             ) : null
           }
-          renderItem={({ item }) => {
+          renderItem={({ item, index }) => {
             const isSelected = selectedProducts.some(
               (p) => p.product_id === item.product_id,
             );
 
             return (
               <ProductItem
+                index={index}
                 product={item}
                 selected={isSelected}
                 onPress={handleSelectProduct}
