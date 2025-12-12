@@ -23,7 +23,7 @@ export function PerformanceSummary({
   const { t } = useTranslation();
 
   return (
-    <Container.Card className="flex-1">
+    <Container.Card className="flex-1" index={3}>
       <Text variant="labelS">{t('home.performance_summary')}</Text>
       <View className="gap-sm flex-row items-center">
         <View className="bg-success p-sm rounded-full">

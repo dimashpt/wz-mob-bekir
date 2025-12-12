@@ -108,7 +108,7 @@ export function OrderSummary({
     ) * 1.5; // Add 50% gap
 
   return (
-    <Container.Card className="gap-lg shrink overflow-hidden">
+    <Container.Card className="gap-lg shrink overflow-hidden" index={1}>
       <View className="gap-sm flex-row items-center">
         <Icon name="cart" className="text-foreground" size="xl" />
         <Text variant="labelL">{t('home.order_summary')}</Text>

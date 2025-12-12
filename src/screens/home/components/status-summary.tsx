@@ -86,7 +86,7 @@ export function StatusSummary({
   }, [summaryStatusMarketplace]);
 
   return (
-    <Container.Card className="flex-1">
+    <Container.Card className="flex-1" index={2}>
       <Text variant="labelS">{t('home.status_summary')}</Text>
       <View className="gap-md">
         {/* Bar Chart */}

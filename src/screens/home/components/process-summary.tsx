@@ -21,7 +21,7 @@ export function ProcessSummary({
 
   return (
     <View className="gap-md flex-row">
-      <Container.Card className="flex-1">
+      <Container.Card className="flex-1" index={4}>
         <Text variant="labelXS" numberOfLines={1}>
           {t('home.problem_processed')}
         </Text>
@@ -29,7 +29,7 @@ export function ProcessSummary({
           {formatNumber(summaryProcessSummary?.problem_process ?? 0)}
         </Text>
       </Container.Card>
-      <Container.Card className="flex-1">
+      <Container.Card className="flex-1" index={5}>
         <Text variant="labelXS" numberOfLines={1}>
           {t('home.cancel_request')}
         </Text>
@@ -37,7 +37,7 @@ export function ProcessSummary({
           {formatNumber(summaryProcessSummary?.request_cancel ?? 0)}
         </Text>
       </Container.Card>
-      <Container.Card className="flex-1">
+      <Container.Card className="flex-1" index={6}>
         <Text variant="labelXS" numberOfLines={1}>
           {t('home.delivery_issue')}
         </Text>

@@ -9,6 +9,8 @@ import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 import { withUniwind } from 'uniwind';
 
+import { AnimatedComponent } from '../animated-component';
+
 const KeyboardAwareScrollView = withUniwind(KeyboardAwareScrollViewRNK);
 
 const containerVariants = tv({
@@ -86,14 +88,19 @@ function ContainerScroll({
 function ContainerCard({
   children,
   className,
+  index,
 }: {
   children?: React.ReactNode;
   className?: string;
+  index?: number;
 }): React.ReactElement {
   return (
-    <View className={twMerge('bg-surface p-md gap-md rounded-md', className)}>
+    <AnimatedComponent
+      index={index}
+      className={twMerge('bg-surface p-md gap-md rounded-md', className)}
+    >
       {children}
-    </View>
+    </AnimatedComponent>
   );
 }
 
