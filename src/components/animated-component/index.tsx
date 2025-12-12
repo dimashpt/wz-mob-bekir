@@ -7,18 +7,20 @@ interface ProductItemProps extends ViewProps {
   index?: number;
   children: React.ReactNode;
   duration?: number;
+  disableExitAnimation?: boolean;
 }
 
 export function AnimatedComponent({
   children,
   index = 0,
   duration = 50,
+  disableExitAnimation = false,
   ...props
 }: ProductItemProps): React.JSX.Element {
   return (
     <Animated.View
       entering={FadeInDown.delay(index * duration).springify()}
-      exiting={FadeOutUp.springify()}
+      exiting={disableExitAnimation ? undefined : FadeOutUp.springify()}
       {...props}
     >
       {children}

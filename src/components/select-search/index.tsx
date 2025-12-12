@@ -9,6 +9,7 @@ import { FlatList, FlatListProps, Keyboard, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 
+import { AnimatedComponent } from '@/components/animated-component';
 import { Clickable } from '@/components/clickable';
 import { Dialog, DialogRef } from '@/components/dialog';
 import { Divider } from '@/components/divider';
@@ -16,7 +17,6 @@ import { Icon } from '@/components/icon';
 import { InputField } from '@/components/input-field';
 import { Option } from '@/components/option-bottom-sheet';
 import { Text } from '@/components/text';
-import { AnimatedComponent } from '../animated-component';
 import { Button } from '../button';
 
 export interface SelectSearchProps<TData = unknown> extends Omit<
@@ -208,7 +208,8 @@ function SelectSearchInner<TData = unknown>(
             renderItem ? (
               renderItem({ item, index, onSelect: () => handleSelect(item) })
             ) : (
-              <AnimatedComponent index={index}>
+              // disable exit animation because it's conflicting with the dialog
+              <AnimatedComponent index={index} disableExitAnimation>
                 <Clickable
                   onPress={() => handleSelect(item)}
                   className="p-md rounded-md"
