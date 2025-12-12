@@ -162,6 +162,7 @@ export const ProductSelectSheet = forwardRef<
           ListHeaderComponent={
             <InputField
               onChangeText={setSearch}
+              inputClassName="py-sm"
               placeholder="Search product"
               left={
                 <Icon
@@ -193,7 +194,7 @@ export const ProductSelectSheet = forwardRef<
 
             return (
               <ProductItem
-                index={index}
+                index={index % 10}
                 product={item}
                 selected={isSelected}
                 onPress={handleSelectProduct}

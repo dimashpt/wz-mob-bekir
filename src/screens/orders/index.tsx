@@ -231,17 +231,15 @@ export default function OrdersScreen(): JSX.Element {
       </View>
       <List
         data={orders}
+        keyExtractor={(item) => item.order_header_id.toString()}
         className="flex-1"
         contentContainerClassName="gap-sm"
-        contentContainerStyle={{
-          paddingBottom: TAB_BAR_HEIGHT,
-        }}
+        contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
         scrollEnabled={!isLoading}
         onScroll={floatingActionButtonRef.current?.onScroll}
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.order_header_id.toString()}
         renderItem={({ item, index }) => (
-          <OrderListItem item={item} index={index} />
+          <OrderListItem item={item} index={index % 10} />
         )}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {

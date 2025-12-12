@@ -1,10 +1,8 @@
 import React, { JSX } from 'react';
 import { View } from 'react-native';
 
-import { Image as ExpoImage } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { withUniwind } from 'uniwind';
 
 import {
   AnimatedComponent,
@@ -12,6 +10,7 @@ import {
   Clickable,
   Divider,
   Icon,
+  Image,
   Text,
 } from '@/components';
 import {
@@ -22,8 +21,6 @@ import { Order } from '@/services/order/types';
 import { formatDisplayDate } from '@/utils/date';
 import { formatCurrency } from '@/utils/formatter';
 import { statusToTranslationKey } from '../utils/order-helpers';
-
-const Image = withUniwind(ExpoImage);
 
 export default function OrderListItem({
   item,
