@@ -27,7 +27,7 @@ const ENDPOINTS = {
 
   // User endpoints
   USER_ENDPOINTS: {
-    GET_USER: '/user',
+    PROFILE: '/auth/v1/me',
   },
 
   // Order endpoints

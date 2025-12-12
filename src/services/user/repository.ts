@@ -9,32 +9,39 @@ import {
 import { USER_ENDPOINTS } from '@/constants/endpoints';
 import { useAuthStore } from '@/store';
 import * as UserService from './index';
-import { User } from './types';
+import { ProfileResponse } from './types';
 
 type UserQuery = Omit<
-  Partial<DefinedInitialDataOptions<User, Error, User, readonly unknown[]>>,
+  Partial<
+    DefinedInitialDataOptions<
+      ProfileResponse,
+      Error,
+      ProfileResponse,
+      readonly unknown[]
+    >
+  >,
   'queryKey' | 'queryFn'
 >;
 
 /**
- * Custom hook to fetch user information.
+ * Custom hook to fetch profile information.
  * @param params - Optional parameters for the query.
- * @returns The query object containing user information.
+ * @returns The query object containing profile information.
  */
-export function useUserQuery(
+export function useProfileQuery(
   params: UserQuery = {},
-): UseQueryResult<User, Error> {
-  const query = useQuery<User>({
+): UseQueryResult<ProfileResponse, Error> {
+  const query = useQuery({
     ...params,
-    queryKey: [USER_ENDPOINTS.GET_USER],
-    queryFn: UserService.getUser,
+    queryKey: [USER_ENDPOINTS.PROFILE],
+    queryFn: UserService.getProfile,
   });
   const { setUser } = useAuthStore();
 
   useEffect(() => {
     // Always update the user info in the auth store when the query data changes
     if (query.data) {
-      setUser(query.data);
+      setUser(query.data.user);
     }
   }, [query.data]);
 

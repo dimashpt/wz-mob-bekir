@@ -1,3 +1,15 @@
+export interface ProfileResponse {
+  user: User;
+  tenant: {
+    id: string;
+    name: string;
+    plan: string;
+    logo: string;
+  };
+  permissions: UserPermission[];
+  roles: string;
+}
+
 export interface User {
   id: number;
   name: string;
