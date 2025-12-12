@@ -25,7 +25,7 @@
   },
   "tab": {
     "home": "Home",
-    "settings": "Pengaturan",
+    "profile": "Profil",
     "orders": "Pesanan",
     "products": "Produk",
     "chat": "Percakapan"
@@ -100,6 +100,7 @@
     "special": "Kata sandi harus mengandung minimal satu karakter khusus"
   },
   "profile": {
+    "title": "Profil",
     "logout": "Keluar",
     "preferences": "Preferensi",
     "developer_features": "Fitur Pengembang",
@@ -219,9 +220,6 @@
   },
   "storybook": {
     "title": "Storybook"
-  },
-  "settings": {
-    "title": "Pengaturan"
   },
   "chat": {
     "title": "Percakapan"

@@ -1,7 +1,7 @@
 import type { ImagePreviewModal as ImagePreviewModalType } from '@/components/image-preview-modal';
 
 import React, { useRef } from 'react';
-import { Dimensions, View, ViewStyle } from 'react-native';
+import { Dimensions, ViewStyle } from 'react-native';
 
 import { Image as ExpoImage, ImageStyle } from 'expo-image';
 import { withUniwind } from 'uniwind';
@@ -27,6 +27,8 @@ interface ProfilePictureProps {
   className?: string;
   /** Custom class name for the profile photo */
   photoClassName?: string;
+  /** Size of the placeholder icon */
+  placeholderSize?: number;
 }
 
 /**
@@ -41,6 +43,7 @@ export function ProfilePicture({
   enableHaptic = true,
   className,
   photoClassName,
+  placeholderSize = 24,
 }: ProfilePictureProps): React.JSX.Element {
   const imagePreviewRef = useRef<ImagePreviewModalType>(null);
 
@@ -70,9 +73,11 @@ export function ProfilePicture({
             className={photoClassName}
           />
         ) : (
-          <View className="bg-muted h-15 w-15 items-center justify-center rounded-full">
-            <Icon name="user" size={20} className="text-foreground-muted" />
-          </View>
+          <Icon
+            name="user"
+            size={placeholderSize}
+            className="text-muted-foreground"
+          />
         )}
       </Clickable>
 

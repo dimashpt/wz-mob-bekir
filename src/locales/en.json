@@ -26,7 +26,7 @@
   },
   "tab": {
     "home": "Home",
-    "settings": "Settings",
+    "profile": "Profile",
     "orders": "Orders",
     "products": "Products",
     "chat": "Chat"
@@ -102,6 +102,7 @@
     "special": "Password must contain at least one special character"
   },
   "profile": {
+    "title": "Profile",
     "logout": "Logout",
     "preferences": "Preferences",
     "developer_features": "Developer Features",
@@ -215,9 +216,6 @@
   },
   "storybook": {
     "title": "Storybook"
-  },
-  "settings": {
-    "title": "Settings"
   },
   "chat": {
     "title": "Chat"

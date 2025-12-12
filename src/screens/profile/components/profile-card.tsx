@@ -43,6 +43,7 @@ export function ProfileCard(): JSX.Element | null {
         <ProfilePicture
           profilePictureUri={user?.avatar ?? undefined}
           photoClassName="h-16 w-16 rounded-full"
+          placeholderSize={64}
         />
         <View className="gap-xs flex-1">
           <Text variant="headingS">{user?.name}</Text>

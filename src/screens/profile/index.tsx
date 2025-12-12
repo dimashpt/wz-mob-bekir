@@ -10,7 +10,7 @@ import { PreferencesSection } from './components/preferences-section';
 import { ProfileCard } from './components/profile-card';
 import { VersionCode } from './components/version-code';
 
-function SettingsScreen(): ReactElement {
+function ProfileScreen(): ReactElement {
   const { t } = useTranslation();
   const { showBetaFeatures } = useAppStore();
 
@@ -23,7 +23,7 @@ function SettingsScreen(): ReactElement {
           paddingBottom: TAB_BAR_HEIGHT,
         }}
       >
-        <Text variant="headingL">{t('settings.title')}</Text>
+        <Text variant="headingL">{t('profile.title')}</Text>
         <ProfileCard />
         <PreferencesSection />
         {showBetaFeatures && <DeveloperFeaturesSection />}
@@ -33,4 +33,4 @@ function SettingsScreen(): ReactElement {
   );
 }
 
-export default SettingsScreen;
+export default ProfileScreen;

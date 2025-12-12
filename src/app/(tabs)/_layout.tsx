@@ -57,10 +57,10 @@ export default function TabLayout(): JSX.Element {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name="profile"
         options={{
-          title: t('tab.settings'),
-          tabBarIcon: () => 'gear',
+          title: t('tab.profile'),
+          tabBarIcon: () => 'user',
         }}
       />
     </Tabs>
