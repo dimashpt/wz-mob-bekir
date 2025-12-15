@@ -43,13 +43,13 @@ export const mapToOrderPayload = (
     is_unpaid: false,
     recipient: {
       name: step_recipient.is_same_as_customer
-        ? step_recipient.customer.name
+        ? step_recipient.customer.name?.label
         : (step_recipient.name ?? ''),
       phone: step_recipient.is_same_as_customer
         ? step_recipient.customer.phone
         : (step_recipient.phone ?? ''),
       email: step_recipient.is_same_as_customer
-        ? step_recipient.customer.email
+        ? (step_recipient?.customer?.email ?? '')
         : (step_recipient.email ?? ''),
       country: step_recipient.subdistrict.data?.country ?? '',
       province: step_recipient.subdistrict.data?.state ?? '',
@@ -66,7 +66,7 @@ export const mapToOrderPayload = (
         step_recipient.subdistrict.data?.subdistrict_code ?? '',
     },
     buyer: {
-      name: step_recipient.customer?.name ?? '',
+      name: step_recipient.customer?.name?.label ?? '',
       phone: step_recipient.customer?.phone ?? '',
       email: step_recipient.customer?.email ?? '',
       full_address: step_recipient.customer?.full_address ?? '',

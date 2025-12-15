@@ -26,3 +26,7 @@ export const PRODUCT_ENDPOINTS = {
 export const SHIPMENT_ENDPOINTS = {
   LIST_LOGISTICS: '/tenant/settings/logistics',
 } as const;
+
+export const CUSTOMER_ENDPOINTS = {
+  LIST_CUSTOMERS: '/tenant/customers',
+} as const;

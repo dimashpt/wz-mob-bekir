@@ -1,10 +1,12 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { ORDER_ENDPOINTS } from '../../constants/endpoints';
+import { CUSTOMER_ENDPOINTS, ORDER_ENDPOINTS } from '../../constants/endpoints';
 import {
   AddressRequestParams,
   AddressResponse,
   CreateOrderPayload,
+  CustomerRequestParams,
+  CustomerResponse,
   OrderDetailsResponse,
   OrderHistoryParams,
   OrderHistoryResponse,
@@ -92,4 +94,21 @@ export async function createOrder(
 
   return response.data.data;
 }
+
+/**
+ * Fetches customers from the API.
+ * @param params - The parameters for the request.
+ * @returns A promise that resolves to the customers.
+ */
+export async function getCustomers(
+  params: CustomerRequestParams,
+): Promise<CustomerResponse> {
+  const response = await API.get<CustomerResponse>(
+    CUSTOMER_ENDPOINTS.LIST_CUSTOMERS,
+    { params },
+  );
+
+  return response.data;
+}
+
 export * from './types';

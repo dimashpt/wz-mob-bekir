@@ -15,42 +15,69 @@ import {
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
 import { useOrderForm } from '../context/order-form-context';
-import { Address } from '../services/order';
-import { useAddressQuery } from '../services/order/repository';
+import { Address, Customer } from '../services/order';
+import {
+  useAddressQuery,
+  useCustomersQuery,
+} from '../services/order/repository';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
+  const customerSearchRef = useRef<SelectSearchRef>(null);
   const subdistrictSearchRef = useRef<SelectSearchRef>(null);
   const { t } = useTranslation();
   const [
     ,
     setSubdistrictSearch,
     debouncedSubdistrictSearch,
-    isSearchDebouncing,
+    isAddressSearchDebouncing,
   ] = useDebounce();
-  const { data: addresses, isFetching } = useAddressQuery(
-    {
-      enabled:
-        debouncedSubdistrictSearch?.length >= 3 ||
-        debouncedSubdistrictSearch.length === 0,
-      select: (data) =>
-        data.destinations.map((address) => ({
-          data: address,
-          label: address.subdistrict,
-          description: [
-            address.district,
-            address.city,
-            address.state,
-            address.country,
-            address.postcode,
-          ]
-            .filter(Boolean)
-            .join(', '),
-          value: address.subdistrict_code,
-        })),
-    },
-    debouncedSubdistrictSearch,
-  );
+  const [
+    ,
+    setCustomerSearch,
+    debouncedCustomerSearch,
+    isCustomerSearchDebouncing,
+  ] = useDebounce();
+
+  const { data: addresses, isFetching: isAddressSearchFetching } =
+    useAddressQuery(
+      {
+        enabled:
+          debouncedSubdistrictSearch?.length >= 3 ||
+          debouncedSubdistrictSearch.length === 0,
+        select: (data) =>
+          data.destinations.map((address) => ({
+            data: address,
+            label: address.subdistrict,
+            description: [
+              address.district,
+              address.city,
+              address.state,
+              address.country,
+              address.postcode,
+            ]
+              .filter(Boolean)
+              .join(', '),
+            value: address.subdistrict_code,
+          })),
+      },
+      debouncedSubdistrictSearch,
+    );
+
+  const { data: customers, isFetching: isCustomerSearchFetching } =
+    useCustomersQuery(
+      {
+        enabled: debouncedCustomerSearch?.length >= 3,
+        select: (data) =>
+          data.data.map((customer) => ({
+            label: `${customer.name} (${customer.phone})`,
+            value: customer.id?.toString(),
+            description: customer.address.full_address,
+            data: customer,
+          })),
+      },
+      { search: debouncedCustomerSearch },
+    );
 
   const { control, ...form } = useFormContext<OrderFormValues>();
   const { resetLogistic } = useOrderForm();
@@ -63,7 +90,7 @@ export function FormStepRecipient(): JSX.Element {
     name: 'step_recipient.customer',
   });
 
-  function onSubdistrictChange(value: Option<Address> | null): void {
+  function onSelectSubdistrict(value: Option<Address> | null): void {
     if (!value) {
       return;
     }
@@ -93,6 +120,33 @@ export function FormStepRecipient(): JSX.Element {
     }
   }
 
+  function onSelectCustomer(value: Option<Customer> | null): void {
+    if (!value) return;
+
+    form.setValue('step_recipient.customer.name', value, {
+      shouldValidate: true,
+    });
+
+    form.setValue('step_recipient.customer.phone', value.data?.phone ?? '', {
+      shouldValidate: true,
+    });
+    form.setValue('step_recipient.customer.email', value.data?.email ?? '', {
+      shouldValidate: true,
+    });
+    form.setValue(
+      'step_recipient.customer.full_address',
+      value.data?.address.full_address ?? '',
+      { shouldValidate: true },
+    );
+
+    form.setValue(
+      'step_recipient.is_same_as_customer',
+      Boolean(value.data?.id),
+    );
+
+    form.trigger('step_recipient.subdistrict');
+  }
+
   return (
     <Container.Scroll
       contentContainerClassName="p-lg gap-md"
@@ -104,18 +158,25 @@ export function FormStepRecipient(): JSX.Element {
         <Controller
           control={control}
           name="step_recipient.customer.name"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <InputField
-              mandatory
+          render={({ field: { value, onBlur }, fieldState: { error } }) => (
+            <SelectSearch
+              ref={customerSearchRef}
               label={t('order_form.customer.name')}
-              value={value}
-              errors={error?.message}
-              onChangeText={onChange}
-              onBlur={onBlur}
+              mandatory
+              allowCreation
               placeholder={t('order_form.enter_customer_name')}
+              title={t('order_form.customer.name')}
+              selected={value}
+              options={customers ?? []}
+              errors={error?.message}
+              onBlur={onBlur}
+              onSelect={onSelectCustomer}
+              search={{
+                onSearchChange: setCustomerSearch,
+                placeholder: t('order_form.enter_customer_name'),
+                isLoading:
+                  isCustomerSearchDebouncing || isCustomerSearchFetching,
+              }}
             />
           )}
         />
@@ -148,7 +209,6 @@ export function FormStepRecipient(): JSX.Element {
             fieldState: { error },
           }) => (
             <InputField
-              mandatory
               label={t('order_form.customer.email')}
               value={value}
               errors={error?.message}
@@ -209,7 +269,7 @@ export function FormStepRecipient(): JSX.Element {
               label={t('order_form.name')}
               mandatory={!isSameAsCustomer}
               disabled={isSameAsCustomer}
-              value={isSameAsCustomer ? watchCustomer?.name : value}
+              value={isSameAsCustomer ? watchCustomer?.name?.label : value}
               errors={error?.message}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -274,11 +334,11 @@ export function FormStepRecipient(): JSX.Element {
               options={addresses ?? []}
               errors={error?.message}
               onBlur={onBlur}
-              onSelect={onSubdistrictChange}
+              onSelect={onSelectSubdistrict}
               search={{
                 onSearchChange: setSubdistrictSearch,
                 placeholder: t('order_form.search_subdistrict'),
-                isLoading: isFetching || isSearchDebouncing,
+                isLoading: isAddressSearchFetching || isAddressSearchDebouncing,
               }}
               helpers={t('order_form.helpers.recipient_address_change')}
             />

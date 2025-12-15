@@ -184,25 +184,28 @@ function SelectSearchInner<TData = unknown>(
                       ? t('select_input.min_characters')
                       : t('select_input.no_results', { search: searchText })}
               </Text>
-              {allowCreation &&
-                searchText.length > 0 &&
-                !props.search?.isLoading && (
-                  <Button
-                    onPress={() => {
-                      const newOption: Option<TData> = {
-                        value: searchText,
-                        label: searchText,
-                      };
-                      onSelect(newOption);
-                      dialogRef.current?.close();
-                      setSearchText('');
-                    }}
-                    prefixIcon="plus"
-                    size="small"
-                    text={t('general.create')}
-                  />
-                )}
             </View>
+          }
+          ListFooterComponent={
+            allowCreation &&
+            searchText.length > 0 &&
+            !props.search?.isLoading ? (
+              <Button
+                onPress={() => {
+                  const newOption: Option<TData> = {
+                    value: searchText,
+                    label: searchText,
+                  };
+                  onSelect(newOption);
+                  dialogRef.current?.close();
+                  setSearchText('');
+                }}
+                prefixIcon="plus"
+                size="small"
+                className="py-sm rounded-t-none rounded-b-sm"
+                text={t('general.create')}
+              />
+            ) : null
           }
           renderItem={({ item, index }) =>
             renderItem ? (

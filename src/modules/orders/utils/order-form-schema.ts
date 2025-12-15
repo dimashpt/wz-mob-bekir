@@ -12,15 +12,19 @@ import {
   required,
   stringSchema,
 } from '@/utils/validation';
-import { Address } from '../services/order';
+import { Address, Customer } from '../services/order';
 import { LogisticProvider } from '../services/shipment';
 import { Warehouse } from '../services/warehouse';
 
 const baseRecipientStepSchema = z.object({
   customer: z.object({
-    name: stringSchema,
+    name: z.object({
+      value: stringSchema,
+      label: stringSchema,
+      data: z.custom<Customer>().optional(),
+    }),
     phone: phoneSchema,
-    email: emailSchema,
+    email: optionalEmailSchema,
     full_address: stringSchema,
   }),
   email: optionalEmailSchema,

@@ -50,7 +50,7 @@ export function FormStepSummary(): JSX.Element {
     if (!watchRecipient) return '-';
 
     return watchRecipient.is_same_as_customer
-      ? watchRecipient.customer.name
+      ? watchRecipient.customer.name?.label
       : watchRecipient.name || '-';
   }
 
@@ -66,7 +66,7 @@ export function FormStepSummary(): JSX.Element {
     if (!watchRecipient) return '-';
 
     return watchRecipient.is_same_as_customer
-      ? watchRecipient.customer.email
+      ? (watchRecipient.customer.email ?? '')
       : watchRecipient.email || '-';
   }
 
@@ -91,7 +91,7 @@ export function FormStepSummary(): JSX.Element {
           <View className="gap-md">
             <DetailItem
               label={t('order_form.customer.name')}
-              value={watchRecipient?.customer?.name || '-'}
+              value={watchRecipient?.customer?.name?.label || '-'}
             />
             <DetailItem
               label={t('order_form.customer.phone')}
