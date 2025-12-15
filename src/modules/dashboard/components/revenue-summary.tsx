@@ -19,7 +19,7 @@ interface ExtendedLineDataItem extends lineDataItem {
 const LineChart = withUniwind(GCLineChart);
 
 const SOSCOM_COLOR = '#42B8D5';
-const MP_COLOR = '#FFAF13';
+// const MP_COLOR = '#FFAF13';
 
 const formatCompactNumber = (value: string | number): string => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
@@ -46,12 +46,12 @@ const lineChartProps = {
   // curved: true,
   overflowBottom: 8,
   hideDataPoints: true,
-  color1: MP_COLOR,
-  color2: SOSCOM_COLOR,
-  startFillColor1: MP_COLOR,
-  startFillColor2: SOSCOM_COLOR,
-  endFillColor1: MP_COLOR,
-  endFillColor2: SOSCOM_COLOR,
+  color1: SOSCOM_COLOR,
+  // color2: SOSCOM_COLOR,
+  startFillColor1: SOSCOM_COLOR,
+  // startFillColor2: SOSCOM_COLOR,
+  endFillColor1: SOSCOM_COLOR,
+  // endFillColor2: SOSCOM_COLOR,
   startOpacity: 0.5,
   endOpacity: 0,
   isAnimated: true,
@@ -75,13 +75,13 @@ const lineChartProps = {
         <View className="p-sm bg-background border-border mt-9 -ml-15 h-[50px] w-[150px] rounded-sm border">
           <Text variant="labelS">{items[0].date}</Text>
           <View className="gap-sm flex-row">
-            <View className="gap-xs flex-row items-center">
+            {/* <View className="gap-xs flex-row items-center">
               <View className="size-2 rounded-full bg-[#FFAF13]" />
               <Text variant="labelS">{formatNumber(items[0].value ?? 0)}</Text>
-            </View>
+            </View> */}
             <View className="gap-xs flex-row items-center">
               <View className="size-2 rounded-full bg-[#42B8D5]" />
-              <Text variant="labelS">{formatNumber(items[1].value ?? 0)}</Text>
+              <Text variant="labelS">{formatNumber(items[0].value ?? 0)}</Text>
             </View>
           </View>
         </View>
@@ -116,7 +116,7 @@ export function RevenueSummary({
   const maxValue =
     Math.max(
       ...[
-        (summaryChartRevenue?.mp ?? []).map((v) => v.value ?? 0),
+        // (summaryChartRevenue?.mp ?? []).map((v) => v.value ?? 0),
         (summaryChartRevenue?.soscom ?? []).map((v) => v.value ?? 0),
       ].flat(),
     ) * 1.5; // Add 50% gap
@@ -133,10 +133,10 @@ export function RevenueSummary({
             {t('home.total_revenue')}
           </Text>
           <Text variant="headingS">
-            {formatCurrency(summaryTotalRevenue?.total_revenue ?? 0)}
+            {formatCurrency(summaryTotalRevenue?.total_revenue_soscom ?? 0)}
           </Text>
         </View>
-        <View className="gap-sm flex-row">
+        {/* <View className="gap-sm flex-row">
           <View className="gap-sm flex-1 flex-row">
             <View className="h-full w-2 rounded-full bg-[#FFAF13]" />
             <View className="gap-xxs">
@@ -159,13 +159,14 @@ export function RevenueSummary({
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
       </View>
       {summaryChartRevenue ? (
         <LineChart
           key={range}
-          data={summaryChartRevenue?.mp}
-          data2={summaryChartRevenue?.soscom}
+          data={summaryChartRevenue?.soscom}
+          // data={summaryChartRevenue?.mp}
+          // data2={summaryChartRevenue?.soscom}
           {...lineChartProps}
           maxValue={maxValue}
           width={screenWidth - spacingLg * 2 - spacingMd * 2 - 50}

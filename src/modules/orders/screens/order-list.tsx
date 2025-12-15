@@ -28,7 +28,6 @@ import {
   ORDER_FILTER_FIELDS,
   ORDER_INTERNAL_STATUS,
   ORDER_PAYMENT_TYPES,
-  ORDER_STORE_PLATFORMS,
 } from '../constants/order';
 import { useOrderInfiniteQuery } from '../services/order/repository';
 import {
@@ -60,7 +59,7 @@ export default function OrdersScreen(): JSX.Element {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<OrderFilters>({
     status: [],
-    channel: [],
+    channel: ['offline', 'website'],
     paymentMethod: [],
     period: null,
   });
@@ -186,7 +185,8 @@ export default function OrdersScreen(): JSX.Element {
                 }),
               )}
             />
-            <Filter.Options
+            {/* Channel filter is disabled for now, and showing socialcommerce platforms only */}
+            {/* <Filter.Options
               name="channel"
               label={t('orders.channel')}
               multiple={true}
@@ -200,7 +200,7 @@ export default function OrdersScreen(): JSX.Element {
                   value: value.value,
                 }),
               )}
-            />
+            /> */}
             <Filter.Options
               name="payment_method"
               label={t('orders.payment_method')}

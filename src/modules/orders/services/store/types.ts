@@ -6,6 +6,7 @@ export interface StoreListRequestParams {
   per_page?: number;
   sort_by?: 'updated_at' | 'created_at';
   sort_order?: 'asc' | 'desc';
+  channels?: StorePlatform[];
 }
 
 export interface StoreListResponse {

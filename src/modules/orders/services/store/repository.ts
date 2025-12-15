@@ -27,11 +27,7 @@ export function useStoresInfiniteQuery<T = InfiniteData<StoreListResponse>>(
     >,
     'queryKey' | 'queryFn' | 'initialPageParam' | 'getNextPageParam'
   > = {},
-  requestParams: Omit<StoreListRequestParams, 'page'> = {
-    per_page: 10,
-    sort_by: 'updated_at',
-    sort_order: 'desc',
-  },
+  requestParams: Omit<StoreListRequestParams, 'page'> = {},
 ): UseInfiniteQueryResult<T, Error> {
   const query = useInfiniteQuery<
     StoreListResponse,
@@ -44,6 +40,9 @@ export function useStoresInfiniteQuery<T = InfiniteData<StoreListResponse>>(
     queryKey: [STORE_ENDPOINTS.LIST_STORES, 'infinite', requestParams],
     queryFn: ({ pageParam }) =>
       StoreService.getStores({
+        per_page: 10,
+        sort_by: 'updated_at',
+        sort_order: 'desc',
         ...requestParams,
         page: pageParam,
       }),

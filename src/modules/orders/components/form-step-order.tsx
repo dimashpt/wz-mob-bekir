@@ -36,7 +36,7 @@ export function FormStepOrder(): JSX.Element {
     fetchNextPage: fetchNextStorePage,
     hasNextPage: hasNextStorePage,
     isFetchingNextPage: isFetchingNextStorePage,
-  } = useStoresInfiniteQuery();
+  } = useStoresInfiniteQuery({}, { channels: ['offline', 'website'] });
   const {
     data: warehouses,
     fetchNextPage: fetchNextWarehousePage,

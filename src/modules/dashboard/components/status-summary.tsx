@@ -25,21 +25,17 @@ export function StatusSummary({
   const { t } = useTranslation();
 
   const { segments, total } = useMemo(() => {
-    const mpData = summaryStatusMarketplace?.marketplace;
+    // const mpData = summaryStatusMarketplace?.marketplace;
     const soscomData = summaryStatusMarketplace?.soscom;
 
-    if (!mpData && !soscomData) return { segments: [], total: 0 };
+    if (!soscomData) return { segments: [], total: 0 };
 
-    const success =
-      Number(mpData?.success ?? 0) + Number(soscomData?.success ?? 0);
-    const onDelivery =
-      Number(mpData?.on_delivery ?? 0) + Number(soscomData?.on_delivery ?? 0);
-    const onProcess =
-      Number(mpData?.on_process ?? 0) + Number(soscomData?.on_process ?? 0);
-    const orderReturn =
-      Number(mpData?.return ?? 0) + Number(soscomData?.return ?? 0);
-    const cancel =
-      Number(mpData?.cancel ?? 0) + Number(soscomData?.cancel ?? 0);
+    // NOTES: Only show soscom data due to updated requirement
+    const success = Number(soscomData?.success ?? 0);
+    const onDelivery = Number(soscomData?.on_delivery ?? 0);
+    const onProcess = Number(soscomData?.on_process ?? 0);
+    const orderReturn = Number(soscomData?.return ?? 0);
+    const cancel = Number(soscomData?.cancel ?? 0);
 
     const total = success + onDelivery + onProcess + orderReturn + cancel;
 

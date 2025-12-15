@@ -108,7 +108,8 @@ export type StorePlatform =
   | 'tiktok'
   | 'tokopedia'
   | 'shopify'
-  | 'offline';
+  | 'offline'
+  | 'website';
 
 export type OrderInternalStatus =
   | 'Unpaid'

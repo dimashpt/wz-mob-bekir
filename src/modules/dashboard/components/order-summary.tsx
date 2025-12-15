@@ -1,7 +1,6 @@
 import React, { JSX } from 'react';
 import { View } from 'react-native';
 
-import { Image as ExpoImage } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import {
   LineChart as GCLineChart,
@@ -11,7 +10,6 @@ import { useCSSVariable, withUniwind } from 'uniwind';
 
 import { Container, Icon, Skeleton, Text } from '@/components';
 import { screenWidth } from '@/hooks';
-import { ORDER_STORE_PLATFORMS_LOGOS } from '@/modules/orders/constants/order';
 import { StorePlatform } from '@/modules/orders/services/order';
 import { formatNumber } from '@/utils/formatter';
 
@@ -20,22 +18,21 @@ interface ExtendedLineDataItem extends lineDataItem {
 }
 
 const LineChart = withUniwind(GCLineChart);
-const Image = withUniwind(ExpoImage);
 
 const SOSCOM_COLOR = '#42B8D5';
-const MP_COLOR = '#FFAF13';
+// const MP_COLOR = '#FFAF13';
 
 const lineChartProps = {
   areaChart: true,
   // curved: true,
   overflowBottom: 8,
   hideDataPoints: true,
-  color1: MP_COLOR,
-  color2: SOSCOM_COLOR,
-  startFillColor1: MP_COLOR,
-  startFillColor2: SOSCOM_COLOR,
-  endFillColor1: MP_COLOR,
-  endFillColor2: SOSCOM_COLOR,
+  color1: SOSCOM_COLOR,
+  // color2: SOSCOM_COLOR,
+  startFillColor1: SOSCOM_COLOR,
+  // startFillColor2: SOSCOM_COLOR,
+  endFillColor1: SOSCOM_COLOR,
+  // endFillColor2: SOSCOM_COLOR,
   startOpacity: 0.5,
   endOpacity: 0,
   isAnimated: true,
@@ -59,13 +56,13 @@ const lineChartProps = {
         <View className="p-sm bg-background border-border mt-9 -ml-15 h-[50px] w-[150px] rounded-sm border">
           <Text variant="labelS">{items[0].date}</Text>
           <View className="gap-sm flex-row">
-            <View className="gap-xs flex-row items-center">
+            {/* <View className="gap-xs flex-row items-center">
               <View className="size-2 rounded-full bg-[#FFAF13]" />
               <Text variant="labelS">{formatNumber(items[0].value ?? 0)}</Text>
-            </View>
+            </View> */}
             <View className="gap-xs flex-row items-center">
               <View className="size-2 rounded-full bg-[#42B8D5]" />
-              <Text variant="labelS">{formatNumber(items[1].value ?? 0)}</Text>
+              <Text variant="labelS">{formatNumber(items[0].value ?? 0)}</Text>
             </View>
           </View>
         </View>
@@ -92,7 +89,7 @@ export function OrderSummary({
   range,
   summaryOrder,
   summaryChartOrder,
-  summaryMpOrder,
+  // summaryMpOrder,
 }: OrderSummaryProps): JSX.Element {
   const { t } = useTranslation();
   const spacingLg = useCSSVariable('--spacing-lg') as number;
@@ -102,7 +99,7 @@ export function OrderSummary({
   const maxValue =
     Math.max(
       ...[
-        (summaryChartOrder?.mp ?? []).map((v) => v.value ?? 0),
+        // (summaryChartOrder?.mp ?? []).map((v) => v.value ?? 0),
         (summaryChartOrder?.soscom ?? []).map((v) => v.value ?? 0),
       ].flat(),
     ) * 1.5; // Add 50% gap
@@ -119,9 +116,9 @@ export function OrderSummary({
         </Text>
         <View className="gap-sm flex-row">
           <Text variant="headingS">
-            {formatNumber(summaryOrder?.total_order ?? 0)}
+            {formatNumber(summaryOrder?.total_order_soscom ?? 0)}
           </Text>
-          <View>
+          {/* <View>
             <View className="gap-xs flex-row items-center">
               <View className="size-2 rounded-full bg-[#FFAF13]" />
               <Text variant="bodyXS" color="muted">
@@ -136,14 +133,15 @@ export function OrderSummary({
                 {formatNumber(summaryOrder?.total_order_soscom ?? 0)})
               </Text>
             </View>
-          </View>
+          </View> */}
         </View>
       </View>
       {summaryChartOrder ? (
         <LineChart
           key={range}
-          data={summaryChartOrder?.mp}
-          data2={summaryChartOrder?.soscom}
+          data={summaryChartOrder?.soscom}
+          // data={summaryChartOrder?.mp}
+          // data2={summaryChartOrder?.soscom}
           {...lineChartProps}
           maxValue={maxValue}
           width={screenWidth - spacingLg * 2 - spacingMd * 2 - 50}
@@ -157,7 +155,7 @@ export function OrderSummary({
       ) : (
         <Skeleton className="h-58" />
       )}
-      <View className="gap-xs flex-row items-center">
+      {/* <View className="gap-xs flex-row items-center">
         {Object.entries(ORDER_STORE_PLATFORMS_LOGOS).map(([store, image]) => (
           <View
             key={store}
@@ -169,7 +167,7 @@ export function OrderSummary({
             </Text>
           </View>
         ))}
-      </View>
+      </View> */}
     </Container.Card>
   );
 }

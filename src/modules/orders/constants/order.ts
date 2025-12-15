@@ -81,6 +81,10 @@ export const ORDER_STORE_PLATFORMS: Record<
     label: 'Offline',
     value: 'offline',
   },
+  website: {
+    label: 'Website',
+    value: 'website',
+  },
 };
 
 export const ORDER_FILTER_FIELDS = {
@@ -134,4 +138,5 @@ export const ORDER_STORE_PLATFORMS_LOGOS: Partial<
   tokopedia: require('@/assets/images/brands/tokopedia.webp'),
   shopify: require('@/assets/images/brands/shopify.webp'),
   offline: require('@/assets/images/brands/offline.png'),
+  website: require('@/assets/images/brands/offline.png'),
 };
