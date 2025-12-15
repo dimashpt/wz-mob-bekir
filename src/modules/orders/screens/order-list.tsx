@@ -1,15 +1,21 @@
 import React, { JSX, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, RefreshControl, View } from 'react-native';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { LegendList } from '@legendapp/list';
+import { useMutation } from '@tanstack/react-query';
 import dayjs, { Dayjs } from 'dayjs';
 import { router } from 'expo-router';
+import { Controller, Resolver, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable, withUniwind } from 'uniwind';
+import z from 'zod';
 
 import { Illustrations } from '@/assets/illustrations';
 import {
+  BottomSheet,
+  BottomSheetModal,
   Button,
   Container,
   Filter,
@@ -17,11 +23,13 @@ import {
   Icon,
   InputField,
   Skeleton,
+  snackbar,
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { screenHeight, screenWidth, useDebounce } from '@/hooks';
 import { queryClient } from '@/lib/react-query';
+import { stringSchema } from '@/utils/validation';
 import OrderListItem from '../components/order-list-item';
 import { ORDER_ENDPOINTS } from '../constants/endpoints';
 import {
@@ -29,6 +37,7 @@ import {
   ORDER_INTERNAL_STATUS,
   ORDER_PAYMENT_TYPES,
 } from '../constants/order';
+import { getOrderDetails } from '../services/order';
 import { useOrderInfiniteQuery } from '../services/order/repository';
 import {
   Order,
@@ -47,11 +56,15 @@ interface OrderFilters {
   period: { start: Dayjs; end: Dayjs } | null;
 }
 
+const getSearchOrderSchema = z.object({ id: stringSchema });
+
+type SearchOrderFormValues = z.infer<typeof getSearchOrderSchema>;
+
 export default function OrdersScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const accentColor = useCSSVariable('--color-accent') as string;
-
+  const searchOrderDialogRef = useRef<BottomSheetModal>(null);
   const [searchKey, setSearchKey] =
     useState<OrderRequestSearchKey>('order_code');
   const [search, setSearch, debouncedSearch, isSearchDebouncing] =
@@ -86,10 +99,28 @@ export default function OrdersScreen(): JSX.Element {
     },
   );
 
+  const searchOrderMutation = useMutation({
+    mutationFn: getOrderDetails,
+    onSuccess: (data) => {
+      router.navigate(
+        `/order-details?id=${data.order.order_header_id.toString()}`,
+      );
+    },
+    onError: (error) => {
+      snackbar.error(error.message);
+    },
+  });
+
   const orders = useMemo(
     () => data?.pages.flatMap((page) => page?.orders ?? []) ?? [],
     [data],
   );
+
+  const { control, ...form } = useForm<SearchOrderFormValues>({
+    resolver: zodResolver(
+      getSearchOrderSchema,
+    ) as Resolver<SearchOrderFormValues>,
+  });
 
   async function handleRefresh(): Promise<void> {
     setIsRefreshingManually(true);
@@ -112,6 +143,10 @@ export default function OrdersScreen(): JSX.Element {
     _setFilters((prev) => ({ ...prev, ...newFilters }));
   }
 
+  function onSearchOrder(data: SearchOrderFormValues): void {
+    searchOrderMutation.mutate(data.id);
+  }
+
   return (
     <Container
       className="bg-background p-lg flex-1"
@@ -119,10 +154,15 @@ export default function OrdersScreen(): JSX.Element {
         paddingTop: insets.top + 20,
       }}
     >
-      <View className="flex-row items-center justify-between">
-        <Text variant="headingL" className="mb-lg">
+      <View className="flex-row items-center">
+        <Text variant="headingL" className="mb-lg grow">
           {t('orders.title')}
         </Text>
+        <Button
+          icon="searchFile"
+          variant="ghost"
+          onPress={searchOrderDialogRef.current?.present}
+        />
         <Button
           icon={showFilters ? 'close' : 'filter'}
           variant="ghost"
@@ -299,6 +339,43 @@ export default function OrdersScreen(): JSX.Element {
           right: 20,
         }}
       />
+      <BottomSheet.Confirm
+        ref={searchOrderDialogRef}
+        title="Search Order"
+        showCloseButton
+        handleSubmit={form.handleSubmit(onSearchOrder)}
+        onClose={form.reset}
+        closeButtonProps={{ text: t('general.cancel') }}
+        submitButtonProps={{
+          text: t('orders.search_order'),
+          loading: searchOrderMutation.isPending,
+        }}
+        description={t('orders.search_order_description')}
+      >
+        <Controller
+          control={control}
+          name="id"
+          render={({
+            field: { onChange, value, onBlur },
+            fieldState: { error },
+          }) => (
+            <InputField
+              bottomSheet
+              value={value}
+              onChangeText={onChange}
+              mandatory
+              autoFocus
+              errors={error?.message}
+              onBlur={onBlur}
+              secureTextEntry
+              enterKeyHint="done"
+              returnKeyType="done"
+              placeholder="ORD-ABCDE97531"
+              onSubmitEditing={form.handleSubmit(onSearchOrder)}
+            />
+          )}
+        />
+      </BottomSheet.Confirm>
     </Container>
   );
 }

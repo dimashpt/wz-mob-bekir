@@ -213,7 +213,8 @@
       "buyer_name": "Nama Pembeli"
     },
     "period": "Periode",
-    "created_at": "Dibuat {{date}}"
+    "created_at": "Dibuat {{date}}",
+    "search_order_description": "Masukkan kode order atau kode tracking"
   },
   "products": {
     "title": "Produk"

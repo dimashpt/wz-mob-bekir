@@ -27,6 +27,7 @@ import productAdd from './product-add.svg';
 import product from './product.svg';
 import refresh from './refresh.svg';
 import rocket from './rocket.svg';
+import searchFile from './search-file.svg';
 import search from './search.svg';
 import shortcut from './shortcut.svg';
 import store from './store.svg';
@@ -72,6 +73,7 @@ export const Icons = {
   refresh,
   rocket,
   search,
+  searchFile,
   shortcut,
   store,
   storybook,
