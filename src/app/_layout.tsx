@@ -24,11 +24,11 @@ import { SafeAreaListener } from 'react-native-safe-area-context';
 import { Uniwind, useCSSVariable } from 'uniwind';
 
 import { DevTools, InAppUpdateDialog, SnackbarProvider } from '@/components';
+import { SplashScreen as SplashScreenComponent } from '@/components/splash';
 import { useTheme } from '@/hooks';
 import { initExceptionHandler } from '@/lib/exception-handler';
 import { queryClient } from '@/lib/react-query';
 import { navigationIntegration, Sentry } from '@/lib/sentry';
-import { default as SplashScreenComponent } from '@/screens/splash';
 import { useAppStore, useAuthStore } from '@/store';
 import { logger } from '@/utils/logger';
 

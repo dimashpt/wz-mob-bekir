@@ -6,8 +6,8 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { initializeAuthInterceptors } from '@/lib/axios';
 import { mmkvEncryptedStorage } from '@/lib/mmkv-storage';
 import { queryClient } from '@/lib/react-query';
-import { LoginResponse } from '@/services/auth/types';
-import { User } from '@/services/user/types';
+import { LoginResponse } from '@/modules/auth/services/types';
+import { User } from '@/modules/profile/services/types';
 
 type AuthStatus = 'firstLogin' | 'loggedIn' | 'loggedOut';
 
@@ -97,7 +97,8 @@ async function refreshTokenFn(): Promise<LoginResponse> {
   }
 
   // Import auth service directly to avoid cycles
-  const { refreshToken: refreshTokenService } = await import('@/services/auth');
+  const { refreshToken: refreshTokenService } =
+    await import('@/modules/auth/services');
   const refreshedData = await refreshTokenService();
 
   // Update tokens in the auth store

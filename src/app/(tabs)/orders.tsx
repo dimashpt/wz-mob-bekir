@@ -1,1 +1,1 @@
-export { default } from '@/screens/orders';
+export { default } from '@/modules/orders/screens/order-list';

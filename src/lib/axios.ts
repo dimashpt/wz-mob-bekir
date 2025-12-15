@@ -5,7 +5,7 @@ import axios, {
 } from 'axios';
 
 import { ErrorResponse } from '@/@types/api';
-import { LoginResponse } from '@/services/auth';
+import { LoginResponse } from '@/modules/auth/services';
 import { AuthStore } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
 

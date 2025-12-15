@@ -1,1 +1,1 @@
-export { default } from '@/screens/orders/order-details';
+export { default } from '@/modules/orders/screens/order-details';
