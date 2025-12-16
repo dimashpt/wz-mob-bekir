@@ -210,8 +210,8 @@
     },
     "period": "Period",
     "created_at": "Created {{date}}",
-    "search_order": "Search Order",
-    "search_order_description": "Enter order code or tracking number",
+    "track_order": "Track Order",
+    "track_order_description": "Enter order code or tracking number",
     "order_not_found": "Order not found"
   },
   "products": {

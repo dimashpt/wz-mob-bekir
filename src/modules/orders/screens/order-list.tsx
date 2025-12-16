@@ -378,16 +378,16 @@ export default function OrdersScreen(): JSX.Element {
       />
       <BottomSheet.Confirm
         ref={searchOrderDialogRef}
-        title="Search Order"
+        title={t('orders.track_order')}
         showCloseButton
         handleSubmit={form.handleSubmit(onSearchOrder)}
         onClose={form.reset}
         closeButtonProps={{ text: t('general.cancel') }}
         submitButtonProps={{
-          text: t('orders.search_order'),
+          text: t('orders.track_order'),
           loading: searchOrderMutation.isPending,
         }}
-        description={t('orders.search_order_description')}
+        description={t('orders.track_order_description')}
       >
         <Controller
           control={control}
