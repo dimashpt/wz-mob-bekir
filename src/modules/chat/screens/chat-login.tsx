@@ -1,0 +1,143 @@
+import { JSX, useRef } from 'react';
+import { Keyboard, TextInput, View } from 'react-native';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import { Controller, Resolver, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCSSVariable } from 'uniwind';
+import { z } from 'zod';
+
+import { Container, Icon, InputField, snackbar, Text } from '@/components';
+import { Button } from '@/components/button';
+import { useAuthStore } from '@/store';
+import { emailSchema, stringSchema } from '@/utils/validation';
+import { CHAT_ENDPOINTS } from '../constants/endpoints';
+import { login } from '../services/auth';
+
+const chatLoginSchema = z.object({
+  email: emailSchema,
+  password: stringSchema,
+});
+
+type ChatLoginFormValues = z.infer<typeof chatLoginSchema>;
+
+export default function ChatLoginScreen(): JSX.Element {
+  const { t } = useTranslation();
+  const { bottom } = useSafeAreaInsets();
+  const spacingMd = useCSSVariable('--spacing-md') as number;
+  const { setChatUser, setStatus } = useAuthStore();
+
+  // Create refs for input fields
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+
+  // Initialize React Hook Form with Zod resolver
+  const { control, handleSubmit } = useForm<ChatLoginFormValues>({
+    resolver: zodResolver(chatLoginSchema) as Resolver<ChatLoginFormValues>,
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    mode: 'onChange',
+  });
+
+  // Mutation
+  const loginMutation = useMutation({
+    mutationKey: [CHAT_ENDPOINTS.LOGIN],
+    mutationFn: login,
+    onSuccess: (data) => {
+      // Check if MFA is required
+      if (data.mfa_required) {
+        // TODO: Navigate to MFA screen
+        snackbar.error('MFA is required');
+        return;
+      }
+
+      if (data.data) {
+        setStatus('loggedIn');
+        setChatUser(data.data);
+
+        snackbar.success(t('login.message.success'));
+      }
+    },
+  });
+
+  function onSubmit(data: ChatLoginFormValues): void {
+    Keyboard.dismiss();
+
+    loginMutation.mutate(data);
+  }
+
+  return (
+    <Container className="bg-surface pt-safe flex-1">
+      <Container.Scroll
+        className="p-lg flex-1"
+        contentContainerClassName="items-center justify-end"
+        style={{ paddingBottom: bottom || spacingMd }}
+      >
+        <View className="p-lg gap-lg w-full">
+          <View className="gap-md items-start">
+            <Icon name="chat" size={64} className="text-foreground" />
+            <Text variant="headingL">Chat Login</Text>
+          </View>
+
+          <Controller
+            control={control}
+            name="email"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                ref={emailRef}
+                label="Email"
+                placeholder="Enter your email"
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={() => passwordRef.current?.focus()}
+                disabled={loginMutation.isPending}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <InputField
+                ref={passwordRef}
+                label="Password"
+                placeholder="Enter your password"
+                value={value}
+                errors={error?.message}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit(onSubmit)}
+                secret
+                disabled={loginMutation.isPending}
+              />
+            )}
+          />
+
+          <Button
+            text="Login"
+            onPress={handleSubmit(onSubmit)}
+            loading={loginMutation.isPending}
+          />
+        </View>
+      </Container.Scroll>
+    </Container>
+  );
+}

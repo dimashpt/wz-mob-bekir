@@ -52,7 +52,7 @@ type ForgotFormValues = z.infer<ReturnType<typeof getForgotSchema>>;
 function LoginScreen(): JSX.Element {
   const { t } = useTranslation();
   const { navigate } = useRouter();
-  const { setToken, status, setStatus, setUser } = useAuthStore();
+  const { setToken, status, setUser } = useAuthStore();
   const { bottom } = useSafeAreaInsets();
   const spacingMd = useCSSVariable('--spacing-md') as number;
 
@@ -95,9 +95,8 @@ function LoginScreen(): JSX.Element {
 
       setToken(data!);
       setUser(data.user);
-      setStatus('loggedIn');
 
-      snackbar.success(t('login.message.success'));
+      navigate('/login-chat');
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
