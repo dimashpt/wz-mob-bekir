@@ -211,7 +211,8 @@
     "period": "Period",
     "created_at": "Created {{date}}",
     "search_order": "Search Order",
-    "search_order_description": "Enter order code or tracking number"
+    "search_order_description": "Enter order code or tracking number",
+    "order_not_found": "Order not found"
   },
   "products": {
     "title": "Products"

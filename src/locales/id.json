@@ -214,7 +214,8 @@
     },
     "period": "Periode",
     "created_at": "Dibuat {{date}}",
-    "search_order_description": "Masukkan kode order atau kode tracking"
+    "search_order_description": "Masukkan kode order atau kode tracking",
+    "order_not_found": "Order tidak ditemukan"
   },
   "products": {
     "title": "Produk"

@@ -23,7 +23,6 @@ import {
   Icon,
   InputField,
   Skeleton,
-  snackbar,
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
@@ -37,7 +36,7 @@ import {
   ORDER_INTERNAL_STATUS,
   ORDER_PAYMENT_TYPES,
 } from '../constants/order';
-import { getOrderDetails } from '../services/order';
+import { getOrders } from '../services/order';
 import { useOrderInfiniteQuery } from '../services/order/repository';
 import {
   Order,
@@ -100,14 +99,10 @@ export default function OrdersScreen(): JSX.Element {
   );
 
   const searchOrderMutation = useMutation({
-    mutationFn: getOrderDetails,
-    onSuccess: (data) => {
-      router.navigate(
-        `/order-details?id=${data.order.order_header_id.toString()}`,
-      );
-    },
-    onError: (error) => {
-      snackbar.error(error.message);
+    mutationFn: handleSearchOrder,
+    onSuccess: (order) => {
+      searchOrderDialogRef.current?.close();
+      router.navigate(`/order-details?id=${order.order_header_id.toString()}`);
     },
   });
 
@@ -121,6 +116,48 @@ export default function OrdersScreen(): JSX.Element {
       getSearchOrderSchema,
     ) as Resolver<SearchOrderFormValues>,
   });
+
+  /**
+   * Handles the search order logic.
+   *
+   * NOTES: currently, backend doesn not provide an API to exact search by order_code or tracking_number.
+   * So we need to search by both fields using order list API and return the matching order.
+   *
+   *  @param value - The value to search for.
+   * @returns The order if found, otherwise throws an error.
+   */
+  async function handleSearchOrder(value: string): Promise<Order> {
+    const params = { page: 1, per_page: 1 };
+
+    // First, try searching by order_code
+    const orderCodeResults = await getOrders({
+      ...params,
+      'search[order_code]': value,
+    });
+
+    // Check if we found a matching order by order_code
+    const orderByCode = orderCodeResults.orders?.find(
+      (order) => order.order_code === value,
+    );
+
+    if (orderByCode) return orderByCode;
+
+    // If not found by order_code, try searching by tracking_number
+    const trackingNumberResults = await getOrders({
+      ...params,
+      'search[tracking_number]': value,
+    });
+
+    // Check if we found a matching order by tracking_number
+    const orderByTracking = trackingNumberResults.orders?.find(
+      (order) => order.tracking_number === value,
+    );
+
+    if (orderByTracking) return orderByTracking;
+
+    // If neither search found, throw error
+    throw new Error(t('orders.order_not_found'));
+  }
 
   async function handleRefresh(): Promise<void> {
     setIsRefreshingManually(true);
