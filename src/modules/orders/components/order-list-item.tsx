@@ -81,7 +81,9 @@ export default function OrderListItem({
             label={t(
               `orders.status.${statusToTranslationKey(item.internal_status)}`,
             )}
-            variant={ORDER_STATUS_CHIP_VARIANTS[item.internal_status].variant}
+            variant={
+              ORDER_STATUS_CHIP_VARIANTS?.[item.internal_status]?.variant
+            }
           />
         </View>
       </Clickable>

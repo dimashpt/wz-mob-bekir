@@ -130,7 +130,8 @@ export type OrderInternalStatus =
   | 'Unmapping Delivery'
   | 'Undefined Status'
   | 'In Cancel'
-  | 'Cancelled Order';
+  | 'Cancelled Order'
+  | 'Pending Logistic';
 
 export interface OrderDetailsResponse {
   order: OrderDetails;

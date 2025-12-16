@@ -15,6 +15,7 @@ export const ORDER_INTERNAL_STATUS: Record<OrderInternalStatus, string> = {
   'In Process': 'orders.status.in_process',
   'Ready To Print': 'orders.status.ready_to_print',
   Packed: 'orders.status.packed',
+  'Pending Logistic': 'orders.status.pending_logistic',
 
   // Shipping
   'Ready For Pickup': 'orders.status.ready_for_pickup',
@@ -106,6 +107,7 @@ export const ORDER_STATUS_CHIP_VARIANTS: Record<
   'In Process': { variant: 'blue' },
   'Ready To Print': { variant: 'blue' },
   Packed: { variant: 'blue' },
+  'Pending Logistic': { variant: 'blue' },
 
   // Shipping
   'Ready For Pickup': { variant: 'blue' },
