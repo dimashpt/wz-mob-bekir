@@ -51,13 +51,15 @@ app-example
 
 #environment
 .env*
+!.env.example
 
 google-services.json
-
-.env.local
 
 # misc
 uniwind.d.ts
 
 # storybook
 .rnstorybook/storybook.requires.ts
+
+# symlinks
+chatwoot

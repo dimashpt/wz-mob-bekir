@@ -51,5 +51,4 @@ app-example
 
 #environment
 .env*
-
-.env.local
+!.env.example
