@@ -15,8 +15,6 @@ import '@/lib/i18n'; // Import i18n configuration
 import '../theme/global.css';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { useNetworkActivityDevTools } from '@rozenite/network-activity-plugin';
-import { usePerformanceMonitorDevTools } from '@rozenite/performance-monitor-plugin';
 import { useTanStackQueryDevTools } from '@rozenite/tanstack-query-plugin';
 import { QueryClientProvider } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
@@ -70,8 +68,6 @@ function App(): React.ReactNode {
     resetStatusBarStyle();
   }, [path]);
 
-  useNetworkActivityDevTools();
-  usePerformanceMonitorDevTools();
   useTanStackQueryDevTools(queryClient);
 
   useEffect(() => {

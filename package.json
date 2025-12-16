@@ -109,8 +109,6 @@
     "@react-native/metro-config": "0.81.5",
     "@rozenite/expo-atlas-plugin": "1.1.0",
     "@rozenite/metro": "1.1.0",
-    "@rozenite/network-activity-plugin": "1.1.0",
-    "@rozenite/performance-monitor-plugin": "1.1.0",
     "@rozenite/tanstack-query-plugin": "1.1.0",
     "@storybook/addon-ondevice-actions": "^10.1.0",
     "@storybook/addon-ondevice-controls": "^10.1.0",
@@ -156,5 +154,13 @@
       "USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS": true,
       "FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS": true
     }
+  },
+  "resolutions": {
+    "@react-native/dev-middleware": "0.83.0",
+    "@react-native/debugger-frontend": "0.83.0"
+  },
+  "resolutionComments": {
+    "@react-native/dev-middleware": "Forcing resolution to use latest Chrome DevTools.",
+    "@react-native/debugger-frontend": "Forcing resolution to use latest Chrome DevTools."
   }
 }
