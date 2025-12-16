@@ -128,15 +128,15 @@ export function FormStepRecipient(): JSX.Element {
     });
 
     form.setValue('step_recipient.customer.phone', value.data?.phone ?? '', {
-      shouldValidate: true,
+      shouldValidate: Boolean(value.data?.phone),
     });
     form.setValue('step_recipient.customer.email', value.data?.email ?? '', {
-      shouldValidate: true,
+      shouldValidate: Boolean(value.data?.email),
     });
     form.setValue(
       'step_recipient.customer.full_address',
       value.data?.address.full_address ?? '',
-      { shouldValidate: true },
+      { shouldValidate: Boolean(value.data?.address.full_address) },
     );
 
     form.setValue(
@@ -144,7 +144,20 @@ export function FormStepRecipient(): JSX.Element {
       Boolean(value.data?.id),
     );
 
-    form.trigger('step_recipient.subdistrict');
+    setSubdistrictSearch(value.data?.address?.subdistrict ?? '');
+    // TODO: set the country after API response is updated
+    form.setValue('step_recipient.province', value.data?.address?.state ?? '');
+    form.setValue('step_recipient.city', value.data?.address?.city ?? '');
+    form.setValue(
+      'step_recipient.district',
+      value.data?.address?.district ?? '',
+    );
+    form.setValue(
+      'step_recipient.postal_code',
+      value.data?.address?.postal_code ?? '',
+    );
+
+    if (value.data) form.trigger('step_recipient.subdistrict');
   }
 
   return (
