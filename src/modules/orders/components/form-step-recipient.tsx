@@ -1,4 +1,5 @@
 import React, { JSX, useRef } from 'react';
+import { View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
@@ -78,7 +79,7 @@ export function FormStepRecipient(): JSX.Element {
         enabled: debouncedCustomerSearch?.length >= 3,
         select: (data) =>
           data.data.map((customer) => ({
-            label: `${customer.name} (${customer.phone})`,
+            label: customer.name,
             value: customer.id?.toString(),
             description: customer.address.full_address,
             data: customer,
@@ -250,6 +251,27 @@ export function FormStepRecipient(): JSX.Element {
               errors={error?.message}
               onBlur={onBlur}
               onSelect={onSelectCustomer}
+              renderItem={({ item }) => (
+                <View>
+                  <View className="gap-xs flex-row items-center">
+                    <Text
+                      variant="bodyS"
+                      className="font-map-medium font-medium"
+                    >
+                      {item.label}
+                    </Text>
+                    <Text
+                      variant="bodyXS"
+                      className="font-map-medium font-medium"
+                    >
+                      ({item.data?.phone})
+                    </Text>
+                  </View>
+                  <Text variant="bodyXS" color="muted">
+                    {item.description}
+                  </Text>
+                </View>
+              )}
               search={{
                 onSearchChange: setCustomerSearch,
                 placeholder: t('order_form.enter_customer_name'),

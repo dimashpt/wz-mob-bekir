@@ -207,26 +207,37 @@ function SelectSearchInner<TData = unknown>(
               />
             ) : null
           }
-          renderItem={({ item, index }) =>
-            renderItem ? (
-              renderItem({ item, index, onSelect: () => handleSelect(item) })
-            ) : (
-              // disable exit animation because it's conflicting with the dialog
-              <AnimatedComponent index={index} disableExitAnimation>
-                <Clickable
-                  onPress={() => handleSelect(item)}
-                  className="p-md rounded-md"
-                >
-                  <Text variant="bodyS">{item.label}</Text>
-                  {item.description ? (
-                    <Text variant="bodyXS" color="muted">
-                      {item.description}
+          renderItem={({ item, index }) => (
+            // disable exit animation because it's conflicting with the dialog
+            <AnimatedComponent index={index} disableExitAnimation>
+              <Clickable
+                onPress={() => handleSelect(item)}
+                className="p-md rounded-md"
+              >
+                {renderItem ? (
+                  renderItem({
+                    item,
+                    index,
+                    onSelect: () => handleSelect(item),
+                  })
+                ) : (
+                  <>
+                    <Text
+                      variant="labelS"
+                      className="font-map-medium font-medium"
+                    >
+                      {item.label}
                     </Text>
-                  ) : null}
-                </Clickable>
-              </AnimatedComponent>
-            )
-          }
+                    {item.description ? (
+                      <Text variant="bodyXS" color="muted">
+                        {item.description}
+                      </Text>
+                    ) : null}
+                  </>
+                )}
+              </Clickable>
+            </AnimatedComponent>
+          )}
         />
       </Dialog>
     </View>
