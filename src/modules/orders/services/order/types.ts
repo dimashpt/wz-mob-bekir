@@ -419,7 +419,7 @@ export interface Customer {
   updated_at: string;
 }
 
-interface CustomerAddress {
+export interface CustomerAddress {
   street: string;
   subdistrict: string;
   district: string;

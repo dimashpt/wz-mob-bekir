@@ -1,5 +1,6 @@
 import React, { JSX, useRef } from 'react';
 
+import { useMutation } from '@tanstack/react-query';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -14,8 +15,15 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
+import { ORDER_ENDPOINTS } from '../constants/endpoints';
 import { useOrderForm } from '../context/order-form-context';
-import { Address, Customer } from '../services/order';
+import {
+  Address,
+  AddressRequestParams,
+  Customer,
+  CustomerAddress,
+  getAddress,
+} from '../services/order';
 import {
   useAddressQuery,
   useCustomersQuery,
@@ -79,6 +87,60 @@ export function FormStepRecipient(): JSX.Element {
       { search: debouncedCustomerSearch },
     );
 
+  // Handle the address search mutation
+  const searchAddressesMutation = useMutation({
+    mutationKey: [ORDER_ENDPOINTS.GET_ADDRESS],
+    mutationFn: (params: AddressRequestParams & { address: CustomerAddress }) =>
+      getAddress({
+        page: 1,
+        per_page: 10,
+        search_by: 'subdistrict',
+        search: params.address.subdistrict,
+      }),
+    onMutate: (variables) => {
+      /**
+       * Initialize the form fields for the province, city, district,
+       * and postal code to the exact address. But, the country and subdistrict
+       * will be empty because it's not provided by the API. When this mutation is successful,
+       * the exact address will be selected and the form fields will be updated.
+       */
+      form.setValue('step_recipient.province', variables?.address?.state ?? '');
+      form.setValue('step_recipient.city', variables?.address?.city ?? '');
+      form.setValue(
+        'step_recipient.district',
+        variables?.address?.district ?? '',
+      );
+      form.setValue(
+        'step_recipient.postal_code',
+        variables?.address?.postal_code ?? '',
+      );
+    },
+    onSuccess: (addresses, variables) => {
+      // Find the exact address from the API response
+      const exactAddress = addresses.destinations.find(
+        (address) =>
+          address.district === variables?.address?.district &&
+          address.city === variables?.address?.city &&
+          address.postcode === variables?.address?.postal_code,
+      );
+
+      // If the exact address is found, select the exact address
+      if (exactAddress) {
+        onSelectSubdistrict({
+          label: exactAddress.subdistrict ?? '',
+          value: exactAddress.subdistrict_code ?? '',
+          data: exactAddress,
+        });
+
+        return;
+      }
+
+      // Use hardcoded string error because this won't be thrown to the UI
+      throw new Error('Exact address not found');
+    },
+    onError: () => form.trigger('step_recipient.subdistrict'),
+  });
+
   const { control, ...form } = useFormContext<OrderFormValues>();
   const { resetLogistic } = useOrderForm();
   const isSameAsCustomer = useWatch({
@@ -120,7 +182,9 @@ export function FormStepRecipient(): JSX.Element {
     }
   }
 
-  function onSelectCustomer(value: Option<Customer> | null): void {
+  async function onSelectCustomer(
+    value: Option<Customer> | null,
+  ): Promise<void> {
     if (!value) return;
 
     form.setValue('step_recipient.customer.name', value, {
@@ -144,20 +208,22 @@ export function FormStepRecipient(): JSX.Element {
       Boolean(value.data?.id),
     );
 
-    setSubdistrictSearch(value.data?.address?.subdistrict ?? '');
-    // TODO: set the country after API response is updated
-    form.setValue('step_recipient.province', value.data?.address?.state ?? '');
-    form.setValue('step_recipient.city', value.data?.address?.city ?? '');
-    form.setValue(
-      'step_recipient.district',
-      value.data?.address?.district ?? '',
-    );
-    form.setValue(
-      'step_recipient.postal_code',
-      value.data?.address?.postal_code ?? '',
-    );
+    /**
+     * NOTES: Due to the API response is not providing subdistrict_code and country,
+     * we need to fetch the subdistrict code and country from the API, and select
+     * the exact address from the API response.
+     */
+    if (value.data?.address) {
+      setSubdistrictSearch(value.data?.address?.subdistrict ?? '');
 
-    if (value.data) form.trigger('step_recipient.subdistrict');
+      searchAddressesMutation.mutate({
+        page: 1,
+        per_page: 10,
+        search_by: 'subdistrict',
+        search: value.data?.address?.subdistrict ?? '',
+        address: value.data?.address as CustomerAddress,
+      });
+    }
   }
 
   return (
@@ -348,6 +414,7 @@ export function FormStepRecipient(): JSX.Element {
               errors={error?.message}
               onBlur={onBlur}
               onSelect={onSelectSubdistrict}
+              loading={searchAddressesMutation.isPending}
               search={{
                 onSearchChange: setSubdistrictSearch,
                 placeholder: t('order_form.search_subdistrict'),
