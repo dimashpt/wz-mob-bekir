@@ -32,7 +32,7 @@ const chipVariants = tv({
 });
 
 const textVariants = tv({
-  base: 'text-[0.625rem]/tight',
+  base: 'text-[0.625rem]/tight text-center',
   variants: {
     variant: {
       blue: 'text-accent',

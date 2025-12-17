@@ -57,9 +57,14 @@ export default function OrderListItem({
             {formatCurrency(item.grand_total_order_price)}
           </Text>
         </View>
-        <View className="flex-row items-start justify-between">
-          <Text variant="labelXS" color="muted">
-            {item.order_code}
+        <View className="gap-lg flex-row items-start justify-between">
+          <Text
+            variant="labelXS"
+            color="muted"
+            className="shrink"
+            numberOfLines={1}
+          >
+            {item.order_code} ABC abc basdkajsd akjs kjdnaisj pkj asp
           </Text>
           <View className="gap-xs flex-row items-center">
             <Icon name="product" size="sm" className="text-muted-foreground" />

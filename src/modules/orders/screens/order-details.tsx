@@ -63,7 +63,7 @@ export default function OrderDetailsScreen(): JSX.Element {
         }
       >
         <Container.Card className="flex-row items-center justify-between">
-          <View className="gap-sm flex-row items-center">
+          <View className="gap-sm flex-1 flex-row items-center">
             {data?.store_platform && !isLoading && (
               <Image
                 source={ORDER_STORE_PLATFORMS_LOGOS?.[data?.store_platform]}
@@ -71,8 +71,8 @@ export default function OrderDetailsScreen(): JSX.Element {
                 contentFit="contain"
               />
             )}
-            <View className="gap-xxs">
-              <Text variant="labelM" loading={isLoading}>
+            <View className="gap-xxs flex-1">
+              <Text variant="labelM" loading={isLoading} numberOfLines={2}>
                 {data?.store_name}
               </Text>
               <Text variant="bodyXS" color="muted" loading={isLoading}>
@@ -89,6 +89,7 @@ export default function OrderDetailsScreen(): JSX.Element {
               label={t(
                 `orders.status.${statusToTranslationKey(data.internal_status)}`,
               )}
+              className="max-w-24"
               variant={
                 ORDER_STATUS_CHIP_VARIANTS[data.internal_status].variant ??
                 'blue'
