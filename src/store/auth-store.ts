@@ -6,8 +6,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { initializeAuthInterceptors } from '@/lib/axios';
 import { mmkvEncryptedStorage } from '@/lib/mmkv-storage';
 import { queryClient } from '@/lib/react-query';
-import { LoginResponse } from '@/modules/auth/services/types';
-import { ChatUser } from '@/modules/chat/services/auth/types';
+import {
+  ChatAuthHeaders,
+  ChatUser,
+  LoginResponse,
+} from '@/modules/auth/services/types';
 import { User } from '@/modules/profile/services/types';
 
 type AuthStatus = 'firstLogin' | 'loggedIn' | 'loggedOut';
@@ -25,6 +28,7 @@ type AuthState = {
 
   // === Chat Authentication ===
   chatUser: ChatUser | null;
+  chatHeaders: ChatAuthHeaders | null;
 };
 
 type AuthActions = {
@@ -36,6 +40,7 @@ type AuthActions = {
 
   // === Chat Authentication ===
   setChatUser: (user: ChatUser) => void;
+  setChatHeaders: (headers: ChatAuthHeaders) => void;
 };
 
 const initialState: AuthState = {
@@ -46,6 +51,7 @@ const initialState: AuthState = {
 
   // === Chat Authentication ===
   chatUser: null,
+  chatHeaders: null,
 };
 
 export type AuthStore = AuthState & AuthActions;
@@ -78,6 +84,9 @@ export const useAuthStore = create<AuthStore>()(
 
         axios.defaults.headers.common['Authorization'] = '';
         axios.defaults.headers.common['X-Tenant-Id'] = '';
+        axios.defaults.headers.common['access-token'] = '';
+        axios.defaults.headers.common['client'] = '';
+        axios.defaults.headers.common['uid'] = '';
 
         queryClient.clear();
       },
@@ -89,6 +98,8 @@ export const useAuthStore = create<AuthStore>()(
       },
       // === Chat Authentication ===
       setChatUser: (user: ChatUser) => set({ chatUser: user }),
+      setChatHeaders: (headers: ChatAuthHeaders) =>
+        set({ chatHeaders: headers }),
     }),
     {
       name: 'auth-storage',

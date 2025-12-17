@@ -11,10 +11,11 @@ import { z } from 'zod';
 
 import { Container, Icon, InputField, snackbar, Text } from '@/components';
 import { Button } from '@/components/button';
+import { API } from '@/lib/axios';
+import { loginChat } from '@/modules/auth/services';
 import { useAuthStore } from '@/store';
 import { emailSchema, stringSchema } from '@/utils/validation';
 import { CHAT_ENDPOINTS } from '../constants/endpoints';
-import { login } from '../services/auth';
 
 const chatLoginSchema = z.object({
   email: emailSchema,
@@ -27,7 +28,7 @@ export default function ChatLoginScreen(): JSX.Element {
   const { t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
   const spacingMd = useCSSVariable('--spacing-md') as number;
-  const { setChatUser, setStatus } = useAuthStore();
+  const { setChatUser, setStatus, setChatHeaders } = useAuthStore();
 
   // Create refs for input fields
   const emailRef = useRef<TextInput>(null);
@@ -46,7 +47,7 @@ export default function ChatLoginScreen(): JSX.Element {
   // Mutation
   const loginMutation = useMutation({
     mutationKey: [CHAT_ENDPOINTS.LOGIN],
-    mutationFn: login,
+    mutationFn: loginChat,
     onSuccess: (data) => {
       // Check if MFA is required
       if (data.mfa_required) {
@@ -56,8 +57,14 @@ export default function ChatLoginScreen(): JSX.Element {
       }
 
       if (data.data) {
+        API.defaults.headers.common['access-token'] =
+          data.headers['access-token'];
+        API.defaults.headers.common.client = data.headers.client;
+        API.defaults.headers.common.uid = data.headers.uid;
+
         setStatus('loggedIn');
         setChatUser(data.data);
+        setChatHeaders(data.headers);
 
         snackbar.success(t('login.message.success'));
       }

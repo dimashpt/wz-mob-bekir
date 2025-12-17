@@ -1,8 +1,11 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
+import { CHAT_ENDPOINTS } from '@/modules/chat/constants/endpoints';
 import { useAuthStore } from '@/store';
 import { AUTH_ENDPOINTS } from '../constants/endpoints';
 import {
+  ChatLoginPayload,
+  ChatLoginResponse,
   ForgotPasswordPayload,
   LoginPayload,
   LoginResponse,
@@ -76,6 +79,32 @@ export async function resetPassword(
   );
 
   return response.data.data;
+}
+
+/**
+ * Login to Chat
+ */
+export async function loginChat(
+  payload: ChatLoginPayload,
+): Promise<ChatLoginResponse> {
+  const response = await API.post<ChatLoginResponse>(
+    CHAT_ENDPOINTS.LOGIN,
+    payload,
+    { baseURL: process.env.EXPO_PUBLIC_CHAT_BASE_URL },
+  );
+
+  const finalResponse: ChatLoginResponse = {
+    mfa_required: response.data.mfa_required,
+    mfa_token: response.data.mfa_token,
+    data: response.data.data,
+    headers: {
+      'access-token': response.headers['access-token'],
+      client: response.headers['client'],
+      uid: response.headers['uid'],
+    },
+  };
+
+  return finalResponse;
 }
 
 export * from './types';

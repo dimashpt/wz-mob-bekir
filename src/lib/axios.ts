@@ -104,13 +104,19 @@ export function initializeAuthInterceptors(
         throw new axios.Cancel(`Rate limited: ${requestKey}`);
       }
 
-      const { token, user } = getAuthState();
+      const { token, user, chatHeaders } = getAuthState();
 
       if (token?.accessToken) {
         // Token is expired or invalid - attempt refresh instead of logout
         // This will be handled by the 401 response interceptor
         config.headers['Authorization'] = `Bearer ${token.accessToken}`;
         config.headers['X-Tenant-Id'] = user?.tenant_id;
+      }
+
+      if (chatHeaders) {
+        config.headers['access-token'] = chatHeaders['access-token'];
+        config.headers['client'] = chatHeaders['client'];
+        config.headers['uid'] = chatHeaders['uid'];
       }
 
       // Add security headers
