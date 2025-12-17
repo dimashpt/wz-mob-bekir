@@ -72,6 +72,22 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     plugins: [
       'expo-secure-store',
       [
+        'expo-sqlite',
+        {
+          enableFTS: true,
+          useSQLCipher: true,
+          android: {
+            enableFTS: false,
+            useSQLCipher: false,
+          },
+          ios: {
+            customBuildFlags: [
+              '-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1',
+            ],
+          },
+        },
+      ],
+      [
         'expo-build-properties',
         {
           ios: {
