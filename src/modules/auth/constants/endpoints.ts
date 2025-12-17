@@ -7,4 +7,5 @@ export const AUTH_ENDPOINTS = {
   FORGOT_PASSWORD: '/auth/v1/forgot-password',
   RESET_PASSWORD: '/auth/v1/reset-password',
   REFRESH_TOKEN: '/auth/refresh-token',
+  CHAT_LOGIN: process.env.EXPO_PUBLIC_CHAT_BASE_URL + '/auth/sign_in',
 } as const;

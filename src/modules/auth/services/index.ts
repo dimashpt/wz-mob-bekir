@@ -1,6 +1,5 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { CHAT_ENDPOINTS } from '@/modules/chat/constants/endpoints';
 import { useAuthStore } from '@/store';
 import { AUTH_ENDPOINTS } from '../constants/endpoints';
 import {
@@ -70,6 +69,11 @@ export async function forgotPassword(
   return response.data.data;
 }
 
+/**
+ * Resets the user's password.
+ * @param payload - The payload for the reset password request.
+ * @returns A promise that resolves when the reset password request is successful.
+ */
 export async function resetPassword(
   payload: ResetPasswordPayload,
 ): Promise<void> {
@@ -88,9 +92,8 @@ export async function loginChat(
   payload: ChatLoginPayload,
 ): Promise<ChatLoginResponse> {
   const response = await API.post<ChatLoginResponse>(
-    CHAT_ENDPOINTS.LOGIN,
+    AUTH_ENDPOINTS.CHAT_LOGIN,
     payload,
-    { baseURL: process.env.EXPO_PUBLIC_CHAT_BASE_URL },
   );
 
   const finalResponse: ChatLoginResponse = {
