@@ -12,6 +12,7 @@ import {
   Container,
   Icon,
   InputField,
+  Option,
   SelectDateTime,
   Text,
 } from '@/components';
@@ -88,6 +89,27 @@ export function FormStepOrder(): JSX.Element {
     ] ?? []
   ).map((method) => ({ label: method, value: method }));
 
+  function onSelectPaymentType(value: Option | null): void {
+    if (!value) return;
+
+    form.setValue('step_order.payment_type', value, { shouldValidate: true });
+
+    if (value.value === 'COD') {
+      form.setValue(
+        'step_order.payment_method',
+        {
+          label: ORDER_PAYMENT_VIA.COD[0],
+          value: ORDER_PAYMENT_VIA.COD[0],
+        },
+        { shouldValidate: true },
+      );
+
+      return;
+    }
+
+    form.resetField('step_order.payment_method', { keepError: true });
+  }
+
   return (
     <Container.Scroll
       contentContainerClassName="p-lg gap-md"
@@ -116,19 +138,11 @@ export function FormStepOrder(): JSX.Element {
         <Controller
           control={control}
           name="step_order.payment_type"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
+          render={({ field: { value, onBlur }, fieldState: { error } }) => (
             <SelectInput
               mandatory
               label={t('order_form.payment_type')}
-              onSelect={(value) => {
-                onChange(value);
-                form.resetField('step_order.payment_method', {
-                  keepError: true,
-                });
-              }}
+              onSelect={onSelectPaymentType}
               options={PAYMENT_TYPE_OPTIONS}
               value={value?.value}
               onBlur={onBlur}
@@ -137,26 +151,29 @@ export function FormStepOrder(): JSX.Element {
             />
           )}
         />
-        <Controller
-          control={control}
-          name="step_order.payment_method"
-          render={({
-            field: { onChange, value, onBlur },
-            fieldState: { error },
-          }) => (
-            <SelectInput
-              mandatory
-              label={t('order_form.payment_via')}
-              onSelect={onChange}
-              disabled={!watchPaymentMethodType}
-              options={PAYMENT_VIA_OPTIONS}
-              value={value?.value}
-              onBlur={onBlur}
-              errors={error?.message}
-              placeholder={t('order_form.select_payment_via')}
-            />
-          )}
-        />
+
+        {watchPaymentMethodType?.value !== 'COD' && (
+          <Controller
+            control={control}
+            name="step_order.payment_method"
+            render={({
+              field: { onChange, value, onBlur },
+              fieldState: { error },
+            }) => (
+              <SelectInput
+                mandatory
+                label={t('order_form.payment_via')}
+                onSelect={onChange}
+                disabled={!watchPaymentMethodType}
+                options={PAYMENT_VIA_OPTIONS}
+                value={value?.value}
+                onBlur={onBlur}
+                errors={error?.message}
+                placeholder={t('order_form.select_payment_via')}
+              />
+            )}
+          />
+        )}
         <Controller
           control={control}
           name="step_order.store"

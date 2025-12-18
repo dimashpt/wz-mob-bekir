@@ -326,7 +326,8 @@
       "name": "Nama Pelanggan",
       "phone": "No. HP Pelanggan",
       "email": "Email Pelanggan",
-      "full_address": "Alamat Lengkap Pelanggan"
+      "full_address": "Alamat Lengkap Pelanggan",
+      "total_orders": "Frekuansi Order: {{count}}"
     },
     "enter_customer_name": "Masukkan nama pelanggan",
     "enter_customer_phone": "Masukkan no. hp pelanggan",

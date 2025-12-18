@@ -6,6 +6,7 @@ import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import {
+  Chip,
   Container,
   InputField,
   Option,
@@ -252,20 +253,22 @@ export function FormStepRecipient(): JSX.Element {
               onBlur={onBlur}
               onSelect={onSelectCustomer}
               renderItem={({ item }) => (
-                <View>
-                  <View className="gap-xs flex-row items-center">
-                    <Text
-                      variant="bodyS"
-                      className="font-map-medium font-medium"
-                    >
-                      {item.label}
-                    </Text>
-                    <Text
-                      variant="bodyXS"
-                      className="font-map-medium font-medium"
-                    >
-                      ({item.data?.phone})
-                    </Text>
+                <View className="gap-xs">
+                  <View className="gap-xs flex-1 flex-row items-center justify-between">
+                    <View className="gap-xs shrink flex-row items-center">
+                      <Text
+                        variant="bodyS"
+                        className="font-map-medium shrink font-medium"
+                      >
+                        {`${item.label} (${item.data?.phone})`}
+                      </Text>
+                    </View>
+                    <Chip
+                      label={t('order_form.customer.total_orders', {
+                        count: item.data?.total_orders,
+                      })}
+                      variant="blue"
+                    />
                   </View>
                   <Text variant="bodyXS" color="muted">
                     {item.description}

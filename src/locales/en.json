@@ -328,7 +328,8 @@
       "name": "Customer Name",
       "phone": "Customer Phone",
       "email": "Customer Email",
-      "full_address": "Customer Full Address"
+      "full_address": "Customer Full Address",
+      "total_orders": "Order Frequency: {{count}}"
     },
     "enter_customer_name": "Enter customer name",
     "enter_customer_phone": "Enter customer phone",
