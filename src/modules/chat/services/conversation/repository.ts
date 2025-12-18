@@ -23,7 +23,7 @@ export function useListConversationQuery<T = ListConversationsResponse>(
   > = {},
   requestParams: ListConversationsParams = {
     assignee_type: 'me',
-    status: 'open',
+    status: 'all',
     page: 1,
     sort_by: 'latest',
   },

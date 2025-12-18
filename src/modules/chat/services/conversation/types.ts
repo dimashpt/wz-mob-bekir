@@ -1,6 +1,6 @@
 export interface ListConversationsParams {
   assignee_type: 'me';
-  status: 'open';
+  status: 'all' | 'open';
   page: number;
   sort_by: 'latest';
 }
@@ -30,7 +30,7 @@ export interface Conversation {
   messages: LastNonActivityMessage[];
   meta: Meta;
   muted: boolean;
-  priority: null;
+  priority: null | 'low' | 'medium' | 'high' | 'urgent' | 'none';
   sla_policy_id: null;
   snoozed_until: null;
   status: string;

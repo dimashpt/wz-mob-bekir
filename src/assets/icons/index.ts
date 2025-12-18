@@ -30,6 +30,7 @@ import rocket from './rocket.svg';
 import searchFile from './search-file.svg';
 import search from './search.svg';
 import shortcut from './shortcut.svg';
+import signal from './signal.svg';
 import store from './store.svg';
 import storybook from './storybook.svg';
 import tickCircle from './tick-circle.svg';
@@ -74,6 +75,7 @@ export const Icons = {
   rocket,
   search,
   searchFile,
+  signal,
   shortcut,
   store,
   storybook,
