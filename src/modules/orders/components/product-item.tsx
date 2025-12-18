@@ -36,6 +36,7 @@ export function ProductItem({
   index,
 }: ProductItemProps): React.JSX.Element {
   const { t } = useTranslation();
+
   function handleQuantityIncrease(): void {
     if (onQuantityChange) {
       onQuantityChange({
@@ -71,13 +72,13 @@ export function ProductItem({
     <AnimatedComponent index={index}>
       <Clickable
         onPress={onPress ? () => onPress(product) : undefined}
-        disabled={!product.available}
+        // disabled={!product.available}
       >
         <View
           className={twMerge(
             'gap-sm border-border p-sm pb-sm flex-row items-center rounded-md border',
             selected && 'border-accent bg-accent/10',
-            !product.available && 'opacity-50',
+            // !product.available && 'opacity-50',
           )}
         >
           <Image
@@ -95,30 +96,54 @@ export function ProductItem({
               </Text>
             </View>
             <View className="flex-row items-center justify-between">
-              <View className="gap-xs">
+              <View className="gap-xs flex-1">
                 <Text variant="bodyXS" color="muted">
                   SKU: {product?.sku}
                 </Text>
-                <View className="gap-md flex-row items-center">
-                  <View className="gap-xs flex-row items-center">
-                    <Icon
-                      name="product"
-                      size="sm"
-                      className="text-muted-foreground"
-                    />
-                    <Text variant="bodyXS" color="muted">
-                      {formatNumber(product?.available ?? 0)}
-                    </Text>
+                <View className="gap-md flex-row items-center justify-between">
+                  <View className="gap-md flex-row items-center">
+                    <View className="gap-xs flex-row items-center">
+                      <Icon
+                        name="product"
+                        size="sm"
+                        className={
+                          product.available
+                            ? 'text-muted-foreground'
+                            : 'text-danger'
+                        }
+                      />
+                      <Text
+                        variant="bodyXS"
+                        color={product.available ? 'muted' : 'danger'}
+                      >
+                        {formatNumber(product?.available ?? 0)}
+                      </Text>
+                    </View>
+                    <View className="gap-xs flex-row items-center">
+                      <Icon
+                        name="weight"
+                        size="sm"
+                        className="text-muted-foreground"
+                      />
+                      <Text variant="bodyXS" color="muted">
+                        {formatNumber(product?.weight ?? 0)}g
+                      </Text>
+                    </View>
                   </View>
-                  <View className="gap-xs flex-row items-center">
-                    <Icon
-                      name="weight"
-                      size="sm"
-                      className="text-muted-foreground"
-                    />
-                    <Text variant="bodyXS" color="muted">
-                      {formatNumber(product?.weight ?? 0)}g
-                    </Text>
+                  <View className="gap-xs min-h-5 flex-row items-center">
+                    {!product.available && !onQuantityChange && (
+                      <Chip
+                        label={t('order_form.out_of_stock')}
+                        variant="red"
+                      />
+                    )}
+                    {selected && (
+                      <Icon
+                        name="tickCircle"
+                        size="lg"
+                        className="text-accent"
+                      />
+                    )}
                   </View>
                 </View>
               </View>
@@ -142,9 +167,9 @@ export function ProductItem({
                     </Text>
                     <Clickable
                       onPress={handleQuantityIncrease}
-                      disabled={
-                        (product.quantity ?? 0) >= (product.available ?? 0)
-                      }
+                      // disabled={
+                      //   (product.quantity ?? 0) >= (product.available ?? 0)
+                      // }
                       className="p-xs"
                     >
                       <Icon name="plus" size="base" className="text-accent" />
@@ -153,22 +178,6 @@ export function ProductItem({
                 </View>
               )}
             </View>
-
-            {selected && (
-              <Icon
-                name="tickCircle"
-                size="lg"
-                className="text-accent absolute right-1 bottom-1"
-              />
-            )}
-
-            {!product.available && (
-              <Chip
-                label={t('order_form.out_of_stock')}
-                variant="red"
-                className="absolute right-1 bottom-1"
-              />
-            )}
           </View>
         </View>
       </Clickable>
