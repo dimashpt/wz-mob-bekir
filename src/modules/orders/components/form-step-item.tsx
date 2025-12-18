@@ -44,8 +44,11 @@ export function FormStepItem(): JSX.Element {
   });
 
   useEffect(() => {
-    // Update package weight in the form
-    form.setValue('step_item.package.weight', handleCalculateWeight());
+    // Prevent updating package weight while submitting the form
+    if (!form.formState.isSubmitting) {
+      // Update package weight in the form
+      form.setValue('step_item.package.weight', handleCalculateWeight());
+    }
   }, [watchProducts]);
 
   const handleCalculateWeight = useCallback(() => {
