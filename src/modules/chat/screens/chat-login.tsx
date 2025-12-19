@@ -110,7 +110,6 @@ export default function ChatLoginScreen(): JSX.Element {
                 returnKeyType="next"
                 blurOnSubmit={false}
                 onSubmitEditing={() => passwordRef.current?.focus()}
-                disabled={loginMutation.isPending}
               />
             )}
           />
@@ -133,7 +132,6 @@ export default function ChatLoginScreen(): JSX.Element {
                 returnKeyType="done"
                 onSubmitEditing={handleSubmit(onSubmit)}
                 secret
-                disabled={loginMutation.isPending}
               />
             )}
           />
