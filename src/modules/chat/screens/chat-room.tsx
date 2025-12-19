@@ -1,12 +1,14 @@
-import React, { JSX } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { JSX, useEffect, useRef } from 'react';
+import { FlatList, Platform, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCSSVariable } from 'uniwind';
 
 import {
   Avatar,
   Button,
-  Clickable,
   Container,
   Header,
   Icon,
@@ -37,6 +39,10 @@ export default function ChatRoomScreen(): JSX.Element {
   //   inbox_ids: [],
   // });
 
+  const flatListRef = useRef<FlatList>(null);
+  const { bottom } = useSafeAreaInsets();
+  const spacingMd = useCSSVariable('--spacing-md') as number;
+
   const groupedMessages = getGroupedMessages(messages?.payload ?? []);
   const allMessages = groupedMessages.flatMap((section) => [
     { date: section.date },
@@ -51,6 +57,15 @@ export default function ChatRoomScreen(): JSX.Element {
     ),
   }));
 
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesWithGrouping.length > 0) {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [messagesWithGrouping.length]);
+
   return (
     <Container className="bg-background flex-1">
       <Header
@@ -64,28 +79,45 @@ export default function ChatRoomScreen(): JSX.Element {
           </View>
         )}
       />
-      <FlatList
-        data={messagesWithGrouping ?? []}
-        contentContainerClassName="p-lg gap-sm"
-        keyExtractor={(item) =>
-          'date' in item ? item.date : item.id.toString()
-        }
-        renderItem={({ item }) => <MessageItem message={item} />}
-      />
-      <View className="pb-safe pt-sm bg-surface px-lg gap-sm flex-row items-center">
-        <Clickable onPress={() => {}} className="p-xs">
-          <Icon name="plus" size="2xl" className="text-foreground" />
-        </Clickable>
-        <View className="flex-1">
-          <InputField
-            placeholder="Type your message..."
-            className="bg-background"
-            inputClassName="py-sm"
-            multiline
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1"
+        keyboardVerticalOffset={-bottom + spacingMd}
+      >
+        <FlatList
+          ref={flatListRef}
+          data={messagesWithGrouping ?? []}
+          contentContainerClassName="p-lg gap-sm"
+          keyExtractor={(item) =>
+            'date' in item ? item.date : item.id.toString()
+          }
+          renderItem={({ item }) => <MessageItem message={item} />}
+          onContentSizeChange={() => {
+            flatListRef.current?.scrollToEnd({ animated: true });
+          }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        />
+        <View className="pb-safe pt-sm bg-surface px-lg gap-sm flex-row items-center">
+          <Button
+            onPress={() => {}}
+            icon={
+              <Icon name="plus" size="xl" className="text-muted-foreground" />
+            }
+            size="small"
+            color="secondary"
           />
+          <View className="flex-1">
+            <InputField
+              placeholder="Type your message..."
+              className="bg-background"
+              inputClassName="py-sm"
+              multiline
+            />
+          </View>
+          <Button onPress={() => {}} icon="send" size="small" />
         </View>
-        <Button onPress={() => {}} icon="send" size="small" />
-      </View>
+      </KeyboardAvoidingView>
     </Container>
   );
 }
