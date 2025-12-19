@@ -1,5 +1,6 @@
 export * from './accordion';
 export * from './animated-component';
+export * from './avatar';
 export * from './banner';
 export * from './bottom-sheet';
 export * from './button';

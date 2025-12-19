@@ -1,18 +1,13 @@
 import React, { JSX } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
-import { LegendList } from '@legendapp/list';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { withUniwind } from 'uniwind';
 
 import { Container, Skeleton, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import ChatListItem from '../components/chat-list-item';
 import { useListConversationQuery } from '../services/conversation/repository';
-import { Conversation } from '../services/conversation/types';
-
-const List = withUniwind(LegendList<Conversation>);
 
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();

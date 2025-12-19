@@ -1,0 +1,107 @@
+import dayjs from 'dayjs';
+
+import { MESSAGE_TYPES } from '../constants/flags';
+import { Message } from '../services/conversation-room/types';
+
+type SectionGroupMessages = {
+  data: Message[];
+  date: string;
+};
+
+type DateSeparator = { date: string; type: 'date' };
+export type MessageOrDate = Message | DateSeparator;
+
+const groupBy = <T>(
+  array: T[],
+  keyGetter: (item: T) => string,
+): Record<string, T[]> => {
+  return array.reduce(
+    (acc, item) => {
+      const key = keyGetter(item);
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(item);
+      return acc;
+    },
+    {} as Record<string, T[]>,
+  );
+};
+
+export function getGroupedMessages(
+  messages: Message[],
+): SectionGroupMessages[] {
+  const conversationGroupedByDate = groupBy(
+    Object.values(messages),
+    (message: Message) =>
+      dayjs(message.created_at * 1000).format('D MMMM YYYY'),
+  );
+  return Object.keys(conversationGroupedByDate).map((date) => {
+    const groupedMessages = conversationGroupedByDate[date].map(
+      (message: Message, index: number) => {
+        let shouldRenderAvatar = false;
+        if (index === conversationGroupedByDate[date].length - 1) {
+          shouldRenderAvatar = true;
+        } else {
+          const nextMessage = conversationGroupedByDate[date][index + 1];
+          const currentSender = message.sender ? message.sender.name : '';
+          const nextSender = nextMessage.sender ? nextMessage.sender.name : '';
+          shouldRenderAvatar =
+            currentSender !== nextSender ||
+            message.message_type !== nextMessage.message_type;
+        }
+        return { ...message, shouldRenderAvatar };
+      },
+    );
+
+    return {
+      date,
+      data: groupedMessages,
+    };
+  });
+}
+
+/**
+ * Determines if a message should be grouped with the next message and previous message
+ * @param {Number} index - Index of the current message
+ * @param {Array} searchList - Array of messages to check
+ * @returns {Boolean} - Whether the message should be grouped with next
+ */
+export function shouldGroupWithNext(
+  index: number,
+  searchList: MessageOrDate[],
+): boolean {
+  if (index < 0) return false;
+
+  if (index === searchList.length - 1) return false;
+
+  const current = searchList[index];
+  const next = searchList[index + 1];
+
+  if ('date' in current) return false;
+  if ('date' in next) return false;
+
+  if (!current.id || !next.id) return false;
+
+  if (next.status === 'failed') return false;
+
+  const nextSenderId = next.sender?.id ?? next.sender?.id;
+  const currentSenderId = current.sender?.id ?? current.sender?.id;
+  const hasSameSender = nextSenderId === currentSenderId;
+
+  const nextMessageType = next.message_type;
+  const currentMessageType = current.message_type;
+
+  const areBothTemplates =
+    nextMessageType === MESSAGE_TYPES.TEMPLATE &&
+    currentMessageType === MESSAGE_TYPES.TEMPLATE;
+
+  if (!hasSameSender || areBothTemplates) return false;
+
+  if (currentMessageType !== nextMessageType) return false;
+
+  // Check if messages are in the same minute by rounding down to nearest minute
+  return (
+    Math.floor(next.created_at / 60) === Math.floor(current.created_at / 60)
+  );
+}

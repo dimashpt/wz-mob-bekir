@@ -79,9 +79,9 @@ export function Header({
       className={twMerge(headerVariants(), className)}
       style={[{ paddingTop: insets.top }, style]}
     >
-      <View className="py-sm px-lg relative min-h-[48px] flex-row items-center">
+      <View className="py-sm px-lg gap-sm relative min-h-[48px] flex-row items-center">
         <Clickable
-          className="h-6 w-6 items-center justify-center"
+          className="size-6 items-center justify-center"
           onPress={handleBackPress}
         >
           <Icon
@@ -99,7 +99,7 @@ export function Header({
           </View>
         )}
         <Clickable
-          className="h-6 w-6 items-center justify-center"
+          className="size-6 items-center justify-center"
           onPress={onPressSuffix}
         >
           {suffixIcon && (

@@ -23,6 +23,11 @@ export default function GuardLayout(): JSX.Element {
       title: t('order_form.title'),
       headerShown: false,
     },
+    {
+      path: '(chat)/chat-room',
+      title: 'Chat Room',
+      headerShown: false,
+    },
   ];
 
   return (

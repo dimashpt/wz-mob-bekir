@@ -29,6 +29,7 @@ import refresh from './refresh.svg';
 import rocket from './rocket.svg';
 import searchFile from './search-file.svg';
 import search from './search.svg';
+import send from './send.svg';
 import shortcut from './shortcut.svg';
 import signal from './signal.svg';
 import store from './store.svg';
@@ -76,6 +77,7 @@ export const Icons = {
   search,
   searchFile,
   signal,
+  send,
   shortcut,
   store,
   storybook,

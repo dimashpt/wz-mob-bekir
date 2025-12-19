@@ -2,9 +2,9 @@ import React from 'react';
 import { View } from 'react-native';
 
 import dayjs from 'dayjs';
-import { twMerge } from 'tailwind-merge';
+import { useRouter } from 'expo-router';
 
-import { Icon, Text } from '@/components';
+import { Avatar, Icon, Text } from '@/components';
 import { AnimatedComponent } from '@/components/animated-component';
 import { Clickable } from '@/components/clickable';
 import { Container } from '@/components/container';
@@ -18,6 +18,8 @@ export default function ChatListItem({
   item: Conversation;
   index: number;
 }): React.JSX.Element {
+  const router = useRouter();
+
   const priorityClassName = {
     low: 'text-success',
     medium: 'text-warning',
@@ -28,7 +30,9 @@ export default function ChatListItem({
 
   return (
     <AnimatedComponent index={index % 10}>
-      <Clickable onPress={() => {}}>
+      <Clickable
+        onPress={() => router.push(`/chat-room?conversation_id=${item.id}`)}
+      >
         <Container.Card className="gap-sm flex-row items-center">
           {/* Create avatar from sender initials */}
           <Avatar name={item.meta.sender.name} textClassName="text-lg" />
@@ -77,34 +81,5 @@ export default function ChatListItem({
         </Container.Card>
       </Clickable>
     </AnimatedComponent>
-  );
-}
-
-function Avatar({
-  name,
-  className,
-  textClassName,
-}: {
-  name: string;
-  className?: string;
-  textClassName?: string;
-}): React.JSX.Element {
-  return (
-    <View
-      className={twMerge(
-        'bg-background size-10 items-center justify-center rounded-full',
-        className,
-      )}
-    >
-      <Text
-        variant="labelXS"
-        className={twMerge('text-[0.5rem] leading-0', textClassName)}
-      >
-        {name
-          .split(' ')
-          .map((name) => name[0])
-          .join('')}
-      </Text>
-    </View>
   );
 }
