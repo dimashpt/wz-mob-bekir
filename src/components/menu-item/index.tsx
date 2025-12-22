@@ -96,13 +96,15 @@ export function MenuItemAction({
           {value}
         </Text>
       ) : null}
-      {rightElement ?? (
-        <Icon
-          name="chevron"
-          transform={[{ rotate: '270deg' }]}
-          className="text-muted-foreground"
-        />
-      )}
+      {rightElement === null
+        ? null
+        : (rightElement ?? (
+            <Icon
+              name="chevron"
+              transform={[{ rotate: '270deg' }]}
+              className="text-muted-foreground"
+            />
+          ))}
     </Clickable>
   );
 
