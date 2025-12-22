@@ -8,6 +8,9 @@ import {
   ConversationMessagesResponse,
   ConversationParticipantsResponse,
   ConversationTeamsResponse,
+  Message,
+  SendMessagePayload,
+  UpdateTypingStatusPayload,
 } from './types';
 
 /**
@@ -104,6 +107,46 @@ export async function listAssignableAgents(
   const response = await API.get<ConversationAssignableAgentsResponse>(
     CONVERSATIONS_ENDPOINTS.ASSIGNABLE_AGENTS(accountId),
     { params },
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the typing status for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateTypingStatus(
+  accountId: number,
+  conversationId: string,
+  payload: UpdateTypingStatusPayload,
+): Promise<void> {
+  const response = await API.post(
+    CONVERSATIONS_ENDPOINTS.UPDATE_TYPING_STATUS(accountId, conversationId),
+    payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Sends a message to the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function sendMessage(
+  accountId: number,
+  conversationId: string,
+  payload: SendMessagePayload,
+): Promise<Message> {
+  const response = await API.post(
+    CONVERSATIONS_ENDPOINTS.SEND_MESSAGE(accountId, conversationId),
+    payload,
   );
 
   return response.data;

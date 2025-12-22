@@ -18,6 +18,7 @@ import filter from './filter.svg';
 import gear from './gear.svg';
 import home from './home.svg';
 import info from './info.svg';
+import lock from './lock.svg';
 import logout from './logout.svg';
 import minus from './minus.svg';
 import notification from './notification.svg';
@@ -65,6 +66,7 @@ export const Icons = {
   gear,
   home,
   info,
+  lock,
   logout,
   minus,
   notification,

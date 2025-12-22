@@ -5,7 +5,7 @@ export interface ConversationMessagesResponse {
 
 export interface Message {
   content: string;
-  content_attributes: Contentattributes;
+  content_attributes: ContentAttributes;
   content_type: string;
   conversation_id: number;
   created_at: number;
@@ -33,7 +33,7 @@ interface Sender {
   avatar_url?: string;
 }
 
-interface Contentattributes {
+interface ContentAttributes {
   in_reply_to?: null;
   submitted_email?: string;
 }
@@ -101,3 +101,15 @@ export interface ConversationAssignableAgentsParams {
 }
 
 export interface ConversationAssignableAgentsResponse {}
+
+export interface UpdateTypingStatusPayload {
+  is_private: boolean;
+  typing_status: 'off' | 'on';
+}
+
+export interface SendMessagePayload {
+  content: string;
+  content_attributes: ContentAttributes;
+  echo_id: string;
+  private: boolean;
+}

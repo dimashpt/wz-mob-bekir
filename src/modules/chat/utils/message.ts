@@ -105,3 +105,16 @@ export function shouldGroupWithNext(
     Math.floor(next.created_at / 60) === Math.floor(current.created_at / 60)
   );
 }
+
+/**
+ * Generates a random UUID for the echo ID
+ * @returns {String} - The generated echo ID
+ */
+export function generateEchoId(): string {
+  return 'xxxxxxxx4xxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}

@@ -6,17 +6,13 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 
-import {
-  Avatar,
-  Button,
-  Container,
-  Header,
-  Icon,
-  InputField,
-  Text,
-} from '@/components';
+import { Avatar, Container, Header, Text } from '@/components';
+import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
-import { useListMessagesQuery } from '../services/conversation-room/repository';
+import {
+  useListMessagesQuery,
+  useUpdateLastSeenQuery,
+} from '../services/conversation-room/repository';
 import {
   getGroupedMessages,
   MessageOrDate,
@@ -29,19 +25,13 @@ type Params = {
 
 export default function ChatRoomScreen(): JSX.Element {
   const { conversation_id } = useLocalSearchParams<Params>();
-  // const _updateLastSeen = useUpdateLastSeenQuery(undefined, conversation_id);
-  const { data: messages } = useListMessagesQuery(undefined, conversation_id);
-  // const _participants = useListParticipantsQuery(undefined, conversation_id);
-  // const _macros = useListMacrosQuery(undefined);
-  // const _teams = useListTeamsQuery(undefined);
-  // TODO: Implement get inbox_id from the conversation
-  // const _assignableAgents = useListAssignableAgentsQuery(undefined, {
-  //   inbox_ids: [],
-  // });
 
   const flatListRef = useRef<FlatList>(null);
   const { bottom } = useSafeAreaInsets();
   const spacingMd = useCSSVariable('--spacing-md') as number;
+
+  const _updateLastSeen = useUpdateLastSeenQuery(undefined, conversation_id);
+  const { data: messages } = useListMessagesQuery(undefined, conversation_id);
 
   const groupedMessages = getGroupedMessages(messages?.payload ?? []);
   const allMessages = groupedMessages.flatMap((section) => [
@@ -98,25 +88,7 @@ export default function ChatRoomScreen(): JSX.Element {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
         />
-        <View className="pb-safe pt-sm bg-surface px-lg gap-sm flex-row items-center">
-          <Button
-            onPress={() => {}}
-            icon={
-              <Icon name="plus" size="xl" className="text-muted-foreground" />
-            }
-            size="small"
-            color="secondary"
-          />
-          <View className="flex-1">
-            <InputField
-              placeholder="Type your message..."
-              className="bg-background"
-              inputClassName="py-sm"
-              multiline
-            />
-          </View>
-          <Button onPress={() => {}} icon="send" size="small" />
-        </View>
+        <ChatRoomInput flatListRef={flatListRef as React.RefObject<FlatList>} />
       </KeyboardAvoidingView>
     </Container>
   );

@@ -12,31 +12,46 @@ type UseDebounceReturn<T> = [
   isDebouncing: boolean;
 };
 
+interface UseDebounceOptions {
+  onStartTyping?: () => void;
+  onEndTyping?: () => void;
+}
+
 export function useDebounce<T = string>(
   initialValue: T = '' as T,
   delay: number = 500,
+  options?: UseDebounceOptions,
 ): UseDebounceReturn<T> {
   const [value, setValue] = useState<T>(initialValue);
   const [debouncedValue, setDebouncedValue] = useState<T>(initialValue);
   const [isDebouncing, setIsDebouncing] = useState<boolean>(false);
+  const [hasCalledStart, setHasCalledStart] = useState<boolean>(false);
 
   useEffect(() => {
-    // If value changes, set isDebouncing to true
+    // If value changes, set isDebouncing to true and call onStartTyping once
     if (value !== debouncedValue) {
       setIsDebouncing(true);
+      if (!hasCalledStart && options?.onStartTyping) {
+        options.onStartTyping();
+        setHasCalledStart(true);
+      }
     }
 
     // Set up the debounce timer
     const handler = setTimeout(() => {
       setDebouncedValue(value);
       setIsDebouncing(false);
+      if (hasCalledStart && options?.onEndTyping) {
+        options.onEndTyping();
+        setHasCalledStart(false);
+      }
     }, delay);
 
     // Cleanup function to clear the timeout
     return () => {
       clearTimeout(handler);
     };
-  }, [value, delay, debouncedValue]);
+  }, [value, delay, debouncedValue, hasCalledStart, options]);
 
   const arrayReturn = [
     value,
