@@ -6,7 +6,6 @@ import { useLocalSearchParams } from 'expo-router';
 
 import { Button, Icon, InputField } from '@/components';
 import { useDebounce } from '@/hooks';
-import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
@@ -90,6 +89,8 @@ export function ChatRoomInput({
               created_at: new Date().getTime() / 1000,
               id: new Date().getTime(),
               message_type: MESSAGE_TYPES.OUTGOING,
+              status: 'sending',
+              echo_id: newMessage.echo_id,
             } as Message,
           ],
         }),
@@ -101,13 +102,25 @@ export function ChatRoomInput({
       // Return a context object with the snapshotted value
       return { previousMessages };
     },
+    onSuccess: (data, payload, __, context) => {
+      // Update the message status and data with the server response
+      context.client.setQueryData(
+        queryKey,
+        (old: ConversationMessagesResponse) => ({
+          ...old,
+          payload: old.payload.map((message) =>
+            message.echo_id === payload.echo_id ? data : message,
+          ),
+        }),
+      );
+    },
     onError: (_, __, onMutateResult, context) => {
       context.client.setQueryData(
         queryKey,
         onMutateResult?.previousMessages ?? {},
       );
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey }),
+    // onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 
   function handleUpdateTypingStatus(
@@ -147,7 +160,6 @@ export function ChatRoomInput({
           }
           className="bg-background"
           inputClassName="py-sm"
-          multiline
           value={message}
           onChangeText={setMessage}
           onPressRight={() => setIsPrivate(!isPrivate)}
@@ -158,6 +170,7 @@ export function ChatRoomInput({
               className={isPrivate ? 'text-accent' : 'text-muted-foreground'}
             />
           }
+          onSubmitEditing={handleSendMessage}
         />
       </View>
       <Button

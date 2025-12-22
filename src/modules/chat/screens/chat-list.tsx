@@ -34,7 +34,7 @@ export default function ChatScreen(): JSX.Element {
           <ChatListItem item={item} index={index} />
         )}
         ListEmptyComponent={() => (
-          <View className="gap-sm flex-1 items-center justify-center">
+          <View className="gap-sm flex-1">
             {isLoading
               ? Array.from({ length: 10 }).map((_, index) => (
                   <Skeleton key={index} className="h-16" />

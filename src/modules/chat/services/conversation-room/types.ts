@@ -9,6 +9,7 @@ export interface Message {
   content_type: string;
   conversation_id: number;
   created_at: number;
+  echo_id: string; // Used for optimistic updates
   id: number;
   inbox_id: number;
   message_type: number;

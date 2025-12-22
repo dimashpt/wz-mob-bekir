@@ -61,6 +61,24 @@ export function getGroupedMessages(
   });
 }
 
+export function groupMessagesByDate(messages: Message[]): MessageOrDate[] {
+  const groupedMessages = getGroupedMessages(messages ?? []);
+  const allMessages = groupedMessages.flatMap((section) => [
+    { date: section.date },
+    ...section.data,
+  ]);
+  const messagesWithGrouping = allMessages.map((message, index) => ({
+    ...(message as MessageOrDate),
+    groupWithNext: shouldGroupWithNext(index, allMessages as MessageOrDate[]),
+    groupWithPrevious: shouldGroupWithNext(
+      index - 1,
+      allMessages as MessageOrDate[],
+    ),
+  }));
+
+  return messagesWithGrouping;
+}
+
 /**
  * Determines if a message should be grouped with the next message and previous message
  * @param {Number} index - Index of the current message

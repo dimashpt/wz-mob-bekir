@@ -98,7 +98,11 @@ export function MessageItem({
         <Text variant="labelXS" color="muted">
           {dayjs(message.created_at * 1000).format('HH:mm')}
         </Text>
-        <Icon name="tick" size="base" className="text-muted-foreground" />
+        <Icon
+          name={message.status === 'sending' ? 'clock' : 'tick'}
+          size="base"
+          className="text-muted-foreground"
+        />
       </View>
     </View>
   );
