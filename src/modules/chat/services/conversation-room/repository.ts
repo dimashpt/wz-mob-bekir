@@ -1,4 +1,8 @@
 import {
+  InfiniteData,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   useQuery,
   UseQueryOptions,
   UseQueryResult,
@@ -56,22 +60,36 @@ export function useUpdateLastSeenQuery<T = Conversation>(
 }
 
 /**
- * Custom hook to fetch messages for a conversation.
+ * Custom hook to fetch messages for a conversation with infinite scrolling/pagination.
  * @param params - Optional parameters for the query, including select for data transformation.
  * @param conversationId - The ID of the conversation.
- * @returns The query object containing messages.
- * @template T - The type of data returned after selection (defaults to ConversationMessagesResponse).
+ * @returns The infinite query object containing paginated messages.
+ * @template T - The type of data returned after selection (defaults to InfiniteData<ConversationMessagesResponse>).
  */
-export function useListMessagesQuery<T = ConversationMessagesResponse>(
+export function useListMessagesInfiniteQuery<
+  T = InfiniteData<ConversationMessagesResponse>,
+>(
   params: Omit<
-    UseQueryOptions<ConversationMessagesResponse, Error, T>,
-    'queryKey' | 'queryFn'
+    UseInfiniteQueryOptions<
+      ConversationMessagesResponse,
+      Error,
+      T,
+      readonly unknown[],
+      number
+    >,
+    'queryKey' | 'queryFn' | 'initialPageParam' | 'getNextPageParam'
   > = {},
   conversationId: string,
-): UseQueryResult<T, Error> {
+): UseInfiniteQueryResult<T, Error> {
   const { chatUser } = useAuthStore();
 
-  const query = useQuery<ConversationMessagesResponse, Error, T>({
+  const query = useInfiniteQuery<
+    ConversationMessagesResponse,
+    Error,
+    T,
+    readonly unknown[],
+    number
+  >({
     ...params,
     enabled: Boolean(chatUser?.account_id && conversationId),
     queryKey: [
@@ -79,8 +97,17 @@ export function useListMessagesQuery<T = ConversationMessagesResponse>(
         chatUser?.account_id ?? 0,
         conversationId,
       ),
+      'infinite',
     ],
-    queryFn: () => listMessages(chatUser?.account_id ?? 0, conversationId),
+    queryFn: ({ pageParam }) => {
+      const beforeId = pageParam === 0 ? undefined : pageParam;
+      return listMessages(chatUser!.account_id, conversationId, beforeId);
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      const hasMore = lastPage.payload.length === 20;
+      return hasMore ? lastPage.payload?.[0]?.id : undefined;
+    },
   });
 
   return query;

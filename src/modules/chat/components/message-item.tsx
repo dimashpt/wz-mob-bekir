@@ -101,7 +101,9 @@ export function MessageItem({
         <Icon
           name={message.status === 'sending' ? 'clock' : 'tick'}
           size="base"
-          className="text-muted-foreground"
+          className={
+            message.status === 'read' ? 'text-info' : 'text-muted-foreground'
+          }
         />
       </View>
     </View>

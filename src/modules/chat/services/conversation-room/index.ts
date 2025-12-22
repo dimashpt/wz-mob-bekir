@@ -34,14 +34,17 @@ export async function updateLastSeen(
  * Lists the messages for the given conversation.
  * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
+ * @param before - The first message id to fetch messages before.
  * @returns A promise that resolves to the messages.
  */
 export async function listMessages(
   accountId: number,
   conversationId: string,
+  before?: number,
 ): Promise<ConversationMessagesResponse> {
   const response = await API.get<ConversationMessagesResponse>(
     CONVERSATIONS_ENDPOINTS.MESSAGES(accountId, conversationId),
+    { params: { before } },
   );
 
   return response.data;
