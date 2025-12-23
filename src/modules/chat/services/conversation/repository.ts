@@ -5,9 +5,13 @@ import {
 } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/store';
-import { listConversations } from '.';
+import { listConversations, listLabels } from '.';
 import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
-import { ListConversationsParams, ListConversationsResponse } from './types';
+import {
+  LabelListResponse,
+  ListConversationsParams,
+  ListConversationsResponse,
+} from './types';
 
 /**
  * Custom hook to fetch conversations.
@@ -35,6 +39,30 @@ export function useListConversationQuery<T = ListConversationsResponse>(
     enabled: Boolean(chatUser?.account_id),
     queryKey: [CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS, requestParams],
     queryFn: () => listConversations(chatUser?.account_id ?? 0, requestParams),
+  });
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch labels.
+ * @param params - Optional parameters for the query, including select for data transformation.
+ * @returns The query object containing labels.
+ * @template T - The type of data returned after selection (defaults to LabelListResponse).
+ */
+export function useListLabelsQuery<T = LabelListResponse>(
+  params: Omit<
+    UseQueryOptions<LabelListResponse, Error, T>,
+    'queryKey' | 'queryFn'
+  > = {},
+): UseQueryResult<T, Error> {
+  const { chatUser } = useAuthStore();
+
+  const query = useQuery<LabelListResponse, Error, T>({
+    ...params,
+    enabled: Boolean(chatUser?.account_id),
+    queryKey: [CONVERSATIONS_ENDPOINTS.LABELS, chatUser?.account_id],
+    queryFn: () => listLabels(chatUser?.account_id ?? 0),
   });
 
   return query;

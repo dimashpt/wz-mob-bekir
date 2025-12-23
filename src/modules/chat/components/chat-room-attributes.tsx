@@ -1,4 +1,4 @@
-import React, { JSX, useRef } from 'react';
+import React, { JSX, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 
 import { InfiniteData, useMutation } from '@tanstack/react-query';
@@ -14,6 +14,7 @@ import {
   Icon,
   IconNames,
   MenuItem,
+  Option,
   OptionBottomSheet,
   OptionBottomSheetRef,
   Text,
@@ -22,6 +23,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import {
   updateAssignee,
+  updateLabels,
   updatePriority,
   updateStatus,
 } from '../services/conversation';
@@ -36,12 +38,15 @@ import {
   Meta,
   Team,
 } from '../services/conversation-room/types';
+import { useListLabelsQuery } from '../services/conversation/repository';
 import {
   Conversation,
   ConversationPriority,
   ConversationStatus,
+  Label,
   UpdateAssigneePayload,
   UpdateAssigneeTeamPayload,
+  UpdateLabelConversationPayload,
   UpdatePriorityPayload,
   UpdateStatusPayload,
 } from '../services/conversation/types';
@@ -86,6 +91,7 @@ export function ChatRoomAttributes({
   const priorityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
   const { data: participants } = useListParticipantsQuery(
     undefined,
@@ -117,6 +123,15 @@ export function ChatRoomAttributes({
       })),
     ],
   });
+  const { data: labels } = useListLabelsQuery({
+    select: (data) =>
+      (data.payload ?? []).map((label) => ({
+        label: label.title,
+        value: label.title,
+        data: label,
+      })),
+  });
+
   const updateLastSeenQueryKey = [
     CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
       chatUser?.account_id ?? 0,
@@ -259,8 +274,43 @@ export function ChatRoomAttributes({
     },
   });
 
+  const updateLabelsMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.UPDATE_LABELS(
+        chatUser?.account_id ?? 0,
+        conversation?.id ?? 0,
+      ),
+    ],
+    mutationFn: (payload: UpdateLabelConversationPayload) =>
+      updateLabels(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+    onMutate: async (payload, context) => {
+      await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
+
+      const previousAssignee =
+        context.client.getQueryData<ConversationMessagesResponse>(
+          listMessagesQueryKey,
+        );
+
+      context.client.setQueryData(
+        listMessagesQueryKey,
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          // Change the first page of the messages to include the new assignee
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            meta: {
+              ...page.meta,
+              labels: payload.labels,
+            },
+          }));
+          return { ...old, pages: newPages };
+        },
+      );
+
+      return { previousAssignee };
+    },
+  });
+
   const additionalAttributes = meta?.additional_attributes;
-  const labels = meta?.labels ?? [];
   const initiatedAt = additionalAttributes?.initiated_at?.timestamp;
   const browser = additionalAttributes?.browser;
 
@@ -321,6 +371,15 @@ export function ChatRoomAttributes({
     });
   }
 
+  function onChangeLabels(labels: Option<Label>[]): void {
+    updateLabelsMutation.mutate({ labels: labels.map((label) => label.value) });
+  }
+
+  const selectedLabels = useMemo(
+    () => labels?.filter((label) => meta?.labels?.includes(label.value)),
+    [labels, meta?.labels],
+  );
+
   return (
     <Container.Scroll contentContainerClassName="p-lg gap-md flex-1">
       <View className="gap-sm flex-row">
@@ -372,7 +431,7 @@ export function ChatRoomAttributes({
         <Text variant="labelM">Labels</Text>
 
         <View className="gap-sm flex-row flex-wrap">
-          {labels.map((label) => (
+          {meta?.labels.map((label) => (
             <Chip
               key={label}
               label={label}
@@ -380,8 +439,29 @@ export function ChatRoomAttributes({
               textProps={{
                 className: 'text-sm font-medium android:font-map-medium',
               }}
+              prefix={
+                <View
+                  className="size-2 rounded-full"
+                  style={{
+                    backgroundColor: labels?.find((l) => l.data.title === label)
+                      ?.data.color,
+                  }}
+                />
+              }
             />
           ))}
+          <Clickable onPress={() => labelsBottomSheetRef.current?.present()}>
+            <Chip
+              label="Add Label"
+              variant="clear"
+              textProps={{
+                className: 'text-sm font-medium android:font-map-medium',
+              }}
+              prefix={
+                <Icon name="plus" size="sm" className="text-foreground" />
+              }
+            />
+          </Clickable>
         </View>
       </View>
 
@@ -472,6 +552,15 @@ export function ChatRoomAttributes({
           (opt) =>
             opt.value === (conversation?.priority ?? 'none').toLowerCase(),
         )}
+      />
+
+      <OptionBottomSheet
+        ref={labelsBottomSheetRef}
+        options={labels ?? []}
+        title="Labels"
+        multiselect
+        onSelect={(opts) => onChangeLabels(opts)}
+        selectedValues={selectedLabels}
       />
     </Container.Scroll>
   );

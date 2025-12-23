@@ -1,5 +1,6 @@
 import React, {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -95,9 +96,10 @@ function OptionBottomSheetInner<TData = unknown>(
   >(selectedValues as Option<TData>[]);
 
   // Sync internal state with prop when it changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (multiselect) {
-      setInternalSelectedValues(selectedValues as Option<TData>[]);
+      // Temporary disabled, due to rerender issue and causing infinite loop
+      // setInternalSelectedValues(selectedValues as Option<TData>[]);
     }
   }, [selectedValues, multiselect]);
 
@@ -212,7 +214,7 @@ function OptionBottomSheetInner<TData = unknown>(
               className={twMerge(
                 'w-full flex-row',
                 isOptionSelected(option) ? 'bg-accent-soft' : '',
-                isLastItem ? 'rounded-b-lg' : '',
+                isLastItem && !multiselect ? 'rounded-b-lg' : '',
               )}
             >
               {renderItem ? (

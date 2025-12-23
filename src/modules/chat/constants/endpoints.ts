@@ -26,4 +26,7 @@ export const CONVERSATIONS_ENDPOINTS = {
     `${baseUrl(accountId)}/conversations/${conversationId}/assignments`,
   UPDATE_PRIORITY: (accountId: number, conversationId: number) =>
     `${baseUrl(accountId)}/conversations/${conversationId}/toggle_priority`,
+  LABELS: (accountId: number) => `${baseUrl(accountId)}/labels`,
+  UPDATE_LABELS: (accountId: number, conversationId: number) =>
+    `${baseUrl(accountId)}/conversations/${conversationId}/labels`,
 } as const;

@@ -1,11 +1,14 @@
 import { API } from '@/lib/axios';
 import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
 import {
+  LabelListResponse,
   ListConversationsParams,
   ListConversationsResponse,
   UpdateAssigneePayload,
   UpdateAssigneeResponse,
   UpdateAssigneeTeamPayload,
+  UpdateLabelConversationPayload,
+  UpdateLabelConversationResponse,
   UpdatePriorityPayload,
   UpdatePriorityResponse,
   UpdateStatusPayload,
@@ -84,6 +87,41 @@ export async function updatePriority(
 ): Promise<UpdatePriorityResponse> {
   const response = await API.post<UpdatePriorityResponse>(
     CONVERSATIONS_ENDPOINTS.UPDATE_PRIORITY(accountId, conversationId),
+    payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Lists the labels for the given account.
+ * @param accountId - The ID of the account.
+ * @returns A promise that resolves to the labels.
+ */
+export async function listLabels(
+  accountId: number,
+): Promise<LabelListResponse> {
+  const response = await API.get<LabelListResponse>(
+    CONVERSATIONS_ENDPOINTS.LABELS(accountId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the labels for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateLabels(
+  accountId: number,
+  conversationId: number,
+  payload: UpdateLabelConversationPayload,
+): Promise<UpdateLabelConversationResponse> {
+  const response = await API.post<UpdateLabelConversationResponse>(
+    CONVERSATIONS_ENDPOINTS.UPDATE_LABELS(accountId, conversationId),
     payload,
   );
 

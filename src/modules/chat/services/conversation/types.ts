@@ -189,3 +189,23 @@ export interface UpdatePriorityPayload {
 }
 
 export interface UpdatePriorityResponse {}
+
+export interface LabelListResponse {
+  payload: Label[];
+}
+
+export interface Label {
+  color: string;
+  description: string;
+  id: number;
+  show_on_sidebar: boolean;
+  title: string;
+}
+
+export interface UpdateLabelConversationPayload {
+  labels: string[];
+}
+
+export interface UpdateLabelConversationResponse {
+  payload: string[];
+}
