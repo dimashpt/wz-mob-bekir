@@ -272,6 +272,18 @@
       "password_label": "Kata Sandi",
       "password_placeholder": "Masukkan kata sandi Anda",
       "submit_button": "Masuk"
+    },
+    "filters": {
+      "status_label": "Status",
+      "assignee_label": "Penerima",
+      "sort_by_label": "Urutkan berdasarkan",
+      "inbox_label": "Kotak Masuk",
+      "all": "Semua",
+      "me": "Saya",
+      "unassigned": "Belum Ditugaskan",
+      "latest": "Terbaru",
+      "sort_on_created_at": "Urutkan berdasarkan tanggal dibuat",
+      "sort_on_priority": "Urutkan berdasarkan prioritas"
     }
   },
   "order_details": {

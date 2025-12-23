@@ -25,20 +25,21 @@ export function useListConversationQuery<T = ListConversationsResponse>(
     UseQueryOptions<ListConversationsResponse, Error, T>,
     'queryKey' | 'queryFn'
   > = {},
-  requestParams: ListConversationsParams = {
-    assignee_type: 'me',
-    status: 'all',
-    page: 1,
-    sort_by: 'latest',
-  },
+  requestParams: ListConversationsParams,
 ): UseQueryResult<T, Error> {
   const { chatUser } = useAuthStore();
+  const finalQueryParams = {
+    page: 1,
+    per_page: 10,
+    ...requestParams,
+  };
 
   const query = useQuery<ListConversationsResponse, Error, T>({
     ...params,
     enabled: Boolean(chatUser?.account_id),
-    queryKey: [CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS, requestParams],
-    queryFn: () => listConversations(chatUser?.account_id ?? 0, requestParams),
+    queryKey: [CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS, finalQueryParams],
+    queryFn: () =>
+      listConversations(chatUser?.account_id ?? 0, finalQueryParams),
   });
 
   return query;

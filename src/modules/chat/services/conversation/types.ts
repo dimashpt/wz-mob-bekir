@@ -1,10 +1,15 @@
 import { Agent } from '../conversation-room/types';
 
+type ConversationStatusFilter = ConversationStatus | 'all';
+type AssigneeTypeFilter = 'me' | 'unassigned' | 'all';
+type SortByFilter = 'sort_on_created_at' | 'sort_on_priority' | 'latest';
+
 export interface ListConversationsParams {
-  assignee_type: 'me';
-  status: 'all' | 'open';
-  page: number;
-  sort_by: 'latest';
+  assignee_type?: AssigneeTypeFilter;
+  status?: ConversationStatusFilter;
+  page?: number;
+  sort_by?: SortByFilter;
+  inbox_id?: string;
 }
 
 export interface ListConversationsResponse {

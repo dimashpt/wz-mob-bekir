@@ -274,6 +274,18 @@
       "password_label": "Password",
       "password_placeholder": "Enter your password",
       "submit_button": "Login"
+    },
+    "filters": {
+      "status_label": "Status",
+      "assignee_label": "Assignee",
+      "sort_by_label": "Sort by",
+      "inbox_label": "Inbox",
+      "all": "All",
+      "me": "Me",
+      "unassigned": "Unassigned",
+      "latest": "Latest",
+      "sort_on_created_at": "Sort on created at",
+      "sort_on_priority": "Sort on priority"
     }
   },
   "order_details": {
