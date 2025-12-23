@@ -1,5 +1,5 @@
 import React, { JSX, useMemo, useRef } from 'react';
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 
 import { InfiniteData, useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -24,6 +24,7 @@ import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import {
   updateAssignee,
   updateLabels,
+  updateParticipants,
   updatePriority,
   updateStatus,
 } from '../services/conversation';
@@ -35,6 +36,7 @@ import {
 import {
   Agent,
   ConversationMessagesResponse,
+  ConversationParticipantsResponse,
   Meta,
   Team,
 } from '../services/conversation-room/types';
@@ -47,6 +49,7 @@ import {
   UpdateAssigneePayload,
   UpdateAssigneeTeamPayload,
   UpdateLabelConversationPayload,
+  UpdateParticipantsPayload,
   UpdatePriorityPayload,
   UpdateStatusPayload,
 } from '../services/conversation/types';
@@ -92,22 +95,21 @@ export function ChatRoomAttributes({
   const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const participantsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
-  const { data: participants } = useListParticipantsQuery(
+  const { data: participants, ...participantsQuery } = useListParticipantsQuery(
     undefined,
     conversation?.id?.toString() ?? '',
   );
   const { data: agents } = useListAssignableAgentsQuery(
     {
       enabled: Boolean(conversation?.id),
-      select: (data) => [
-        { label: 'None', value: String(0), data: {} as Agent },
-        ...(data.payload ?? []).map((agent) => ({
+      select: (data) =>
+        (data.payload ?? []).map((agent) => ({
           label: agent.name,
           value: String(agent.id),
           data: agent,
         })),
-      ],
     },
     {
       inbox_ids: [conversation?.inbox_id ?? 0],
@@ -144,6 +146,12 @@ export function ChatRoomAttributes({
       conversation?.id?.toString() ?? '',
     ),
     'infinite',
+  ];
+  const listParticipantsQueryKey = [
+    CONVERSATIONS_ENDPOINTS.PARTICIPANTS(
+      chatUser?.account_id ?? 0,
+      conversation?.id?.toString() ?? '',
+    ),
   ];
 
   const updateStatusMutation = useMutation({
@@ -310,6 +318,45 @@ export function ChatRoomAttributes({
     },
   });
 
+  const updateParticipantsMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.PARTICIPANTS(
+        chatUser?.account_id ?? 0,
+        conversation?.id?.toString() ?? '',
+      ),
+    ],
+    mutationFn: (payload: UpdateParticipantsPayload) =>
+      updateParticipants(
+        chatUser?.account_id ?? 0,
+        conversation?.id?.toString() ?? '',
+        payload,
+      ),
+    onMutate: async (payload, context) => {
+      await context.client.cancelQueries({
+        queryKey: listParticipantsQueryKey,
+      });
+
+      const previousParticipants = context.client.getQueryData<
+        ConversationParticipantsResponse[]
+      >(listParticipantsQueryKey);
+
+      context.client.setQueryData(
+        listParticipantsQueryKey,
+        (_: ConversationParticipantsResponse[]) =>
+          payload.user_ids.map((userId) => {
+            const participant = agents?.find(
+              (agent) => agent.value === String(userId),
+            );
+
+            return participant?.data;
+          }) ?? [],
+      );
+
+      return { previousParticipants };
+    },
+    onSuccess: () => participantsQuery.refetch(),
+  });
+
   const additionalAttributes = meta?.additional_attributes;
   const initiatedAt = additionalAttributes?.initiated_at?.timestamp;
   const browser = additionalAttributes?.browser;
@@ -366,13 +413,17 @@ export function ChatRoomAttributes({
   }
 
   function onChangePriority(priority: ConversationPriority): void {
-    updatePriorityMutation.mutate({
-      priority: priority,
-    });
+    updatePriorityMutation.mutate({ priority: priority });
   }
 
   function onChangeLabels(labels: Option<Label>[]): void {
     updateLabelsMutation.mutate({ labels: labels.map((label) => label.value) });
+  }
+
+  function onChangeParticipants(participants: Option<Agent>[]): void {
+    updateParticipantsMutation.mutate({
+      user_ids: participants.map((participant) => Number(participant.value)),
+    });
   }
 
   const selectedLabels = useMemo(
@@ -381,7 +432,7 @@ export function ChatRoomAttributes({
   );
 
   return (
-    <Container.Scroll contentContainerClassName="p-lg gap-md flex-1">
+    <Container.Scroll contentContainerClassName="p-lg gap-md">
       <View className="gap-sm flex-row">
         {statusList.map((status) => (
           <Clickable
@@ -409,6 +460,7 @@ export function ChatRoomAttributes({
         <MenuItem.Action
           icon="userSettings"
           label="Assignee"
+          loading={updateAssigneeTeamMutation.isPending}
           value={conversation?.meta?.team?.name}
           onPress={() => teamsBottomSheetRef.current?.present()}
         />
@@ -467,16 +519,28 @@ export function ChatRoomAttributes({
 
       <View className="gap-sm">
         <Text variant="labelM">Participants</Text>
-        <Container.Card>
-          {participants?.map((participant) => (
-            <MenuItem.Action
-              key={participant.id}
-              icon="user"
-              label={participant.name}
-              value={participant.availability_status}
-              rightElement={null}
-            />
-          ))}
+        <Container.Card className={participants?.length ? 'gap-sm' : 'gap-0'}>
+          <FlatList
+            data={participants}
+            scrollEnabled={false}
+            renderItem={({ item }) => (
+              <MenuItem.Action
+                key={item.id}
+                icon="user"
+                label={item.name}
+                value={item.availability_status}
+                rightElement={null}
+              />
+            )}
+            ItemSeparatorComponent={() => <Divider className="-mx-md" />}
+          />
+          {participants?.length ? <Divider className="-mx-md" /> : null}
+          <MenuItem.Action
+            icon="plus"
+            label="Add Participant"
+            rightElement={null}
+            onPress={() => participantsBottomSheetRef.current?.present()}
+          />
         </Container.Card>
       </View>
 
@@ -524,7 +588,10 @@ export function ChatRoomAttributes({
 
       <OptionBottomSheet
         ref={agentsBottomSheetRef}
-        options={agents ?? []}
+        options={[
+          { label: 'None', value: String(0), data: {} as Agent },
+          ...(agents ?? []),
+        ]}
         title="Agent"
         onSelect={(opt) => onChangeAgent(opt.value)}
         selectedValue={agents?.find(
@@ -561,6 +628,19 @@ export function ChatRoomAttributes({
         multiselect
         onSelect={(opts) => onChangeLabels(opts)}
         selectedValues={selectedLabels}
+      />
+
+      <OptionBottomSheet
+        ref={participantsBottomSheetRef}
+        options={agents ?? []}
+        title="Participants"
+        multiselect
+        onSelect={(opts) => onChangeParticipants(opts)}
+        selectedValues={participants?.map((participant) => ({
+          label: participant.name,
+          value: String(participant.id),
+          data: participant,
+        }))}
       />
     </Container.Scroll>
   );

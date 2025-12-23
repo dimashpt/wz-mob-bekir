@@ -1,3 +1,5 @@
+import { Agent } from '../conversation-room/types';
+
 export interface ListConversationsParams {
   assignee_type: 'me';
   status: 'all' | 'open';
@@ -209,3 +211,9 @@ export interface UpdateLabelConversationPayload {
 export interface UpdateLabelConversationResponse {
   payload: string[];
 }
+
+export interface UpdateParticipantsPayload {
+  user_ids: number[];
+}
+
+export type UpdateParticipantsResponse = Agent[];

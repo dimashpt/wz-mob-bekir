@@ -9,6 +9,8 @@ import {
   UpdateAssigneeTeamPayload,
   UpdateLabelConversationPayload,
   UpdateLabelConversationResponse,
+  UpdateParticipantsPayload,
+  UpdateParticipantsResponse,
   UpdatePriorityPayload,
   UpdatePriorityResponse,
   UpdateStatusPayload,
@@ -122,6 +124,26 @@ export async function updateLabels(
 ): Promise<UpdateLabelConversationResponse> {
   const response = await API.post<UpdateLabelConversationResponse>(
     CONVERSATIONS_ENDPOINTS.UPDATE_LABELS(accountId, conversationId),
+    payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the participants for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateParticipants(
+  accountId: number,
+  conversationId: string,
+  payload: UpdateParticipantsPayload,
+): Promise<UpdateParticipantsResponse> {
+  const response = await API.put<UpdateParticipantsResponse>(
+    CONVERSATIONS_ENDPOINTS.PARTICIPANTS(accountId, conversationId),
     payload,
   );
 
