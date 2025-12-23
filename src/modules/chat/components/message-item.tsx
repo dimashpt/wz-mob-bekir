@@ -98,13 +98,15 @@ export function MessageItem({
         <Text variant="labelXS" color="muted">
           {dayjs(message.created_at * 1000).format('HH:mm')}
         </Text>
-        <Icon
-          name={message.status === 'sending' ? 'clock' : 'tick'}
-          size="base"
-          className={
-            message.status === 'read' ? 'text-info' : 'text-muted-foreground'
-          }
-        />
+        {isOutgoing && (
+          <Icon
+            name={message.status === 'sending' ? 'clock' : 'tick'}
+            size="base"
+            className={
+              message.status === 'read' ? 'text-info' : 'text-muted-foreground'
+            }
+          />
+        )}
       </View>
     </View>
   );
