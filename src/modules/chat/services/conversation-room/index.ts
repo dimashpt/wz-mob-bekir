@@ -59,8 +59,8 @@ export async function listMessages(
 export async function listParticipants(
   accountId: number,
   conversationId: string,
-): Promise<ConversationParticipantsResponse> {
-  const response = await API.get<ConversationParticipantsResponse>(
+): Promise<ConversationParticipantsResponse[]> {
+  const response = await API.get<ConversationParticipantsResponse[]>(
     CONVERSATIONS_ENDPOINTS.PARTICIPANTS(accountId, conversationId),
   );
 

@@ -39,7 +39,7 @@ interface ContentAttributes {
   submitted_email?: string;
 }
 
-interface Meta {
+export interface Meta {
   additional_attributes: Additionalattributes;
   agent_last_seen_at: string;
   assignee: Assignee;
@@ -91,7 +91,18 @@ interface Browser {
   platform_version: string;
 }
 
-export interface ConversationParticipantsResponse {}
+export type ConversationParticipantsResponse = {
+  account_id: number;
+  auto_offline: boolean;
+  availability_status: string;
+  available_name: string;
+  confirmed: boolean;
+  email: string;
+  id: number;
+  name: string;
+  role: string;
+  thumbnail: string;
+};
 
 export interface ConversationMacrosResponse {}
 
@@ -113,4 +124,20 @@ export interface SendMessagePayload {
   content_attributes: ContentAttributes;
   echo_id: string;
   private: boolean;
+}
+
+export interface CustomAttribute {
+  id: number;
+  attributeDisplayName: string;
+  attributeDisplayType: string;
+  attributeDescription: string;
+  attributeKey: string;
+  regexPattern: string;
+  regexCue: string;
+  attributeValues: string[];
+  attributeModel: string;
+  defaultValue: string;
+  createdAt: string;
+  updatedAt: string;
+  value: string;
 }

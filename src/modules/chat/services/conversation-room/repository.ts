@@ -120,16 +120,18 @@ export function useListMessagesInfiniteQuery<
  * @returns The query object containing participants.
  * @template T - The type of data returned after selection (defaults to ConversationParticipantsResponse).
  */
-export function useListParticipantsQuery<T = ConversationParticipantsResponse>(
+export function useListParticipantsQuery<
+  T = ConversationParticipantsResponse[],
+>(
   params: Omit<
-    UseQueryOptions<ConversationParticipantsResponse, Error, T>,
+    UseQueryOptions<ConversationParticipantsResponse[], Error, T>,
     'queryKey' | 'queryFn'
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
   const { chatUser } = useAuthStore();
 
-  const query = useQuery<ConversationParticipantsResponse, Error, T>({
+  const query = useQuery<ConversationParticipantsResponse[], Error, T>({
     ...params,
     enabled: Boolean(chatUser?.account_id && conversationId),
     queryKey: [

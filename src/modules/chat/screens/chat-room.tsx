@@ -1,21 +1,13 @@
-import React, { JSX, useRef } from 'react';
+import React, { JSX, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Platform, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
-import PagerView from 'react-native-pager-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
 
-import {
-  Avatar,
-  Button,
-  Container,
-  Divider,
-  Header,
-  MenuItem,
-  Text,
-} from '@/components';
+import { Avatar, Container, Header, PagerView, Text } from '@/components';
+import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
 import {
@@ -34,8 +26,13 @@ export default function ChatRoomScreen(): JSX.Element {
   const flatListRef = useRef<FlatList>(null);
   const { bottom } = useSafeAreaInsets();
   const spacingMd = useCSSVariable('--spacing-md') as number;
+  const pagerViewRef = useRef<PagerView>(null);
+  const [activeTab, setActiveTab] = useState(0);
+  const { data: conversation } = useUpdateLastSeenQuery(
+    undefined,
+    conversation_id,
+  );
 
-  const _updateLastSeen = useUpdateLastSeenQuery(undefined, conversation_id);
   const {
     data: messages,
     fetchNextPage,
@@ -53,9 +50,14 @@ export default function ChatRoomScreen(): JSX.Element {
     conversation_id,
   );
 
+  const meta = messages?.pages?.[0]?.meta;
+
   return (
     <Container className="bg-background flex-1">
       <Header
+        onPressBack={
+          activeTab === 0 ? undefined : () => pagerViewRef.current?.setPage(0)
+        }
         renderTitle={() => (
           <View className="gap-sm flex-row items-center">
             <Avatar
@@ -69,7 +71,12 @@ export default function ChatRoomScreen(): JSX.Element {
           </View>
         )}
       />
-      <PagerView style={{ flex: 1 }} initialPage={0}>
+      <PagerView
+        ref={pagerViewRef}
+        className="flex-1"
+        initialPage={activeTab}
+        onPageSelected={(event) => setActiveTab(event.nativeEvent.position)}
+      >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           className="flex-1"
@@ -104,82 +111,7 @@ export default function ChatRoomScreen(): JSX.Element {
             flatListRef={flatListRef as React.RefObject<FlatList>}
           />
         </KeyboardAvoidingView>
-        <View key="2" className="p-lg gap-md flex-1">
-          <View className="bg-surface px-lg py-md gap-md border-border rounded-md border">
-            <MenuItem.Action
-              icon="user"
-              label="Agent"
-              value="Ravi Mukti"
-              onPress={() => {}}
-            />
-            <Divider className="-mx-lg" />
-            <MenuItem.Action
-              icon="userSettings"
-              label="Assignee"
-              value="Hazkia"
-              onPress={() => {}}
-            />
-            <Divider className="-mx-lg" />
-            <MenuItem.Action
-              icon="signal"
-              label="Priority"
-              value="High"
-              onPress={() => {}}
-            />
-          </View>
-
-          <View className="gap-sm">
-            <Text variant="labelM">Participants</Text>
-            <View className="bg-surface px-lg py-md gap-md border-border rounded-md border">
-              <MenuItem.Action
-                icon="user"
-                label="Ravi Mukti"
-                onPress={() => {}}
-              />
-            </View>
-          </View>
-
-          <View className="gap-sm">
-            <Text variant="labelM">Attributes</Text>
-            <View className="bg-surface px-lg py-md gap-md border-border rounded-md border">
-              <MenuItem.Action
-                label="Conversation ID"
-                value="2"
-                rightElement={null}
-              />
-              <Divider className="-mx-lg" />
-              <MenuItem.Action
-                label="Initiated at"
-                value="18/02/2025"
-                rightElement={null}
-              />
-              <Divider className="-mx-lg" />
-              <MenuItem.Action
-                label="Browser"
-                value="Chrome 133.0.0.0"
-                rightElement={null}
-              />
-              <Divider className="-mx-lg" />
-              <MenuItem.Action
-                label="Operating System"
-                value="macOS 10.15.7"
-                rightElement={null}
-              />
-              <Divider className="-mx-lg" />
-              <MenuItem.Action
-                label="IP Address"
-                value="127.0.0.1"
-                rightElement={null}
-              />
-            </View>
-          </View>
-          <Button
-            text="Share Conversation"
-            onPress={() => {}}
-            color="primary"
-            variant="outlined"
-          />
-        </View>
+        <ChatRoomAttributes key="2" meta={meta} conversation={conversation} />
       </PagerView>
     </Container>
   );
