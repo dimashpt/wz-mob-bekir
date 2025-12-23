@@ -150,3 +150,19 @@ interface ConversationCounter {
   mine_count: number;
   unassigned_count: number;
 }
+
+export type ConversationStatus = 'open' | 'pending' | 'snoozed' | 'resolved';
+
+export interface UpdateStatusPayload {
+  snoozed_until?: string;
+  status: ConversationStatus;
+}
+
+export interface UpdateStatusResponse {
+  payload: {
+    conversation_id: number;
+    current_status: ConversationStatus;
+    snoozed_until: string;
+    success: boolean;
+  };
+}

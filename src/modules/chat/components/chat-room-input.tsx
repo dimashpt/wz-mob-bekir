@@ -68,7 +68,7 @@ export function ChatRoomInput({
       setMessage('');
 
       // Cancel any outgoing refetches
-      // (so they don't overwrite our optimistic update)
+      // (so they don't overwrite the optimistic update)
       await context.client.cancelQueries({ queryKey });
 
       // Snapshot the previous value

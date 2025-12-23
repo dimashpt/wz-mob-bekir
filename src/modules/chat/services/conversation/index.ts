@@ -1,6 +1,11 @@
 import { API } from '@/lib/axios';
 import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
-import { ListConversationsParams, ListConversationsResponse } from './types';
+import {
+  ListConversationsParams,
+  ListConversationsResponse,
+  UpdateStatusPayload,
+  UpdateStatusResponse,
+} from './types';
 
 /**
  * Lists conversations for the given account.
@@ -15,6 +20,26 @@ export async function listConversations(
   const response = await API.get<ListConversationsResponse>(
     CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(accountId),
     { params },
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the status for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateStatus(
+  accountId: number,
+  conversationId: number,
+  payload: UpdateStatusPayload,
+): Promise<UpdateStatusResponse> {
+  const response = await API.post<UpdateStatusResponse>(
+    CONVERSATIONS_ENDPOINTS.UPDATE_STATUS(accountId, conversationId),
+    payload,
   );
 
   return response.data;

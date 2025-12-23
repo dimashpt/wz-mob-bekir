@@ -19,4 +19,6 @@ export const CONVERSATIONS_ENDPOINTS = {
     `${CHAT_BASE_URL}/api/v1/accounts/${accountId}/conversations/${conversationId}/toggle_typing_status`,
   SEND_MESSAGE: (accountId: number, conversationId: string) =>
     `${CHAT_BASE_URL}/api/v1/accounts/${accountId}/conversations/${conversationId}/messages`,
+  UPDATE_STATUS: (accountId: number, conversationId: number) =>
+    `${CHAT_BASE_URL}/api/v1/accounts/${accountId}/conversations/${conversationId}/toggle_status`,
 } as const;

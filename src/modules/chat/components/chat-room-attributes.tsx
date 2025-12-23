@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 import { View } from 'react-native';
 
+import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { tv } from 'tailwind-variants';
 
@@ -15,9 +16,16 @@ import {
   MenuItem,
   Text,
 } from '@/components';
+import { useAuthStore } from '@/store/auth-store';
+import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { updateStatus } from '../services/conversation';
 import { useListParticipantsQuery } from '../services/conversation-room/repository';
 import { Meta } from '../services/conversation-room/types';
-import { Conversation } from '../services/conversation/types';
+import {
+  Conversation,
+  ConversationStatus,
+  UpdateStatusPayload,
+} from '../services/conversation/types';
 
 type ChatRoomAttributesProps = {
   meta?: Meta;
@@ -30,8 +38,8 @@ const statusVariants = tv({
     variant: {
       open: 'bg-accent-soft border-accent',
       pending: 'bg-warning-soft border-warning',
-      snooze: 'bg-info-soft border-info',
-      resolve: 'bg-success-soft border-success',
+      snoozed: 'bg-info-soft border-info',
+      resolved: 'bg-success-soft border-success',
     },
     active: {
       true: 'border-accent',
@@ -48,10 +56,41 @@ export function ChatRoomAttributes({
   meta,
   conversation,
 }: ChatRoomAttributesProps): JSX.Element {
+  const { chatUser } = useAuthStore();
   const { data: participants } = useListParticipantsQuery(
     undefined,
     conversation?.id?.toString() ?? '',
   );
+
+  const updateStatusMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.UPDATE_STATUS(
+        chatUser?.account_id ?? 0,
+        conversation?.id ?? 0,
+      ),
+    ],
+    mutationFn: (payload: UpdateStatusPayload) =>
+      updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+    onMutate: async (payload, context) => {
+      const queryKey = [
+        CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
+          chatUser?.account_id ?? 0,
+          conversation?.id?.toString() ?? '',
+        ),
+      ];
+      await context.client.cancelQueries({ queryKey });
+
+      const previousStatus =
+        context.client.getQueryData<Conversation>(queryKey);
+
+      context.client.setQueryData(queryKey, (old: Conversation) => ({
+        ...old,
+        status: payload.status,
+      }));
+
+      return { previousStatus };
+    },
+  });
 
   const additionalAttributes = meta?.additional_attributes;
   const labels = meta?.labels ?? [];
@@ -67,7 +106,7 @@ export function ChatRoomAttributes({
 
   const statusList: {
     label: string;
-    value: 'open' | 'pending' | 'snooze' | 'resolve';
+    value: ConversationStatus;
     icon: IconNames;
     active: boolean;
   }[] = [
@@ -75,27 +114,31 @@ export function ChatRoomAttributes({
       label: 'Open',
       value: 'open',
       icon: 'refresh',
-      active: true,
+      active: conversation?.status === 'open',
     },
     {
       label: 'Pending',
       value: 'pending',
       icon: 'clock',
-      active: false,
+      active: conversation?.status === 'pending',
     },
     {
       label: 'Snooze',
-      value: 'snooze',
+      value: 'snoozed',
       icon: 'notification',
-      active: false,
+      active: conversation?.status === 'snoozed',
     },
     {
       label: 'Resolve',
-      value: 'resolve',
+      value: 'resolved',
       icon: 'tickCircle',
-      active: false,
+      active: conversation?.status === 'resolved',
     },
   ];
+
+  function onChangeStatus(status: ConversationStatus): void {
+    updateStatusMutation.mutate({ status });
+  }
 
   return (
     <Container.Scroll contentContainerClassName="p-lg gap-md flex-1">
@@ -107,7 +150,7 @@ export function ChatRoomAttributes({
               variant: status.value,
               active: status.active,
             })}
-            onPress={() => {}}
+            onPress={() => onChangeStatus(status.value)}
           >
             <Icon name={status.icon} size="lg" className="text-foreground" />
             <Text variant="labelS">{status.label}</Text>
