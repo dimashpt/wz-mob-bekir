@@ -3,6 +3,7 @@ import { FlatList, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Icon, InputField } from '@/components';
 import { useDebounce } from '@/hooks';
@@ -29,6 +30,7 @@ export function ChatRoomInput({
 }): JSX.Element {
   const { chatUser } = useAuthStore();
   const { conversation_id } = useLocalSearchParams<Params>();
+  const { t } = useTranslation();
 
   const [isPrivate, setIsPrivate] = useState(false);
 
@@ -155,8 +157,8 @@ export function ChatRoomInput({
         <InputField
           placeholder={
             isPrivate
-              ? 'Only a agents can see this message'
-              : 'Type your message...'
+              ? t('chat.input.placeholder_private')
+              : t('chat.input.placeholder')
           }
           className="bg-background"
           inputClassName="py-sm"

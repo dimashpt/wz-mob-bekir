@@ -2,6 +2,7 @@ import React, { JSX } from 'react';
 import { View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, IconNames, Text } from '@/components';
@@ -42,6 +43,7 @@ export function StatusSection({
   conversation,
 }: StatusSectionProps): JSX.Element {
   const { chatUser } = useAuthStore();
+  const { t } = useTranslation();
 
   const updateLastSeenQueryKey = [
     CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
@@ -85,25 +87,25 @@ export function StatusSection({
     active: boolean;
   }[] = [
     {
-      label: 'Open',
+      label: t('chat.status.open'),
       value: 'open',
       icon: 'refresh',
       active: conversation?.status === 'open',
     },
     {
-      label: 'Pending',
+      label: t('chat.status.pending'),
       value: 'pending',
       icon: 'clock',
       active: conversation?.status === 'pending',
     },
     {
-      label: 'Snooze',
+      label: t('chat.status.snooze'),
       value: 'snoozed',
       icon: 'notification',
       active: conversation?.status === 'snoozed',
     },
     {
-      label: 'Resolve',
+      label: t('chat.status.resolve'),
       value: 'resolved',
       icon: 'tickCircle',
       active: conversation?.status === 'resolved',

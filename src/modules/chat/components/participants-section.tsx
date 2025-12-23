@@ -2,6 +2,7 @@ import React, { JSX, useRef } from 'react';
 import { FlatList, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import {
   Container,
@@ -36,6 +37,7 @@ export function ParticipantsSection({
 }: ParticipantsSectionProps): JSX.Element {
   const participantsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
+  const { t } = useTranslation();
 
   const { data: participants, refetch: refetchParticipants } =
     useListParticipantsQuery(undefined, conversation?.id?.toString() ?? '');
@@ -95,7 +97,7 @@ export function ParticipantsSection({
   return (
     <>
       <View className="gap-sm">
-        <Text variant="labelM">Participants</Text>
+        <Text variant="labelM">{t('chat.participants.title')}</Text>
         <Container.Card className={participants?.length ? 'gap-sm' : 'gap-0'}>
           <FlatList
             data={participants}
@@ -114,7 +116,7 @@ export function ParticipantsSection({
           {participants?.length ? <Divider className="-mx-md" /> : null}
           <MenuItem.Action
             icon="plus"
-            label="Add Participant"
+            label={t('chat.participants.add_participant')}
             rightElement={null}
             onPress={() => participantsBottomSheetRef.current?.present()}
           />
@@ -124,7 +126,7 @@ export function ParticipantsSection({
       <OptionBottomSheet
         ref={participantsBottomSheetRef}
         options={agents ?? []}
-        title="Participants"
+        title={t('chat.participants.title')}
         multiselect
         onSelect={(opts) => onChangeParticipants(opts)}
         selectedValues={participants?.map((participant) => ({

@@ -99,8 +99,8 @@ export default function ChatLoginScreen(): JSX.Element {
             }) => (
               <InputField
                 ref={emailRef}
-                label="Email"
-                placeholder="Enter your email"
+                label={t('chat.login.email_label')}
+                placeholder={t('chat.login.email_placeholder')}
                 value={value}
                 errors={error?.message}
                 onChangeText={onChange}
@@ -123,8 +123,8 @@ export default function ChatLoginScreen(): JSX.Element {
             }) => (
               <InputField
                 ref={passwordRef}
-                label="Password"
-                placeholder="Enter your password"
+                label={t('chat.login.password_label')}
+                placeholder={t('chat.login.password_placeholder')}
                 value={value}
                 errors={error?.message}
                 onChangeText={onChange}
@@ -137,7 +137,7 @@ export default function ChatLoginScreen(): JSX.Element {
           />
 
           <Button
-            text="Login"
+            text={t('chat.login.submit_button')}
             onPress={handleSubmit(onSubmit)}
             loading={loginMutation.isPending}
           />

@@ -227,7 +227,54 @@
     "title": "Storybook"
   },
   "chat": {
-    "title": "Chat"
+    "title": "Chat",
+    "status": {
+      "open": "Open",
+      "pending": "Pending",
+      "snooze": "Snooze",
+      "resolve": "Resolve"
+    },
+    "assignment": {
+      "agent": "Agent",
+      "assignee": "Assignee",
+      "priority": "Priority",
+      "priority_none": "None",
+      "priority_low": "Low",
+      "priority_medium": "Medium",
+      "priority_high": "High",
+      "priority_urgent": "Urgent",
+      "team": "Team"
+    },
+    "labels": {
+      "title": "Labels",
+      "add_label": "Add Label"
+    },
+    "participants": {
+      "title": "Participants",
+      "add_participant": "Add Participant"
+    },
+    "attributes": {
+      "title": "Attributes",
+      "conversation_id": "Conversation ID",
+      "initiated_at": "Initiated at",
+      "browser": "Browser",
+      "operating_system": "Operating System",
+      "ip_address": "IP Address"
+    },
+    "actions": {
+      "share_conversation": "Share Conversation"
+    },
+    "input": {
+      "placeholder": "Type your message...",
+      "placeholder_private": "Only agents can see this message"
+    },
+    "login": {
+      "email_label": "Email",
+      "email_placeholder": "Enter your email",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "submit_button": "Login"
+    }
   },
   "order_details": {
     "title": "Order Details",

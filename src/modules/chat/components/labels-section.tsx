@@ -2,6 +2,7 @@ import React, { JSX, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 
 import { InfiniteData, useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import {
   Chip,
@@ -38,6 +39,7 @@ export function LabelsSection({
 }: LabelsSectionProps): JSX.Element {
   const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
+  const { t } = useTranslation();
 
   const { data: labels } = useListLabelsQuery({
     select: (data) =>
@@ -103,7 +105,7 @@ export function LabelsSection({
   return (
     <>
       <View className="gap-sm">
-        <Text variant="labelM">Labels</Text>
+        <Text variant="labelM">{t('chat.labels.title')}</Text>
 
         <View className="gap-sm flex-row flex-wrap">
           {meta?.labels.map((label) => (
@@ -128,7 +130,7 @@ export function LabelsSection({
           ))}
           <Clickable onPress={() => labelsBottomSheetRef.current?.present()}>
             <Chip
-              label="Add Label"
+              label={t('chat.labels.add_label')}
               variant="clear"
               textProps={{
                 className: 'text-sm font-medium android:font-map-medium',
@@ -144,7 +146,7 @@ export function LabelsSection({
       <OptionBottomSheet
         ref={labelsBottomSheetRef}
         options={labels ?? []}
-        title="Labels"
+        title={t('chat.labels.title')}
         multiselect
         onSelect={(opts) => onChangeLabels(opts)}
         selectedValues={selectedLabels}

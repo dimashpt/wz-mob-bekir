@@ -1,6 +1,7 @@
 import React, { JSX, useRef } from 'react';
 
 import { InfiniteData, useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import {
   Container,
@@ -35,14 +36,6 @@ type AssignmentSectionProps = {
   teams?: Option<Team>[];
 };
 
-const PRIORITY_OPTIONS: { label: string; value: ConversationPriority }[] = [
-  { label: 'None', value: 'none' },
-  { label: 'Low', value: 'low' },
-  { label: 'Medium', value: 'medium' },
-  { label: 'High', value: 'high' },
-  { label: 'Urgent', value: 'urgent' },
-];
-
 export function AssignmentSection({
   meta,
   conversation,
@@ -52,10 +45,23 @@ export function AssignmentSection({
   const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
+  const { t } = useTranslation();
+
+  const PRIORITY_OPTIONS: { label: string; value: ConversationPriority }[] = [
+    { label: t('chat.assignment.priority_none'), value: 'none' },
+    { label: t('chat.assignment.priority_low'), value: 'low' },
+    { label: t('chat.assignment.priority_medium'), value: 'medium' },
+    { label: t('chat.assignment.priority_high'), value: 'high' },
+    { label: t('chat.assignment.priority_urgent'), value: 'urgent' },
+  ];
 
   const { data: teams } = useListTeamsQuery({
     select: (data) => [
-      { label: 'None', value: String(0), data: {} as Team },
+      {
+        label: t('chat.assignment.priority_none'),
+        value: String(0),
+        data: {} as Team,
+      },
       ...(data ?? []).map((team) => ({
         label: team.name,
         value: String(team.id),
@@ -196,7 +202,7 @@ export function AssignmentSection({
       <Container.Card>
         <MenuItem.Action
           icon="user"
-          label="Agent"
+          label={t('chat.assignment.agent')}
           loading={updateAssigneeMutation.isPending}
           value={meta?.assignee?.name}
           onPress={() => agentsBottomSheetRef.current?.present()}
@@ -204,7 +210,7 @@ export function AssignmentSection({
         <Divider className="-mx-lg" />
         <MenuItem.Action
           icon="userSettings"
-          label="Assignee"
+          label={t('chat.assignment.assignee')}
           loading={updateAssigneeTeamMutation.isPending}
           value={conversation?.meta?.team?.name}
           onPress={() => teamsBottomSheetRef.current?.present()}
@@ -212,7 +218,7 @@ export function AssignmentSection({
         <Divider className="-mx-lg" />
         <MenuItem.Action
           icon="signal"
-          label="Priority"
+          label={t('chat.assignment.priority')}
           loading={updatePriorityMutation.isPending}
           value={
             PRIORITY_OPTIONS.find(
@@ -227,10 +233,14 @@ export function AssignmentSection({
       <OptionBottomSheet
         ref={agentsBottomSheetRef}
         options={[
-          { label: 'None', value: String(0), data: {} as Agent },
+          {
+            label: t('chat.assignment.priority_none'),
+            value: String(0),
+            data: {} as Agent,
+          },
           ...(agents ?? []),
         ]}
-        title="Agent"
+        title={t('chat.assignment.agent')}
         onSelect={(opt) => onChangeAgent(opt.value)}
         selectedValue={agents?.find(
           (agent) => agent.value === (meta?.assignee?.id ?? 0).toString(),
@@ -240,7 +250,7 @@ export function AssignmentSection({
       <OptionBottomSheet
         ref={teamsBottomSheetRef}
         options={teams ?? []}
-        title="Team"
+        title={t('chat.assignment.team')}
         onSelect={(opt) => onChangeTeam(opt.value)}
         selectedValue={teams?.find(
           (team) =>
@@ -251,7 +261,7 @@ export function AssignmentSection({
       <OptionBottomSheet
         ref={priorityBottomSheetRef}
         options={PRIORITY_OPTIONS}
-        title="Priority"
+        title={t('chat.assignment.priority')}
         onSelect={(opt) => onChangePriority(opt.value as ConversationPriority)}
         selectedValue={PRIORITY_OPTIONS.find(
           (opt) =>

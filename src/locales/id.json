@@ -225,7 +225,54 @@
     "title": "Storybook"
   },
   "chat": {
-    "title": "Percakapan"
+    "title": "Obrolan",
+    "status": {
+      "open": "Buka",
+      "pending": "Tertunda",
+      "snooze": "Tunda",
+      "resolve": "Selesaikan"
+    },
+    "assignment": {
+      "agent": "Agen",
+      "assignee": "Penanggung Jawab",
+      "priority": "Prioritas",
+      "priority_none": "Tidak Ada",
+      "priority_low": "Rendah",
+      "priority_medium": "Sedang",
+      "priority_high": "Tinggi",
+      "priority_urgent": "Mendesak",
+      "team": "Tim"
+    },
+    "labels": {
+      "title": "Label",
+      "add_label": "Tambah Label"
+    },
+    "participants": {
+      "title": "Peserta",
+      "add_participant": "Tambah Peserta"
+    },
+    "attributes": {
+      "title": "Atribut",
+      "conversation_id": "ID Percakapan",
+      "initiated_at": "Dimulai pada",
+      "browser": "Peramban",
+      "operating_system": "Sistem Operasi",
+      "ip_address": "Alamat IP"
+    },
+    "actions": {
+      "share_conversation": "Bagikan Percakapan"
+    },
+    "input": {
+      "placeholder": "Ketik pesan Anda...",
+      "placeholder_private": "Hanya agen yang dapat melihat pesan ini"
+    },
+    "login": {
+      "email_label": "Email",
+      "email_placeholder": "Masukkan email Anda",
+      "password_label": "Kata Sandi",
+      "password_placeholder": "Masukkan kata sandi Anda",
+      "submit_button": "Masuk"
+    }
   },
   "order_details": {
     "title": "Detail Pesanan",

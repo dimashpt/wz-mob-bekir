@@ -2,6 +2,7 @@ import React, { JSX } from 'react';
 import { View } from 'react-native';
 
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 import { Container, Divider, MenuItem, Text } from '@/components';
 import { Meta } from '../services/conversation-room/types';
@@ -16,6 +17,7 @@ export function AttributesSection({
   meta,
   conversation,
 }: AttributesSectionProps): JSX.Element {
+  const { t } = useTranslation();
   const additionalAttributes = meta?.additional_attributes;
   const initiatedAt = additionalAttributes?.initiated_at?.timestamp;
   const browser = additionalAttributes?.browser;
@@ -29,34 +31,34 @@ export function AttributesSection({
 
   return (
     <View className="gap-sm">
-      <Text variant="labelM">Attributes</Text>
+      <Text variant="labelM">{t('chat.attributes.title')}</Text>
       <Container.Card>
         <MenuItem.Action
-          label="Conversation ID"
+          label={t('chat.attributes.conversation_id')}
           value={conversation?.id?.toString()}
           rightElement={null}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
-          label="Initiated at"
+          label={t('chat.attributes.initiated_at')}
           value={dayjs(initiatedAt).format('DD/MM/YYYY HH:mm')}
           rightElement={null}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
-          label="Browser"
+          label={t('chat.attributes.browser')}
           value={browserName}
           rightElement={null}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
-          label="Operating System"
+          label={t('chat.attributes.operating_system')}
           value={platformName}
           rightElement={null}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
-          label="IP Address"
+          label={t('chat.attributes.ip_address')}
           value="127.0.0.1"
           rightElement={null}
         />

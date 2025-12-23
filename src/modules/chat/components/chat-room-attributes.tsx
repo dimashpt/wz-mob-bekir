@@ -1,5 +1,7 @@
 import React, { JSX } from 'react';
 
+import { useTranslation } from 'react-i18next';
+
 import { Button, Container } from '@/components';
 import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
 import { Meta } from '../services/conversation-room/types';
@@ -19,6 +21,7 @@ export function ChatRoomAttributes({
   meta,
   conversation,
 }: ChatRoomAttributesProps): JSX.Element {
+  const { t } = useTranslation();
   const { data: agents } = useListAssignableAgentsQuery(
     {
       enabled: Boolean(conversation?.id),
@@ -51,7 +54,7 @@ export function ChatRoomAttributes({
       <AttributesSection meta={meta} conversation={conversation} />
 
       <Button
-        text="Share Conversation"
+        text={t('chat.actions.share_conversation')}
         onPress={() => {}}
         color="primary"
         variant="outlined"
