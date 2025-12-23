@@ -2,8 +2,8 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
   const VARIANT = process.env.APP_VARIANT;
-  const VERSION = '0.1.0';
-  const BUILD_NUMBER = 1;
+  const VERSION = '0.2.0';
+  const BUILD_NUMBER = 2;
   const BUNDLE_ID = 'com.bebaschat.app';
   const EXPO_PROJECT_ID = 'cf27c8f8-5c74-4302-9386-a44ed0d781ad';
 
