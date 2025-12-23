@@ -1,7 +1,7 @@
-import React, { JSX } from 'react';
+import React, { JSX, useRef } from 'react';
 import { View } from 'react-native';
 
-import { useMutation } from '@tanstack/react-query';
+import { InfiniteData, useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { tv } from 'tailwind-variants';
 
@@ -14,16 +14,35 @@ import {
   Icon,
   IconNames,
   MenuItem,
+  OptionBottomSheet,
+  OptionBottomSheetRef,
   Text,
 } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
-import { updateStatus } from '../services/conversation';
-import { useListParticipantsQuery } from '../services/conversation-room/repository';
-import { Meta } from '../services/conversation-room/types';
+import {
+  updateAssignee,
+  updatePriority,
+  updateStatus,
+} from '../services/conversation';
+import {
+  useListAssignableAgentsQuery,
+  useListParticipantsQuery,
+  useListTeamsQuery,
+} from '../services/conversation-room/repository';
+import {
+  Agent,
+  ConversationMessagesResponse,
+  Meta,
+  Team,
+} from '../services/conversation-room/types';
 import {
   Conversation,
+  ConversationPriority,
   ConversationStatus,
+  UpdateAssigneePayload,
+  UpdateAssigneeTeamPayload,
+  UpdatePriorityPayload,
   UpdateStatusPayload,
 } from '../services/conversation/types';
 
@@ -52,15 +71,65 @@ const statusVariants = tv({
   },
 });
 
+const PRIORITY_OPTIONS: { label: string; value: ConversationPriority }[] = [
+  { label: 'None', value: 'none' },
+  { label: 'Low', value: 'low' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'High', value: 'high' },
+  { label: 'Urgent', value: 'urgent' },
+];
+
 export function ChatRoomAttributes({
   meta,
   conversation,
 }: ChatRoomAttributesProps): JSX.Element {
+  const priorityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const { chatUser } = useAuthStore();
   const { data: participants } = useListParticipantsQuery(
     undefined,
     conversation?.id?.toString() ?? '',
   );
+  const { data: agents } = useListAssignableAgentsQuery(
+    {
+      enabled: Boolean(conversation?.id),
+      select: (data) => [
+        { label: 'None', value: String(0), data: {} as Agent },
+        ...(data.payload ?? []).map((agent) => ({
+          label: agent.name,
+          value: String(agent.id),
+          data: agent,
+        })),
+      ],
+    },
+    {
+      inbox_ids: [conversation?.inbox_id ?? 0],
+    },
+  );
+  const { data: teams } = useListTeamsQuery({
+    select: (data) => [
+      { label: 'None', value: String(0), data: {} as Team },
+      ...(data ?? []).map((team) => ({
+        label: team.name,
+        value: String(team.id),
+        data: team,
+      })),
+    ],
+  });
+  const updateLastSeenQueryKey = [
+    CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
+      chatUser?.account_id ?? 0,
+      conversation?.id?.toString() ?? '',
+    ),
+  ];
+  const listMessagesQueryKey = [
+    CONVERSATIONS_ENDPOINTS.MESSAGES(
+      chatUser?.account_id ?? 0,
+      conversation?.id?.toString() ?? '',
+    ),
+    'infinite',
+  ];
 
   const updateStatusMutation = useMutation({
     mutationKey: [
@@ -72,23 +141,121 @@ export function ChatRoomAttributes({
     mutationFn: (payload: UpdateStatusPayload) =>
       updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
-      const queryKey = [
-        CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
-          chatUser?.account_id ?? 0,
-          conversation?.id?.toString() ?? '',
-        ),
-      ];
-      await context.client.cancelQueries({ queryKey });
+      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
 
-      const previousStatus =
-        context.client.getQueryData<Conversation>(queryKey);
+      const previousStatus = context.client.getQueryData<Conversation>(
+        updateLastSeenQueryKey,
+      );
 
-      context.client.setQueryData(queryKey, (old: Conversation) => ({
-        ...old,
-        status: payload.status,
-      }));
+      context.client.setQueryData(
+        updateLastSeenQueryKey,
+        (old: Conversation) => ({
+          ...old,
+          status: payload.status,
+        }),
+      );
 
       return { previousStatus };
+    },
+  });
+
+  const updateAssigneeMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.UPDATE_ASSIGNEE(
+        chatUser?.account_id ?? 0,
+        conversation?.id ?? 0,
+      ),
+    ],
+    mutationFn: (payload: UpdateAssigneePayload) =>
+      updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+    onMutate: async (payload, context) => {
+      await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
+
+      const previousAssignee =
+        context.client.getQueryData<ConversationMessagesResponse>(
+          listMessagesQueryKey,
+        );
+      const assignedAgent = agents?.find(
+        (agent) => agent.value === payload.assignee_id.toString(),
+      );
+
+      context.client.setQueryData(
+        listMessagesQueryKey,
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          // Change the first page of the messages to include the new assignee
+          const newPages = old.pages.map((page) => ({
+            ...page,
+            meta: {
+              ...page.meta,
+              assignee: assignedAgent?.data,
+            },
+          }));
+          return { ...old, pages: newPages };
+        },
+      );
+
+      return { previousAssignee };
+    },
+  });
+
+  const updateAssigneeTeamMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.UPDATE_ASSIGNEE(
+        chatUser?.account_id ?? 0,
+        conversation?.id ?? 0,
+      ),
+    ],
+    mutationFn: (payload: UpdateAssigneeTeamPayload) =>
+      updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+    onMutate: async (payload, context) => {
+      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
+
+      const previousTeam = context.client.getQueryData<Conversation>(
+        updateLastSeenQueryKey,
+      );
+
+      context.client.setQueryData(
+        updateLastSeenQueryKey,
+        (old: Conversation) => ({
+          ...old,
+          meta: {
+            ...old.meta,
+            team: teams?.find(
+              (team) => team.value === payload.team_id.toString(),
+            )?.data,
+          },
+        }),
+      );
+
+      return { previousTeam };
+    },
+  });
+
+  const updatePriorityMutation = useMutation({
+    mutationKey: [
+      CONVERSATIONS_ENDPOINTS.UPDATE_PRIORITY(
+        chatUser?.account_id ?? 0,
+        conversation?.id ?? 0,
+      ),
+    ],
+    mutationFn: (payload: UpdatePriorityPayload) =>
+      updatePriority(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+    onMutate: async (payload, context) => {
+      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
+
+      const previousPriority = context.client.getQueryData<Conversation>(
+        updateLastSeenQueryKey,
+      );
+
+      context.client.setQueryData(
+        updateLastSeenQueryKey,
+        (old: Conversation) => ({
+          ...old,
+          priority: payload.priority,
+        }),
+      );
+
+      return { previousPriority };
     },
   });
 
@@ -140,6 +307,20 @@ export function ChatRoomAttributes({
     updateStatusMutation.mutate({ status });
   }
 
+  function onChangeAgent(agentId: string): void {
+    updateAssigneeMutation.mutate({ assignee_id: Number(agentId) });
+  }
+
+  function onChangeTeam(teamId: string): void {
+    updateAssigneeTeamMutation.mutate({ team_id: Number(teamId) });
+  }
+
+  function onChangePriority(priority: ConversationPriority): void {
+    updatePriorityMutation.mutate({
+      priority: priority,
+    });
+  }
+
   return (
     <Container.Scroll contentContainerClassName="p-lg gap-md flex-1">
       <View className="gap-sm flex-row">
@@ -161,22 +342,29 @@ export function ChatRoomAttributes({
         <MenuItem.Action
           icon="user"
           label="Agent"
+          loading={updateAssigneeMutation.isPending}
           value={meta?.assignee?.name}
-          onPress={() => {}}
+          onPress={() => agentsBottomSheetRef.current?.present()}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
           icon="userSettings"
           label="Assignee"
           value={conversation?.meta?.team?.name}
-          onPress={() => {}}
+          onPress={() => teamsBottomSheetRef.current?.present()}
         />
         <Divider className="-mx-lg" />
         <MenuItem.Action
           icon="signal"
           label="Priority"
-          value="High"
-          onPress={() => {}}
+          loading={updatePriorityMutation.isPending}
+          value={
+            PRIORITY_OPTIONS.find(
+              (opt) =>
+                opt.value === (conversation?.priority ?? 'none').toLowerCase(),
+            )?.label ?? '-'
+          }
+          onPress={() => priorityBottomSheetRef.current?.present()}
         />
       </Container.Card>
 
@@ -252,6 +440,38 @@ export function ChatRoomAttributes({
         onPress={() => {}}
         color="primary"
         variant="outlined"
+      />
+
+      <OptionBottomSheet
+        ref={agentsBottomSheetRef}
+        options={agents ?? []}
+        title="Agent"
+        onSelect={(opt) => onChangeAgent(opt.value)}
+        selectedValue={agents?.find(
+          (agent) => agent.value === (meta?.assignee?.id ?? 0).toString(),
+        )}
+      />
+
+      <OptionBottomSheet
+        ref={teamsBottomSheetRef}
+        options={teams ?? []}
+        title="Team"
+        onSelect={(opt) => onChangeTeam(opt.value)}
+        selectedValue={teams?.find(
+          (team) =>
+            team.value === (conversation?.meta?.team?.id ?? 0).toString(),
+        )}
+      />
+
+      <OptionBottomSheet
+        ref={priorityBottomSheetRef}
+        options={PRIORITY_OPTIONS}
+        title="Priority"
+        onSelect={(opt) => onChangePriority(opt.value as ConversationPriority)}
+        selectedValue={PRIORITY_OPTIONS.find(
+          (opt) =>
+            opt.value === (conversation?.priority ?? 'none').toLowerCase(),
+        )}
       />
     </Container.Scroll>
   );

@@ -212,7 +212,7 @@ export function useListAssignableAgentsQuery<
 
   const query = useQuery<ConversationAssignableAgentsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
+    enabled: params.enabled ?? Boolean(chatUser?.account_id),
     queryKey: [
       CONVERSATIONS_ENDPOINTS.ASSIGNABLE_AGENTS(chatUser?.account_id ?? 0),
     ],

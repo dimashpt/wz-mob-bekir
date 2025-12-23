@@ -106,13 +106,37 @@ export type ConversationParticipantsResponse = {
 
 export interface ConversationMacrosResponse {}
 
-export interface ConversationTeamsResponse {}
+export type ConversationTeamsResponse = Team[];
+
+export interface Team {
+  account_id: number;
+  allow_auto_assign: boolean;
+  description: string;
+  id: number;
+  is_member: boolean;
+  name: string;
+}
 
 export interface ConversationAssignableAgentsParams {
   inbox_ids: number[] | string[];
 }
 
-export interface ConversationAssignableAgentsResponse {}
+export interface ConversationAssignableAgentsResponse {
+  payload: Agent[];
+}
+
+export interface Agent {
+  account_id: number;
+  auto_offline: boolean;
+  availability_status: string;
+  available_name: string;
+  confirmed: boolean;
+  email: string;
+  id: number;
+  name: string;
+  role: string;
+  thumbnail: string;
+}
 
 export interface UpdateTypingStatusPayload {
   is_private: boolean;

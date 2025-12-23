@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { ActivityIndicator, View, ViewStyle } from 'react-native';
 
 import { twMerge } from 'tailwind-merge';
 
@@ -25,6 +25,7 @@ export type MenuItemActionProps = {
   className?: string;
   style?: ViewStyle;
   rightElement?: React.ReactNode;
+  loading?: boolean;
 };
 
 export function MenuItem({
@@ -78,6 +79,7 @@ export function MenuItemAction({
   className,
   style,
   rightElement,
+  loading,
 }: MenuItemActionProps): JSX.Element {
   const content = (
     <Clickable
@@ -92,9 +94,13 @@ export function MenuItemAction({
         <Text variant="bodyM">{label}</Text>
       </View>
       {value ? (
-        <Text variant="bodyS" color="muted">
-          {value}
-        </Text>
+        loading ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          <Text variant="bodyS" color="muted">
+            {value}
+          </Text>
+        )
       ) : null}
       {rightElement === null
         ? null

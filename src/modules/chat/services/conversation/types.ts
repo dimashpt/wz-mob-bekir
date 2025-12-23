@@ -166,3 +166,26 @@ export interface UpdateStatusResponse {
     success: boolean;
   };
 }
+
+export interface UpdateAssigneePayload {
+  assignee_id: number;
+}
+
+export interface UpdateAssigneeTeamPayload {
+  team_id: number;
+}
+
+export interface UpdateAssigneeResponse {}
+
+export type ConversationPriority =
+  | 'low'
+  | 'medium'
+  | 'high'
+  | 'urgent'
+  | 'none';
+
+export interface UpdatePriorityPayload {
+  priority: ConversationPriority;
+}
+
+export interface UpdatePriorityResponse {}

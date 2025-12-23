@@ -86,7 +86,7 @@ export default function ChatRoomScreen(): JSX.Element {
           <FlatList
             ref={flatListRef}
             data={messages?.payload ?? []}
-            contentContainerClassName="pt-lg px-lg gap-sm flex-col-reverse"
+            contentContainerClassName="pt-lg px-lg gap-sm"
             keyExtractor={(item) =>
               'date' in item ? item.date : item.id.toString()
             }
