@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { IMessage } from 'react-native-gifted-chat';
 
 import { MESSAGE_TYPES } from '../constants/flags';
 import { Message } from '../services/conversation-room/types';
@@ -135,4 +136,24 @@ export function generateEchoId(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+/**
+ * Maps a message to a GiftedChat message
+ * @param {Message} message - The message to map
+ * @returns {IMessage} - The mapped message
+ */
+export function mapMessageToGiftedChatMessage(message: Message): IMessage {
+  return {
+    _id: message.id,
+    text: message.content,
+    createdAt: message.created_at * 1000,
+    user: {
+      _id: message.sender?.id ?? 0,
+      name: message.sender?.name ?? '',
+    },
+    system: message.message_type === MESSAGE_TYPES.ACTIVITY,
+    pending: message.status === 'sending',
+    sent: message.status === 'sent',
+  };
 }

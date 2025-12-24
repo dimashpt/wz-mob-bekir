@@ -1,20 +1,16 @@
 import { View } from 'react-native';
 
 import dayjs from 'dayjs';
+import {
+  BubbleProps,
+  DayProps,
+  IMessage,
+  SystemMessageProps,
+} from 'react-native-gifted-chat';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
 import { Icon, Text } from '@/components';
-import { MESSAGE_TYPES } from '../constants/flags';
-import { MessageOrDate } from '../utils/message';
-
-type MessageItemProps = {
-  message: MessageOrDate & {
-    groupWithNext?: boolean;
-    groupWithPrevious?: boolean;
-  };
-  className?: string;
-};
 
 const messageBubbleVariants = tv({
   base: 'px-md py-sm max-w-[80%]',
@@ -40,36 +36,23 @@ const messageBubbleVariants = tv({
 });
 
 export function MessageItem({
-  message,
-  className,
-}: MessageItemProps): React.JSX.Element {
-  // Render date separator
-  if ('date' in message) {
-    return (
-      <View className="py-sm flex-row items-center justify-center">
-        <View className="bg-muted px-sm py-xs rounded-full">
-          <Text variant="labelXS" color="muted">
-            {message.date}
-          </Text>
-        </View>
-      </View>
-    );
-  }
-
+  currentMessage: message,
+  ...props
+}: BubbleProps<IMessage>): React.JSX.Element {
   // Render activity message
-  if (message.message_type === MESSAGE_TYPES.ACTIVITY) {
+  if (message?.system) {
     return (
       <Text
         variant="bodyXS"
         color="muted"
         className="font-map-medium text-center font-medium"
       >
-        {message.content} {dayjs(message.created_at * 1000).format('HH:mm')}
+        {message.text} {dayjs(message.createdAt).format('HH:mm')}
       </Text>
     );
   }
 
-  const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
+  const isOutgoing = props.position === 'right';
 
   // TODO: Render other message types
   // if (message.content_attributes) {}
@@ -82,32 +65,58 @@ export function MessageItem({
       className={twMerge(
         messageBubbleVariants({
           type: isOutgoing ? 'outgoing' : 'incoming',
-          groupWithPrevious: message.groupWithPrevious ?? false,
-          groupWithNext: message.groupWithNext ?? false,
         }),
-        className,
       )}
     >
       <Text
         variant="bodyS"
         className={isOutgoing ? 'text-foreground-inverted' : 'text-foreground'}
       >
-        {message.content}
+        {message.text}
       </Text>
       <View className="gap-xs flex-row items-center justify-end">
         <Text variant="labelXS" color="muted">
-          {dayjs(message.created_at * 1000).format('HH:mm')}
+          {dayjs(message.createdAt).format('HH:mm')}
         </Text>
         {isOutgoing && (
           <Icon
-            name={message.status === 'sending' ? 'clock' : 'tick'}
+            name={message.pending ? 'clock' : 'tick'}
             size="base"
-            className={
-              message.status === 'read' ? 'text-info' : 'text-muted-foreground'
-            }
+            className={message.sent ? 'text-info' : 'text-muted-foreground'}
           />
         )}
       </View>
     </View>
   );
 }
+
+function SystemMessage({
+  currentMessage,
+}: SystemMessageProps<IMessage>): React.JSX.Element {
+  return (
+    <Text
+      variant="bodyXS"
+      color="muted"
+      className="font-map-medium my-xs text-center font-medium"
+    >
+      {currentMessage.text} {dayjs(currentMessage.createdAt).format('HH:mm')}
+    </Text>
+  );
+}
+
+function DaySeparator({ createdAt }: DayProps): React.JSX.Element {
+  return (
+    <View className="py-sm flex-row items-center justify-center">
+      <View className="bg-muted px-sm py-xs rounded-full">
+        <Text variant="labelXS" color="muted">
+          {dayjs(createdAt).format('D MMMM')}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+MessageItem.displayName = 'MessageItem';
+
+MessageItem.SystemMessage = SystemMessage;
+MessageItem.DaySeparator = DaySeparator;

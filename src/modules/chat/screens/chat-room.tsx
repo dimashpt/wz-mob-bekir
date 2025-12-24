@@ -1,12 +1,12 @@
 import React, { JSX, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Platform, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
-import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useCSSVariable } from 'uniwind';
 
 import { Avatar, Container, Header, PagerView, Text } from '@/components';
+import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
@@ -14,7 +14,7 @@ import {
   useListMessagesInfiniteQuery,
   useUpdateLastSeenQuery,
 } from '../services/conversation-room/repository';
-import { groupMessagesByDate } from '../utils/message';
+import { mapMessageToGiftedChatMessage } from '../utils/message';
 
 type Params = {
   conversation_id: string;
@@ -23,11 +23,10 @@ type Params = {
 export default function ChatRoomScreen(): JSX.Element {
   const { conversation_id } = useLocalSearchParams<Params>();
 
-  const flatListRef = useRef<FlatList>(null);
   const { bottom } = useSafeAreaInsets();
-  const spacingMd = useCSSVariable('--spacing-md') as number;
   const pagerViewRef = useRef<PagerView>(null);
   const [activeTab, setActiveTab] = useState(0);
+  const { chatUser } = useAuthStore();
   const { data: conversation } = useUpdateLastSeenQuery(
     undefined,
     conversation_id,
@@ -40,12 +39,25 @@ export default function ChatRoomScreen(): JSX.Element {
     isFetchingNextPage,
   } = useListMessagesInfiniteQuery(
     {
-      select: (data) => ({
-        ...data,
-        payload: groupMessagesByDate(
-          data.pages.flatMap((page) => page?.payload ?? []),
-        ),
-      }),
+      select: (data) => {
+        // Merge all pages into a single array
+        const mergedMessages = data.pages.flatMap(
+          (page) => page?.payload ?? [],
+        );
+
+        // Sort messages from oldest to newest
+        const sortedMessages = mergedMessages.sort(
+          (a, b) => b.created_at - a.created_at,
+        );
+
+        // Map messages to the expected format
+        return {
+          ...data,
+          payload: sortedMessages.map((message) =>
+            mapMessageToGiftedChatMessage(message),
+          ) as IMessage[],
+        };
+      },
     },
     conversation_id,
   );
@@ -72,45 +84,39 @@ export default function ChatRoomScreen(): JSX.Element {
         )}
       />
       <PagerView
+        key="1"
         ref={pagerViewRef}
         className="flex-1"
         initialPage={activeTab}
         onPageSelected={(event) => setActiveTab(event.nativeEvent.position)}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          className="flex-1"
-          keyboardVerticalOffset={-bottom + spacingMd}
-          key="1"
-        >
-          <FlatList
-            ref={flatListRef}
-            data={messages?.payload ?? []}
-            contentContainerClassName="pt-lg px-lg gap-sm"
-            keyExtractor={(item) =>
-              'date' in item ? item.date : item.id.toString()
-            }
-            renderItem={({ item }) => <MessageItem message={item} />}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
-            ListFooterComponent={() => <View className="h-lg" />}
-            inverted
-            onEndReached={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            onEndReachedThreshold={0.3}
-            ListHeaderComponent={() => (
+        <GiftedChat
+          messages={messages?.payload ?? []}
+          user={{
+            _id: chatUser?.account_id ?? 0,
+            name: chatUser?.name ?? '',
+          }}
+          renderBubble={MessageItem}
+          listProps={{
+            ListHeaderComponent: () => (
               <View className="h-lg">
                 {isFetchingNextPage ? <ActivityIndicator /> : null}
               </View>
-            )}
-          />
-          <ChatRoomInput
-            flatListRef={flatListRef as React.RefObject<FlatList>}
-          />
-        </KeyboardAvoidingView>
+            ),
+            onEndReachedThreshold: 0.3,
+            onEndReached: () => {
+              if (hasNextPage && !isFetchingNextPage) {
+                fetchNextPage();
+              }
+            },
+          }}
+          renderSystemMessage={MessageItem.SystemMessage}
+          renderDay={MessageItem.DaySeparator}
+          renderInputToolbar={ChatRoomInput}
+          keyboardAvoidingViewProps={{
+            keyboardVerticalOffset: bottom + 50,
+          }}
+        />
         <ChatRoomAttributes key="2" meta={meta} conversation={conversation} />
       </PagerView>
     </Container>

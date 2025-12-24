@@ -105,8 +105,8 @@ export function useListMessagesInfiniteQuery<
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
-      const hasMore = lastPage.payload.length === 20;
-      return hasMore ? lastPage.payload?.[0]?.id : undefined;
+      const hasMore = lastPage?.payload?.length === 20;
+      return hasMore ? lastPage?.payload?.[0]?.id : undefined;
     },
   });
 

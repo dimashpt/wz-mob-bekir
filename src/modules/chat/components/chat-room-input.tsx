@@ -1,9 +1,10 @@
 import React, { JSX, useState } from 'react';
-import { FlatList, View } from 'react-native';
+import { View } from 'react-native';
 
-import { useMutation } from '@tanstack/react-query';
+import { InfiniteData, useMutation } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { IMessage, InputToolbarProps } from 'react-native-gifted-chat';
 
 import { Button, Icon, InputField } from '@/components';
 import { useDebounce } from '@/hooks';
@@ -23,11 +24,9 @@ type Params = {
   conversation_id: string;
 };
 
-export function ChatRoomInput({
-  flatListRef,
-}: {
-  flatListRef: React.RefObject<FlatList>;
-}): JSX.Element {
+export function ChatRoomInput(
+  _props: InputToolbarProps<IMessage>,
+): JSX.Element {
   const { chatUser } = useAuthStore();
   const { conversation_id } = useLocalSearchParams<Params>();
   const { t } = useTranslation();
@@ -55,6 +54,7 @@ export function ChatRoomInput({
       chatUser?.account_id ?? 0,
       conversation_id,
     ),
+    'infinite',
   ];
   const sendMessageMutation = useMutation({
     mutationKey: [
@@ -77,29 +77,36 @@ export function ChatRoomInput({
       const previousMessages =
         context.client.getQueryData<ConversationMessagesResponse>(queryKey);
 
+      const messagePayload = {
+        content: newMessage.content,
+        private: newMessage.private,
+        content_attributes: newMessage.content_attributes,
+        created_at: new Date().getTime() / 1000,
+        id: new Date().getTime(),
+        message_type: MESSAGE_TYPES.OUTGOING,
+        status: 'sending',
+        echo_id: newMessage.echo_id,
+        sender: {
+          id: chatUser?.account_id ?? 0,
+          name: chatUser?.name ?? '',
+        },
+      } as Message;
+
       // Optimistically update to the new value
       context.client.setQueryData(
         queryKey,
-        (old: ConversationMessagesResponse) => ({
-          ...old,
-          payload: [
-            ...old.payload,
-            {
-              content: newMessage.content,
-              private: newMessage.private,
-              content_attributes: newMessage.content_attributes,
-              created_at: new Date().getTime() / 1000,
-              id: new Date().getTime(),
-              message_type: MESSAGE_TYPES.OUTGOING,
-              status: 'sending',
-              echo_id: newMessage.echo_id,
-            } as Message,
-          ],
-        }),
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          return {
+            ...old,
+            pages: old.pages.map((page, index) => ({
+              ...page,
+              // Append the message to the first page
+              payload:
+                index === 0 ? [...page.payload, messagePayload] : page.payload,
+            })),
+          };
+        },
       );
-
-      // Scroll to the bottom of the list
-      flatListRef.current?.scrollToEnd({ animated: true });
 
       // Return a context object with the snapshotted value
       return { previousMessages };
@@ -108,12 +115,17 @@ export function ChatRoomInput({
       // Update the message status and data with the server response
       context.client.setQueryData(
         queryKey,
-        (old: ConversationMessagesResponse) => ({
-          ...old,
-          payload: old.payload.map((message) =>
-            message.echo_id === payload.echo_id ? data : message,
-          ),
-        }),
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              payload: page.payload.map((message) =>
+                message.echo_id === payload.echo_id ? data : message,
+              ),
+            })),
+          };
+        },
       );
     },
     onError: (_, __, onMutateResult, context) => {
