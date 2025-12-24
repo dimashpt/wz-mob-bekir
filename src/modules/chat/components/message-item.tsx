@@ -82,7 +82,7 @@ export function MessageItem({
           <Icon
             name={message.pending ? 'clock' : 'tick'}
             size="base"
-            className={message.sent ? 'text-info' : 'text-muted-foreground'}
+            className="text-muted-foreground"
           />
         )}
       </View>

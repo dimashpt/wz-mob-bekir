@@ -1,5 +1,5 @@
 import React, { JSX, useRef, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
@@ -103,7 +103,7 @@ export default function ChatRoomScreen(): JSX.Element {
                 {isFetchingNextPage ? <ActivityIndicator /> : null}
               </View>
             ),
-            onEndReachedThreshold: 0.3,
+            onEndReachedThreshold: 0.5,
             onEndReached: () => {
               if (hasNextPage && !isFetchingNextPage) {
                 fetchNextPage();
@@ -114,7 +114,7 @@ export default function ChatRoomScreen(): JSX.Element {
           renderDay={MessageItem.DaySeparator}
           renderInputToolbar={ChatRoomInput}
           keyboardAvoidingViewProps={{
-            keyboardVerticalOffset: bottom + 50,
+            keyboardVerticalOffset: bottom + (Platform.OS === 'ios' ? 50 : 64),
           }}
         />
         <ChatRoomAttributes key="2" meta={meta} conversation={conversation} />
