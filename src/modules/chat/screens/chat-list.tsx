@@ -22,12 +22,7 @@ export default function ChatScreen(): JSX.Element {
   const insets = useSafeAreaInsets();
 
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, _setFilters] = useState<ListConversationsParams>({
-    assignee_type: 'all',
-    status: 'all',
-    sort_by: 'latest',
-    inbox_id: undefined,
-  });
+  const [filters, _setFilters] = useState<ListConversationsParams>({});
 
   const STATUS_OPTIONS: Option[] = useMemo(
     () => [
@@ -87,11 +82,11 @@ export default function ChatScreen(): JSX.Element {
       </View>
       {showFilters && (
         <Filter
+          hideClearAll
           scrollViewProps={{
             contentContainerClassName: 'px-lg',
             className: '-mx-lg mb-sm',
           }}
-          hideClearAll
         >
           <Filter.Options
             name="status"
@@ -152,7 +147,7 @@ export default function ChatScreen(): JSX.Element {
         ListEmptyComponent={() => (
           <View className="gap-sm flex-1">
             {isLoading
-              ? Array.from({ length: 10 }).map((_, index) => (
+              ? Array.from({ length: 5 }).map((_, index) => (
                   <Skeleton key={index} className="h-16" />
                 ))
               : null}

@@ -207,7 +207,7 @@ export function AssignmentSection({
           value={meta?.assignee?.name}
           onPress={() => agentsBottomSheetRef.current?.present()}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           icon="userSettings"
           label={t('chat.assignment.assignee')}
@@ -215,7 +215,7 @@ export function AssignmentSection({
           value={conversation?.meta?.team?.name}
           onPress={() => teamsBottomSheetRef.current?.present()}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           icon="signal"
           label={t('chat.assignment.priority')}

@@ -38,25 +38,25 @@ export function AttributesSection({
           value={conversation?.id?.toString()}
           rightElement={null}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           label={t('chat.attributes.initiated_at')}
           value={dayjs(initiatedAt).format('DD/MM/YYYY HH:mm')}
           rightElement={null}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           label={t('chat.attributes.browser')}
           value={browserName}
           rightElement={null}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           label={t('chat.attributes.operating_system')}
           value={platformName}
           rightElement={null}
         />
-        <Divider className="-mx-lg" />
+        <Divider className="-mx-md" />
         <MenuItem.Action
           label={t('chat.attributes.ip_address')}
           value="127.0.0.1"

@@ -28,9 +28,11 @@ export function useListConversationQuery<T = ListConversationsResponse>(
   requestParams: ListConversationsParams,
 ): UseQueryResult<T, Error> {
   const { chatUser } = useAuthStore();
-  const finalQueryParams = {
+  const finalQueryParams: ListConversationsParams = {
     page: 1,
-    per_page: 10,
+    assignee_type: 'me',
+    status: 'open',
+    sort_by: 'latest',
     ...requestParams,
   };
 
