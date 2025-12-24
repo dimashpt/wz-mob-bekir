@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 
-import { Avatar, Icon, Text } from '@/components';
+import { Avatar, Chip, Icon, Text } from '@/components';
 import { AnimatedComponent } from '@/components/animated-component';
 import { Clickable } from '@/components/clickable';
 import { Container } from '@/components/container';
@@ -33,11 +33,11 @@ export default function ChatListItem({
       <Clickable
         onPress={() => router.push(`/chat-room?conversation_id=${item.id}`)}
       >
-        <Container.Card className="gap-sm flex-row items-center">
+        <Container.Card className="gap-sm flex-row">
           {/* Create avatar from sender initials */}
           <Avatar name={item.meta.sender.name} textClassName="text-lg" />
-          <View className="flex-1 justify-between">
-            <View className="gap-xs flex-1 flex-row items-start justify-between">
+          <View className="flex-1">
+            <View className="gap-xs flex-row items-start justify-between">
               <View className="gap-xs flex-row items-center">
                 <Text variant="labelM" className="pr-xxs capitalize">
                   {item.meta.sender.name}
@@ -77,6 +77,13 @@ export default function ChatListItem({
                 )}
               </View>
             </View>
+            {item.labels.length ? (
+              <View className="mt-xs gap-xs flex-row flex-wrap items-center">
+                {item.labels.map((label) => (
+                  <Chip key={label} label={label} variant="blue" />
+                ))}
+              </View>
+            ) : null}
           </View>
         </Container.Card>
       </Clickable>
