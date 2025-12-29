@@ -47,9 +47,7 @@ export default function ChatRoomScreen(): JSX.Element {
         );
 
         // Sort messages from oldest to newest
-        const sortedMessages = mergedMessages.sort(
-          (a, b) => b.created_at - a.created_at,
-        );
+        const sortedMessages = mergedMessages.sort((a, b) => b.id - a.id);
 
         // Map messages to the expected format
         return {
