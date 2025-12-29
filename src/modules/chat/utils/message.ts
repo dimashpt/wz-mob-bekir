@@ -149,8 +149,14 @@ export function mapMessageToGiftedChatMessage(message: Message): IMessage {
     text: message.content,
     createdAt: message.created_at * 1000,
     user: {
-      _id: message.sender?.id ?? 0,
-      name: message.sender?.name ?? '',
+      _id:
+        message.message_type === MESSAGE_TYPES.TEMPLATE
+          ? 'system'
+          : `${message.sender?.id ?? 0}-${message.message_type}`,
+      name:
+        message.message_type === MESSAGE_TYPES.TEMPLATE
+          ? 'System Bot'
+          : (message.sender?.name ?? ''),
     },
     system: message.message_type === MESSAGE_TYPES.ACTIVITY,
     pending: message.status === 'sending',

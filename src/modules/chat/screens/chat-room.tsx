@@ -2,7 +2,7 @@ import React, { JSX, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 
 import { useLocalSearchParams } from 'expo-router';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { GiftedChat } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar, Container, Header, PagerView, Text } from '@/components';
@@ -10,6 +10,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
+import { MESSAGE_TYPES } from '../constants/flags';
 import {
   useListMessagesInfiniteQuery,
   useUpdateLastSeenQuery,
@@ -53,9 +54,10 @@ export default function ChatRoomScreen(): JSX.Element {
         // Map messages to the expected format
         return {
           ...data,
-          payload: sortedMessages.map((message) =>
-            mapMessageToGiftedChatMessage(message),
-          ) as IMessage[],
+          payload: sortedMessages.map((message) => ({
+            ...mapMessageToGiftedChatMessage(message),
+            ...message,
+          })),
         };
       },
     },
@@ -93,7 +95,8 @@ export default function ChatRoomScreen(): JSX.Element {
         <GiftedChat
           messages={messages?.payload ?? []}
           user={{
-            _id: chatUser?.account_id ?? 0,
+            // Add outgoing message type to the user id, due to the given sender.id !== account_id
+            _id: `${chatUser?.account_id ?? 0}-${MESSAGE_TYPES.OUTGOING}`,
             name: chatUser?.name ?? '',
           }}
           renderBubble={MessageItem}

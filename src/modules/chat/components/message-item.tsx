@@ -11,13 +11,17 @@ import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
 import { Icon, Text } from '@/components';
+import { MESSAGE_TYPES } from '../constants/flags';
+import { Message } from '../services/conversation-room/types';
 
 const messageBubbleVariants = tv({
-  base: 'px-md py-sm max-w-[80%]',
+  base: 'px-md py-sm max-w-[80%] bg-surface self-start',
   variants: {
     type: {
       incoming: 'bg-surface self-start',
       outgoing: 'bg-accent self-end',
+      private: 'bg-accent-soft self-end',
+      template: 'bg-info-soft self-start',
     },
     groupWithPrevious: {
       true: 'rounded-tl-sm rounded-tr-sm',
@@ -35,10 +39,24 @@ const messageBubbleVariants = tv({
   },
 });
 
+const messageBubbleTextVariants = tv({
+  base: 'text-foreground',
+  variants: {
+    type: {
+      incoming: 'text-foreground',
+      outgoing: 'text-foreground-inverted',
+      private: 'text-accent',
+      template: 'text-foreground',
+    },
+  },
+});
+
+type ChatMessage = IMessage & Message;
+type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
+
 export function MessageItem({
   currentMessage: message,
-  ...props
-}: BubbleProps<IMessage>): React.JSX.Element {
+}: BubbleProps<ChatMessage>): React.JSX.Element {
   // Render activity message
   if (message?.system) {
     return (
@@ -52,7 +70,19 @@ export function MessageItem({
     );
   }
 
-  const isOutgoing = props.position === 'right';
+  const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
+  const isPrivate = message.private;
+  const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
+
+  function getMessageType(): MessageType {
+    if (isPrivate) return 'private';
+
+    if (isTemplate) return 'template';
+
+    if (isOutgoing) return 'outgoing';
+
+    return 'incoming';
+  }
 
   // TODO: Render other message types
   // if (message.content_attributes) {}
@@ -62,19 +92,21 @@ export function MessageItem({
   // Render regular message with bubble
   return (
     <View
-      className={twMerge(
-        messageBubbleVariants({
-          type: isOutgoing ? 'outgoing' : 'incoming',
-        }),
-      )}
+      className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
     >
       <Text
         variant="bodyS"
-        className={isOutgoing ? 'text-foreground-inverted' : 'text-foreground'}
+        className={messageBubbleTextVariants({ type: getMessageType() })}
       >
         {message.text}
       </Text>
       <View className="gap-xs flex-row items-center justify-end">
+        {isPrivate && (
+          <Icon name="lock" size="sm" className="text-muted-foreground" />
+        )}
+        {isTemplate && (
+          <Icon name="robot" size="sm" className="text-muted-foreground" />
+        )}
         <Text variant="labelXS" color="muted">
           {dayjs(message.createdAt).format('HH:mm')}
         </Text>
@@ -82,7 +114,9 @@ export function MessageItem({
           <Icon
             name={message.pending ? 'clock' : 'tick'}
             size="base"
-            className="text-muted-foreground"
+            className={
+              message.status === 'read' ? 'text-info' : 'text-muted-foreground'
+            }
           />
         )}
       </View>
@@ -92,7 +126,7 @@ export function MessageItem({
 
 function SystemMessage({
   currentMessage,
-}: SystemMessageProps<IMessage>): React.JSX.Element {
+}: SystemMessageProps<ChatMessage>): React.JSX.Element {
   return (
     <Text
       variant="bodyXS"
