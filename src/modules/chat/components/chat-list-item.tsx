@@ -6,8 +6,8 @@ import { useRouter } from 'expo-router';
 
 import { Avatar, Chip, Icon, Text } from '@/components';
 import { AnimatedComponent } from '@/components/animated-component';
-import { Clickable } from '@/components/clickable';
 import { Container } from '@/components/container';
+import { Swipeable } from '@/components/swipeable';
 import { formatDisplayDate } from '@/utils/date';
 import { Conversation } from '../services/conversation/types';
 
@@ -30,8 +30,12 @@ export default function ChatListItem({
 
   return (
     <AnimatedComponent index={index % 10}>
-      <Clickable
-        onPress={() => router.push(`/chat-room?conversation_id=${item.id}`)}
+      <Swipeable
+        spacing={35}
+        rightElement={<Icon name="trash" size="2xl" className="text-white" />}
+        handlePress={() => router.push(`/chat-room?conversation_id=${item.id}`)}
+        triggerOverswipeOnFlick
+        index={index}
       >
         <Container.Card className="gap-sm flex-row">
           {/* Create avatar from sender initials */}
@@ -86,7 +90,7 @@ export default function ChatListItem({
             ) : null}
           </View>
         </Container.Card>
-      </Clickable>
+      </Swipeable>
     </AnimatedComponent>
   );
 }
