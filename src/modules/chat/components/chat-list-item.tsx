@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { twMerge } from 'tailwind-merge';
 
 import { Avatar, Chip, Icon, Text } from '@/components';
 import { AnimatedComponent } from '@/components/animated-component';
@@ -14,9 +20,17 @@ import { Conversation } from '../services/conversation/types';
 export default function ChatListItem({
   item,
   index,
+  isSelectionMode = false,
+  isSelected = false,
+  onPress,
+  onLongPress,
 }: {
   item: Conversation;
   index: number;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }): React.JSX.Element {
   const router = useRouter();
 
@@ -28,18 +42,76 @@ export default function ChatListItem({
     none: 'text-muted-foreground',
   };
 
+  function handlePress(): void {
+    if (onPress) {
+      onPress();
+    } else {
+      router.push(`/chat-room?conversation_id=${item.id}`);
+    }
+  }
+
+  function handleLongPress(): void {
+    if (onLongPress) {
+      onLongPress();
+    }
+  }
+
+  const checkboxWidth = useSharedValue(0);
+  const checkboxOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    if (isSelectionMode) {
+      checkboxWidth.value = withTiming(32, { duration: 200 });
+      checkboxOpacity.value = withTiming(1, { duration: 200 });
+    } else {
+      checkboxWidth.value = withTiming(0, { duration: 200 });
+      checkboxOpacity.value = withTiming(0, { duration: 200 });
+    }
+  }, [isSelectionMode, checkboxWidth, checkboxOpacity]);
+
+  const checkboxAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      width: checkboxWidth.value,
+      opacity: checkboxOpacity.value,
+    };
+  });
+
   return (
     <AnimatedComponent index={index % 10}>
       <Swipeable
         spacing={35}
         rightElement={<Icon name="trash" size="2xl" className="text-white" />}
-        handlePress={() => router.push(`/chat-room?conversation_id=${item.id}`)}
+        handlePress={handlePress}
+        handleLongPress={handleLongPress}
+        isSwipeEnabled={!isSelectionMode}
         triggerOverswipeOnFlick
         index={index}
       >
         <Container.Card className="gap-sm flex-row">
           {/* Create avatar from sender initials */}
-          <Avatar name={item.meta.sender.name} textClassName="text-lg" />
+          <View
+            className={twMerge(
+              'flex-row items-center self-start',
+              isSelectionMode ? 'gap-sm' : '',
+            )}
+          >
+            <Animated.View
+              style={checkboxAnimatedStyle}
+              className="items-center justify-center overflow-hidden"
+            >
+              <View
+                className={twMerge(
+                  'size-2xl items-center justify-center rounded-full border-2',
+                  isSelected ? 'border-accent' : 'border-border bg-transparent',
+                )}
+              >
+                {isSelected && (
+                  <Icon name="tickCircle" size="2xl" className="text-accent" />
+                )}
+              </View>
+            </Animated.View>
+            <Avatar name={item.meta.sender.name} textClassName="text-lg" />
+          </View>
           <View className="flex-1">
             <View className="gap-xs flex-row items-start justify-between">
               <View className="gap-xs flex-row items-center">

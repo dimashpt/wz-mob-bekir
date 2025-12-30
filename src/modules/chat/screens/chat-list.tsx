@@ -1,4 +1,4 @@
-import React, { JSX, useMemo, useState } from 'react';
+import React, { JSX, useEffect, useMemo, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,8 @@ export default function ChatScreen(): JSX.Element {
 
   const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<ListConversationsParams>({});
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const STATUS_OPTIONS: Option[] = useMemo(
     () => [
@@ -65,6 +67,38 @@ export default function ChatScreen(): JSX.Element {
     _setFilters((prev) => ({ ...prev, ...newFilters }));
   }
 
+  function handleItemPress(itemUuid: string): void {
+    if (isSelectionMode) {
+      setSelectedIds((prev) => {
+        const newSet = new Set(prev);
+        if (newSet.has(itemUuid)) {
+          newSet.delete(itemUuid);
+        } else {
+          newSet.add(itemUuid);
+        }
+        return newSet;
+      });
+    }
+  }
+
+  function handleItemLongPress(itemUuid: string): void {
+    if (!isSelectionMode) {
+      setIsSelectionMode(true);
+      setSelectedIds(new Set([itemUuid]));
+    }
+  }
+
+  function exitSelectionMode(): void {
+    setIsSelectionMode(false);
+    setSelectedIds(new Set());
+  }
+
+  useEffect(() => {
+    if (isSelectionMode && selectedIds.size === 0) {
+      setIsSelectionMode(false);
+    }
+  }, [isSelectionMode, selectedIds.size]);
+
   return (
     <Container
       className="bg-background p-lg flex-1"
@@ -72,13 +106,17 @@ export default function ChatScreen(): JSX.Element {
     >
       <View className="flex-row items-center justify-between">
         <Text variant="headingL" className="mb-lg">
-          {t('chat.title')}
+          {isSelectionMode ? `${selectedIds.size} selected` : t('chat.title')}
         </Text>
-        <Button
-          icon={showFilters ? 'close' : 'filter'}
-          variant="ghost"
-          onPress={() => setShowFilters(!showFilters)}
-        />
+        {isSelectionMode ? (
+          <Button text="Cancel" variant="ghost" onPress={exitSelectionMode} />
+        ) : (
+          <Button
+            icon={showFilters ? 'close' : 'filter'}
+            variant="ghost"
+            onPress={() => setShowFilters(!showFilters)}
+          />
+        )}
       </View>
       {showFilters && (
         <Filter
@@ -142,7 +180,16 @@ export default function ChatScreen(): JSX.Element {
         scrollEnabled={!isLoading}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <ChatListItem item={item} index={index} />
+          <ChatListItem
+            item={item}
+            index={index}
+            isSelectionMode={isSelectionMode}
+            isSelected={selectedIds.has(item.uuid)}
+            onPress={
+              isSelectionMode ? () => handleItemPress(item.uuid) : undefined
+            }
+            onLongPress={() => handleItemLongPress(item.uuid)}
+          />
         )}
         ListEmptyComponent={() => (
           <View className="gap-sm flex-1">

@@ -65,6 +65,10 @@ export type SwipeableProps = {
    */
   handlePress: () => void;
   /**
+   * Callback function invoked when a long press is detected on the swipeable component.
+   */
+  handleLongPress?: () => void;
+  /**
    * Spacing in the left and right
    */
   spacing: number;
@@ -73,6 +77,11 @@ export type SwipeableProps = {
    * @defaults to false
    */
   triggerOverswipeOnFlick?: boolean;
+  /**
+   * Whether swipe gestures are enabled
+   * @defaults to true
+   */
+  isSwipeEnabled?: boolean;
   /**
    * No of pointers
    */
@@ -91,7 +100,9 @@ export const Swipeable = forwardRef(
       leftElement,
       rightElement,
       handlePress,
+      handleLongPress,
       triggerOverswipeOnFlick = false,
+      isSwipeEnabled = true,
       noOfPointers = 1,
     } = props;
 
@@ -169,6 +180,7 @@ export const Swipeable = forwardRef(
       );
 
     const panGesture = Gesture.Pan()
+      .enabled(isSwipeEnabled)
       .maxPointers(noOfPointers)
       .activeOffsetX([-20, 20])
       .onBegin(() => {
@@ -418,7 +430,22 @@ export const Swipeable = forwardRef(
 
     const flingGesture = Gesture.Fling();
 
-    const cellGestures = Gesture.Race(panGesture, tapGesture, flingGesture);
+    const longPressGesture = Gesture.LongPress()
+      .enabled(Boolean(handleLongPress))
+      .minDuration(750)
+      .maxDistance(20)
+      .onStart(() => {
+        if (handleLongPress) {
+          runOnJS(handleLongPress)();
+        }
+      });
+
+    const cellGestures = Gesture.Race(
+      panGesture,
+      tapGesture,
+      flingGesture,
+      longPressGesture,
+    );
 
     return (
       <Animated.View className="flex flex-row">
