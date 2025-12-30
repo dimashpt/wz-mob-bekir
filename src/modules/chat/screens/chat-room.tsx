@@ -15,7 +15,7 @@ import {
   useListMessagesInfiniteQuery,
   useUpdateLastSeenQuery,
 } from '../services/conversation-room/repository';
-import { mapMessageToGiftedChatMessage } from '../utils/message';
+import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 
 type Params = {
   conversation_id: string;
@@ -39,26 +39,7 @@ export default function ChatRoomScreen(): JSX.Element {
     hasNextPage,
     isFetchingNextPage,
   } = useListMessagesInfiniteQuery(
-    {
-      select: (data) => {
-        // Merge all pages into a single array
-        const mergedMessages = data.pages.flatMap(
-          (page) => page?.payload ?? [],
-        );
-
-        // Sort messages from oldest to newest
-        const sortedMessages = mergedMessages.sort((a, b) => b.id - a.id);
-
-        // Map messages to the expected format
-        return {
-          ...data,
-          payload: sortedMessages.map((message) => ({
-            ...mapMessageToGiftedChatMessage(message),
-            ...message,
-          })),
-        };
-      },
-    },
+    { select: mapInfiniteMessagesToGiftedChatMessages },
     conversation_id,
   );
 
@@ -91,7 +72,7 @@ export default function ChatRoomScreen(): JSX.Element {
         onPageSelected={(event) => setActiveTab(event.nativeEvent.position)}
       >
         <GiftedChat
-          messages={messages?.payload ?? []}
+          messages={messages?.messages ?? []}
           user={{
             // Add outgoing message type to the user id, due to the given sender.id !== account_id
             _id: `${chatUser?.account_id ?? 0}-${MESSAGE_TYPES.OUTGOING}`,

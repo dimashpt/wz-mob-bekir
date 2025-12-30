@@ -35,8 +35,9 @@ interface Sender {
 }
 
 interface ContentAttributes {
-  in_reply_to?: null;
+  in_reply_to?: number;
   submitted_email?: string;
+  deleted?: boolean;
 }
 
 export interface Meta {

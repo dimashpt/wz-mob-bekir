@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { View } from 'react-native';
 
+import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import {
   BubbleProps,
@@ -10,17 +12,24 @@ import {
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
-import { Icon, Text } from '@/components';
+import { Clickable, Icon, Text } from '@/components';
+import { queryClient } from '@/lib/react-query';
+import { useAuthStore } from '@/store';
+import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
-import { Message } from '../services/conversation-room/types';
+import {
+  ConversationMessagesResponse,
+  Message,
+} from '../services/conversation-room/types';
+import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 
 const messageBubbleVariants = tv({
-  base: 'px-md py-sm max-w-[80%] bg-surface self-start',
+  base: 'p-sm bg-surface self-start',
   variants: {
     type: {
       incoming: 'bg-surface self-start',
       outgoing: 'bg-accent self-end',
-      private: 'bg-accent-soft self-end',
+      private: 'bg-warning-soft self-end border border-warning',
       template: 'bg-info-soft self-start',
     },
     groupWithPrevious: {
@@ -45,13 +54,13 @@ const messageBubbleTextVariants = tv({
     type: {
       incoming: 'text-foreground',
       outgoing: 'text-foreground-inverted',
-      private: 'text-accent',
+      private: 'text-yellow-600',
       template: 'text-foreground',
     },
   },
 });
 
-type ChatMessage = IMessage & Message;
+export type ChatMessage = IMessage & Message;
 type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
 
 export function MessageItem({
@@ -70,9 +79,33 @@ export function MessageItem({
     );
   }
 
+  const { chatUser } = useAuthStore();
+  const queryKey = [
+    CONVERSATIONS_ENDPOINTS.MESSAGES(
+      chatUser?.account_id ?? 0,
+      message.conversation_id.toString(),
+    ),
+    'infinite',
+  ];
+  const messages =
+    queryClient.getQueryData<InfiniteData<ConversationMessagesResponse>>(
+      queryKey,
+    );
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
+  const isReplyMessage = message.content_attributes.in_reply_to;
+  const replyMessage = useMemo(() => {
+    const replyMessageId = message.content_attributes.in_reply_to;
+    const mappedMessages = mapInfiniteMessagesToGiftedChatMessages(
+      messages ?? { pages: [], pageParams: [] },
+    );
+    const repliedMessage = mappedMessages.messages.find(
+      (m) => m.id === replyMessageId,
+    );
+
+    return repliedMessage?.text ?? '~';
+  }, [message.content_attributes.in_reply_to]);
 
   function getMessageType(): MessageType {
     if (isPrivate) return 'private';
@@ -94,6 +127,28 @@ export function MessageItem({
     <View
       className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
     >
+      {isReplyMessage ? (
+        <Clickable
+          onPress={() => {}}
+          className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
+        >
+          <Icon
+            name="forward"
+            size="sm"
+            className="text-white/70 dark:text-black/70"
+            transform="scale(-1,1)"
+          />
+          <View className="shrink">
+            <Text
+              variant="bodyXS"
+              numberOfLines={3}
+              className="text-white/70 dark:text-black/70"
+            >
+              {replyMessage}
+            </Text>
+          </View>
+        </Clickable>
+      ) : null}
       <Text
         variant="bodyS"
         className={messageBubbleTextVariants({ type: getMessageType() })}

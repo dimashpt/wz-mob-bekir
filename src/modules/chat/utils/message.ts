@@ -1,8 +1,13 @@
+import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { IMessage } from 'react-native-gifted-chat';
 
+import { ChatMessage } from '../components/message-item';
 import { MESSAGE_TYPES } from '../constants/flags';
-import { Message } from '../services/conversation-room/types';
+import {
+  ConversationMessagesResponse,
+  Message,
+} from '../services/conversation-room/types';
 
 type SectionGroupMessages = {
   data: Message[];
@@ -158,8 +163,36 @@ export function mapMessageToGiftedChatMessage(message: Message): IMessage {
           ? 'System Bot'
           : (message.sender?.name ?? ''),
     },
-    system: message.message_type === MESSAGE_TYPES.ACTIVITY,
+    system:
+      message.message_type === MESSAGE_TYPES.ACTIVITY ||
+      message.content_attributes.deleted,
     pending: message.status === 'sending',
     sent: message.status === 'sent',
+  };
+}
+
+/**
+ * Maps infinite messages to GiftedChat messages
+ * @param {InfiniteData<ConversationMessagesResponse>} data - The infinite data to map
+ * @returns {InfiniteData<ConversationMessagesResponse> & { messages: Array<ChatMessage> }} - The mapped data
+ */
+export function mapInfiniteMessagesToGiftedChatMessages(
+  data: InfiniteData<ConversationMessagesResponse>,
+): InfiniteData<ConversationMessagesResponse> & {
+  messages: Array<ChatMessage>;
+} {
+  // Merge all pages into a single array
+  const mergedMessages = data.pages.flatMap((page) => page?.payload ?? []);
+
+  // Sort messages from oldest to newest
+  const sortedMessages = mergedMessages.sort((a, b) => b.id - a.id);
+
+  // Map messages to the expected format
+  return {
+    ...data,
+    messages: sortedMessages.map((message) => ({
+      ...mapMessageToGiftedChatMessage(message),
+      ...message,
+    })),
   };
 }
