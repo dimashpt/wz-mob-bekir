@@ -3,18 +3,20 @@ import { View } from 'react-native';
 
 import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   BubbleProps,
   DayProps,
   IMessage,
   SystemMessageProps,
 } from 'react-native-gifted-chat';
+import { runOnJS } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, Text } from '@/components';
 import { queryClient } from '@/lib/react-query';
-import { useAuthStore } from '@/store';
+import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import {
@@ -23,6 +25,9 @@ import {
 } from '../services/conversation-room/types';
 import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 
+interface MessageItemProps extends BubbleProps<ChatMessage> {
+  onDelete: (messageId: number) => void;
+}
 const messageBubbleVariants = tv({
   base: 'p-sm bg-surface self-start',
   variants: {
@@ -65,21 +70,14 @@ type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
 
 export function MessageItem({
   currentMessage: message,
-}: BubbleProps<ChatMessage>): React.JSX.Element {
-  // Render activity message
-  if (message?.system) {
-    return (
-      <Text
-        variant="bodyXS"
-        color="muted"
-        className="font-map-medium text-center font-medium"
-      >
-        {message.text} {dayjs(message.createdAt).format('HH:mm')}
-      </Text>
-    );
-  }
-
+  onDelete,
+}: MessageItemProps): React.JSX.Element {
   const { chatUser } = useAuthStore();
+  const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
+  const isPrivate = message.private;
+  const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
+  const isReplyMessage = message.content_attributes.in_reply_to;
+
   const queryKey = [
     CONVERSATIONS_ENDPOINTS.MESSAGES(
       chatUser?.account_id ?? 0,
@@ -91,10 +89,6 @@ export function MessageItem({
     queryClient.getQueryData<InfiniteData<ConversationMessagesResponse>>(
       queryKey,
     );
-  const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
-  const isPrivate = message.private;
-  const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
-  const isReplyMessage = message.content_attributes.in_reply_to;
   const replyMessage = useMemo(() => {
     const replyMessageId = message.content_attributes.in_reply_to;
     const mappedMessages = mapInfiniteMessagesToGiftedChatMessages(
@@ -106,6 +100,11 @@ export function MessageItem({
 
     return repliedMessage?.text ?? '~';
   }, [message.content_attributes.in_reply_to]);
+  const longPressGesture = Gesture.LongPress()
+    .enabled(Boolean(onDelete))
+    .minDuration(750)
+    .maxDistance(20)
+    .onStart(() => onDelete && runOnJS(onDelete)(message.id));
 
   function getMessageType(): MessageType {
     if (isPrivate) return 'private';
@@ -124,71 +123,78 @@ export function MessageItem({
 
   // Render regular message with bubble
   return (
-    <View
-      className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
-    >
-      {isReplyMessage ? (
-        <Clickable
-          onPress={() => {}}
-          className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
-        >
-          <Icon
-            name="forward"
-            size="sm"
-            className="text-white/70 dark:text-black/70"
-            transform="scale(-1,1)"
-          />
-          <View className="shrink">
-            <Text
-              variant="bodyXS"
-              numberOfLines={3}
-              className="text-white/70 dark:text-black/70"
-            >
-              {replyMessage}
-            </Text>
-          </View>
-        </Clickable>
-      ) : null}
-      <Text
-        variant="bodyS"
-        className={messageBubbleTextVariants({ type: getMessageType() })}
+    <GestureDetector gesture={longPressGesture}>
+      <View
+        className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
       >
-        {message.text}
-      </Text>
-      <View className="gap-xs flex-row items-center justify-end">
-        {isPrivate && (
-          <Icon name="lock" size="sm" className="text-muted-foreground" />
-        )}
-        {isTemplate && (
-          <Icon name="robot" size="sm" className="text-muted-foreground" />
-        )}
-        <Text variant="labelXS" color="muted">
-          {dayjs(message.createdAt).format('HH:mm')}
+        {isReplyMessage ? (
+          <Clickable
+            onPress={() => {}}
+            className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
+          >
+            <Icon
+              name="forward"
+              size="sm"
+              className="text-white/70 dark:text-black/70"
+              transform="scale(-1,1)"
+            />
+            <View className="shrink">
+              <Text
+                variant="bodyXS"
+                numberOfLines={3}
+                className="text-white/70 dark:text-black/70"
+              >
+                {replyMessage}
+              </Text>
+            </View>
+          </Clickable>
+        ) : null}
+        <Text
+          variant="bodyS"
+          className={messageBubbleTextVariants({ type: getMessageType() })}
+        >
+          {message.text}
         </Text>
-        {isOutgoing && (
-          <Icon
-            name={message.pending ? 'clock' : 'tick'}
-            size="base"
-            className={
-              message.status === 'read' ? 'text-info' : 'text-muted-foreground'
-            }
-          />
-        )}
+        <View className="gap-xs flex-row items-center justify-end">
+          {isPrivate && (
+            <Icon name="lock" size="sm" className="text-muted-foreground" />
+          )}
+          {isTemplate && (
+            <Icon name="robot" size="sm" className="text-muted-foreground" />
+          )}
+          <Text variant="labelXS" color="muted">
+            {dayjs(message.createdAt).format('HH:mm')}
+          </Text>
+          {isOutgoing && (
+            <Icon
+              name={message.pending ? 'clock' : 'tick'}
+              size="base"
+              className={
+                message.status === 'read'
+                  ? 'text-info'
+                  : 'text-muted-foreground'
+              }
+            />
+          )}
+        </View>
       </View>
-    </View>
+    </GestureDetector>
   );
 }
 
 function SystemMessage({
   currentMessage,
 }: SystemMessageProps<ChatMessage>): React.JSX.Element {
+  const isDeleted = Boolean(currentMessage.content_attributes.deleted);
+
   return (
     <Text
       variant="bodyXS"
       color="muted"
       className="font-map-medium my-xs text-center font-medium"
     >
-      {currentMessage.text} {dayjs(currentMessage.createdAt).format('HH:mm')}
+      {currentMessage.text}{' '}
+      {isDeleted ? null : dayjs(currentMessage.createdAt).format('HH:mm')}
     </Text>
   );
 }

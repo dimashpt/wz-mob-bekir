@@ -154,3 +154,26 @@ export async function sendMessage(
 
   return response.data;
 }
+
+/**
+ * Deletes a message from the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param messageId - The ID of the message.
+ * @returns A promise that resolves to the response.
+ */
+export async function deleteMessage(
+  accountId: number,
+  conversationId: string,
+  messageId: number,
+): Promise<Message> {
+  const response = await API.delete<Message>(
+    CONVERSATIONS_ENDPOINTS.DELETE_MESSAGE(
+      accountId,
+      conversationId,
+      messageId,
+    ),
+  );
+
+  return response.data;
+}

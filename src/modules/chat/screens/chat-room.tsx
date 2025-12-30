@@ -1,6 +1,7 @@
 import React, { JSX, useRef, useState } from 'react';
 import { ActivityIndicator, Platform, View } from 'react-native';
 
+import { InfiniteData, useMutation } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,11 +11,14 @@ import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
+import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
+import { deleteMessage } from '../services/conversation-room';
 import {
   useListMessagesInfiniteQuery,
   useUpdateLastSeenQuery,
 } from '../services/conversation-room/repository';
+import { ConversationMessagesResponse } from '../services/conversation-room/types';
 import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 
 type Params = {
@@ -42,6 +46,70 @@ export default function ChatRoomScreen(): JSX.Element {
     { select: mapInfiniteMessagesToGiftedChatMessages },
     conversation_id,
   );
+
+  const queryKey = [
+    CONVERSATIONS_ENDPOINTS.MESSAGES(
+      chatUser?.account_id ?? 0,
+      conversation_id,
+    ),
+    'infinite',
+  ];
+
+  const deleteMessageMutation = useMutation({
+    mutationKey: ['delete-message'],
+    mutationFn: (messageId: number) =>
+      deleteMessage(chatUser?.account_id ?? 0, conversation_id, messageId),
+    onMutate: async (messageId, context) => {
+      await context.client.cancelQueries({ queryKey });
+
+      const previousMessages =
+        context.client.getQueryData<InfiniteData<ConversationMessagesResponse>>(
+          queryKey,
+        );
+
+      context.client.setQueryData(
+        queryKey,
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              payload: page.payload.map((_message) =>
+                _message.id === messageId
+                  ? {
+                      ..._message,
+                      content: 'This message was deleted',
+                      content_attributes: {
+                        ..._message.content_attributes,
+                        deleted: true,
+                      },
+                    }
+                  : _message,
+              ),
+            })),
+          };
+        },
+      );
+
+      return { previousMessages };
+    },
+    onSuccess: (data, messageId, __, context) => {
+      context.client.setQueryData(
+        queryKey,
+        (old: InfiniteData<ConversationMessagesResponse>) => {
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              payload: page.payload.map((_message) =>
+                _message.id === messageId ? data : _message,
+              ),
+            })),
+          };
+        },
+      );
+    },
+  });
 
   const meta = messages?.pages?.[0]?.meta;
 
@@ -78,13 +146,16 @@ export default function ChatRoomScreen(): JSX.Element {
             _id: `${chatUser?.account_id ?? 0}-${MESSAGE_TYPES.OUTGOING}`,
             name: chatUser?.name ?? '',
           }}
-          renderBubble={MessageItem}
+          renderBubble={(props) => (
+            <MessageItem {...props} onDelete={deleteMessageMutation.mutate} />
+          )}
           listProps={{
-            ListHeaderComponent: () => (
-              <View className="h-lg">
-                {isFetchingNextPage ? <ActivityIndicator /> : null}
-              </View>
-            ),
+            ListFooterComponent: () =>
+              isFetchingNextPage ? (
+                <View className="py-xl">
+                  <ActivityIndicator />
+                </View>
+              ) : null,
             onEndReachedThreshold: 0.5,
             onEndReached: () => {
               if (hasNextPage && !isFetchingNextPage) {

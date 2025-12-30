@@ -29,4 +29,10 @@ export const CONVERSATIONS_ENDPOINTS = {
   LABELS: (accountId: number) => `${baseUrl(accountId)}/labels`,
   UPDATE_LABELS: (accountId: number, conversationId: number) =>
     `${baseUrl(accountId)}/conversations/${conversationId}/labels`,
+  DELETE_MESSAGE: (
+    accountId: number,
+    conversationId: string,
+    messageId: number,
+  ) =>
+    `${baseUrl(accountId)}/conversations/${conversationId}/messages/${messageId}`,
 } as const;
