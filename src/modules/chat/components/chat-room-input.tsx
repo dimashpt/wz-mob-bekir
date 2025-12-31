@@ -172,7 +172,7 @@ export function ChatRoomInput(
               ? t('chat.input.placeholder_private')
               : t('chat.input.placeholder')
           }
-          className="bg-background"
+          className="bg-background max-h-40"
           inputClassName="py-sm"
           value={message}
           onChangeText={setMessage}
@@ -184,7 +184,9 @@ export function ChatRoomInput(
               className={isPrivate ? 'text-accent' : 'text-muted-foreground'}
             />
           }
-          onSubmitEditing={handleSendMessage}
+          returnKeyType="send"
+          multiline
+          // onSubmitEditing={handleSendMessage}
         />
       </View>
       <Button

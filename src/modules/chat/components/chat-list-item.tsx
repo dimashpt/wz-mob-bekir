@@ -132,7 +132,7 @@ export default function ChatListItem({
                     className="text-muted-foreground"
                   />
                 )}
-                <Text variant="bodyXS" color="muted">
+                <Text variant="bodyXS" color="muted" numberOfLines={2}>
                   {item.last_non_activity_message.content}
                 </Text>
               </View>

@@ -81,7 +81,7 @@ export function MessageItem({
   const queryKey = [
     CONVERSATIONS_ENDPOINTS.MESSAGES(
       chatUser?.account_id ?? 0,
-      message.conversation_id.toString(),
+      (message.conversation_id ?? '').toString(),
     ),
     'infinite',
   ];
