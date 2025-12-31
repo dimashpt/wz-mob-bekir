@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Avatar, Container, Header, PagerView, Text } from '@/components';
+import { Avatar, Container, Header, Icon, PagerView, Text } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
@@ -150,6 +150,7 @@ export default function ChatRoomScreen(): JSX.Element {
             <MessageItem {...props} onDelete={deleteMessageMutation.mutate} />
           )}
           listProps={{
+            contentContainerClassName: 'pb-md',
             ListFooterComponent: () =>
               isFetchingNextPage ? (
                 <View className="py-xl">
@@ -166,6 +167,22 @@ export default function ChatRoomScreen(): JSX.Element {
           renderSystemMessage={MessageItem.SystemMessage}
           renderDay={MessageItem.DaySeparator}
           renderInputToolbar={ChatRoomInput}
+          renderAvatar={(props) => (
+            <Avatar
+              name={props.currentMessage.sender?.name ?? ''}
+              className="bg-surface size-9"
+              textClassName="text-lg"
+              children={
+                props.currentMessage.sender?.name ? undefined : (
+                  <Icon
+                    name="robot"
+                    size="base"
+                    className="text-muted-foreground"
+                  />
+                )
+              }
+            />
+          )}
           keyboardAvoidingViewProps={{
             keyboardVerticalOffset: bottom + (Platform.OS === 'ios' ? 50 : 64),
           }}

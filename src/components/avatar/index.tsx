@@ -8,10 +8,12 @@ export function Avatar({
   name,
   className,
   textClassName,
+  children,
 }: {
   name: string;
   className?: string;
   textClassName?: string;
+  children?: React.ReactNode;
 }): React.JSX.Element {
   return (
     <View
@@ -20,15 +22,18 @@ export function Avatar({
         className,
       )}
     >
-      <Text
-        variant="labelXS"
-        className={twMerge('text-[0.5rem] leading-0', textClassName)}
-      >
-        {name
-          .split(' ')
-          .map((name) => name[0])
-          .join('')}
-      </Text>
+      {children ?? (
+        <Text
+          variant="labelXS"
+          className={twMerge('text-[0.5rem] leading-0', textClassName)}
+        >
+          {name
+            .split(' ')
+            .map((name) => name[0])
+            .join('')
+            .toUpperCase()}
+        </Text>
+      )}
     </View>
   );
 }
