@@ -18,7 +18,6 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useTanStackQueryDevTools } from '@rozenite/tanstack-query-plugin';
 import { QueryClientProvider } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
-import { HeroUINativeProvider } from 'heroui-native';
 import { SafeAreaListener } from 'react-native-safe-area-context';
 import { Uniwind, useCSSVariable } from 'uniwind';
 
@@ -134,91 +133,86 @@ function App(): React.ReactNode {
           style={{ backgroundColor }}
         >
           <KeyboardProvider>
-            <HeroUINativeProvider>
-              <BottomSheetModalProvider>
-                <StatusBar
-                  style={appColorScheme === 'dark' ? 'light' : 'dark'}
-                />
-                <DevTools />
-                <SnackbarProvider>
-                  {/* Splash Screen */}
+            <BottomSheetModalProvider>
+              <StatusBar style={appColorScheme === 'dark' ? 'light' : 'dark'} />
+              <DevTools />
+              <SnackbarProvider>
+                {/* Splash Screen */}
+                <Animated.View
+                  className="absolute inset-0 z-1000"
+                  style={{
+                    transitionProperty: 'opacity',
+                    transitionDuration: '300ms',
+                    transitionTimingFunction: 'ease-out',
+                    opacity: splashFinished ? 0 : 1,
+                  }}
+                  pointerEvents={splashFinished ? 'none' : 'auto'}
+                >
+                  <SplashScreenComponent
+                    key="splashScreen"
+                    onAnimationFinish={handleSplashAnimationFinish}
+                  />
+                </Animated.View>
+
+                {/* Main App */}
+                {showMainApp && (
                   <Animated.View
-                    className="absolute inset-0 z-1000"
+                    className="flex-1"
                     style={{
                       transitionProperty: 'opacity',
                       transitionDuration: '300ms',
-                      transitionTimingFunction: 'ease-out',
-                      opacity: splashFinished ? 0 : 1,
+                      transitionTimingFunction: 'ease-in',
+                      opacity: splashFinished ? 1 : 0,
                     }}
-                    pointerEvents={splashFinished ? 'none' : 'auto'}
                   >
-                    <SplashScreenComponent
-                      key="splashScreen"
-                      onAnimationFinish={handleSplashAnimationFinish}
-                    />
+                    <Stack>
+                      <Stack.Protected
+                        guard={
+                          status === 'loggedOut' && !hasCompletedOnboarding
+                        }
+                      >
+                        <Stack.Screen
+                          name="index"
+                          options={{ headerShown: false }}
+                        />
+                      </Stack.Protected>
+                      <Stack.Protected
+                        guard={
+                          (status === 'loggedOut' || status === 'firstLogin') &&
+                          hasCompletedOnboarding
+                        }
+                      >
+                        <Stack.Screen
+                          name="(auth)"
+                          options={{
+                            headerShown: false,
+                            contentStyle: { backgroundColor },
+                          }}
+                        />
+                      </Stack.Protected>
+                      <Stack.Protected guard={status === 'loggedIn'}>
+                        <Stack.Screen
+                          name="(tabs)"
+                          options={{
+                            headerShown: false,
+                            contentStyle: { backgroundColor },
+                          }}
+                        />
+                        <Stack.Screen
+                          name="(protected)"
+                          options={{
+                            headerShown: false,
+                            contentStyle: { backgroundColor },
+                          }}
+                        />
+                      </Stack.Protected>
+                    </Stack>
+                    <UpdateButton />
+                    <InAppUpdateDialog />
                   </Animated.View>
-
-                  {/* Main App */}
-                  {showMainApp && (
-                    <Animated.View
-                      className="flex-1"
-                      style={{
-                        transitionProperty: 'opacity',
-                        transitionDuration: '300ms',
-                        transitionTimingFunction: 'ease-in',
-                        opacity: splashFinished ? 1 : 0,
-                      }}
-                    >
-                      <Stack>
-                        <Stack.Protected
-                          guard={
-                            status === 'loggedOut' && !hasCompletedOnboarding
-                          }
-                        >
-                          <Stack.Screen
-                            name="index"
-                            options={{ headerShown: false }}
-                          />
-                        </Stack.Protected>
-                        <Stack.Protected
-                          guard={
-                            (status === 'loggedOut' ||
-                              status === 'firstLogin') &&
-                            hasCompletedOnboarding
-                          }
-                        >
-                          <Stack.Screen
-                            name="(auth)"
-                            options={{
-                              headerShown: false,
-                              contentStyle: { backgroundColor },
-                            }}
-                          />
-                        </Stack.Protected>
-                        <Stack.Protected guard={status === 'loggedIn'}>
-                          <Stack.Screen
-                            name="(tabs)"
-                            options={{
-                              headerShown: false,
-                              contentStyle: { backgroundColor },
-                            }}
-                          />
-                          <Stack.Screen
-                            name="(protected)"
-                            options={{
-                              headerShown: false,
-                              contentStyle: { backgroundColor },
-                            }}
-                          />
-                        </Stack.Protected>
-                      </Stack>
-                      <UpdateButton />
-                      <InAppUpdateDialog />
-                    </Animated.View>
-                  )}
-                </SnackbarProvider>
-              </BottomSheetModalProvider>
-            </HeroUINativeProvider>
+                )}
+              </SnackbarProvider>
+            </BottomSheetModalProvider>
           </KeyboardProvider>
         </SafeAreaListener>
       </QueryClientProvider>

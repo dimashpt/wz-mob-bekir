@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @import 'uniwind';
-@import 'heroui-native/styles';
 
 @import './radius.css';
 @import './spacing.css';
@@ -13,7 +12,6 @@
  *
  * See more: https://github.com/Unistyles-OSS/uniwind/issues/133#issuecomment-3485215951
  */
-@source './node_modules/heroui-native/lib';
 @source '../';
 
 @layer theme {
@@ -80,42 +78,6 @@
       --color-muted-foreground: #797979;
       --color-border: #efefef;
       --color-focus: var(--color-accent);
-
-      /* HeroUI Native tokens */
-      /* Base Colors */
-      --background: var(--color-background);
-      --foreground: var(--color-foreground);
-      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
-      --surface: var(--color-surface);
-      --surface-foreground: var(--color-foreground);
-      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) */
-      --overlay: oklch(0.998 0.003 230);
-      --overlay-foreground: var(--color-foreground);
-      --muted: var(--color-muted);
-      --default: oklch(0.94 0.018 230);
-      --default-foreground: oklch(0.4 0.05 230);
-      /* Accent */
-      --accent: var(--color-accent);
-      --accent-foreground: var(--color-accent-foreground);
-      /* Form Field Defaults - Colors */
-      --field-background: var(--color-field-background);
-      --field-foreground: var(--color-field-foreground);
-      --field-placeholder: var(--muted);
-      --field-border: var(--color-field-border);
-      /* Status Colors */
-      --success: var(--color-success);
-      --success-foreground: var(--color-success-foreground);
-      --warning: var(--color-warning);
-      --warning-foreground: var(--color-warning-foreground);
-      --danger: var(--color-danger);
-      --danger-foreground: var(--color-danger-foreground);
-      /* Component Colors */
-      --segment: oklch(0.98 0.01 230);
-      --segment-foreground: oklch(0.25 0.04 230);
-      /* Misc Colors */
-      --border: var(--color-border);
-      --divider: var(--color-border);
-      --link: var(--color-accent);
     }
 
     /* Dark theme semantic tokens */
@@ -176,44 +138,7 @@
       --color-muted: #2c2c2c;
       --color-muted-foreground: #b3b3b3;
       --color-border: #2c2c2c;
-
       --color-focus: var(--color-accent);
-
-      /* HeroUI Native tokens */
-      /* Base Colors */
-      --background: var(--color-background);
-      --foreground: var(--color-foreground);
-      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
-      --surface: var(--color-surface);
-      --surface-foreground: var(--color-foreground);
-      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) */
-      --overlay: oklch(0.998 0.003 230);
-      --overlay-foreground: var(--color-foreground);
-      --muted: var(--color-muted);
-      --default: oklch(0.94 0.018 230);
-      --default-foreground: oklch(0.4 0.05 230);
-      /* Accent */
-      --accent: var(--color-accent);
-      --accent-foreground: var(--color-accent-foreground);
-      /* Form Field Defaults - Colors */
-      --field-background: var(--color-field-background);
-      --field-foreground: var(--color-field-foreground);
-      --field-placeholder: var(--muted);
-      --field-border: var(--color-field-border);
-      /* Status Colors */
-      --success: var(--color-success);
-      --success-foreground: var(--color-success-foreground);
-      --warning: var(--color-warning);
-      --warning-foreground: var(--color-warning-foreground);
-      --danger: var(--color-danger);
-      --danger-foreground: var(--color-danger-foreground);
-      /* Component Colors */
-      --segment: oklch(0.98 0.01 230);
-      --segment-foreground: oklch(0.25 0.04 230);
-      /* Misc Colors */
-      --border: var(--color-border);
-      --divider: var(--color-border);
-      --link: var(--color-accent);
     }
   }
 }
