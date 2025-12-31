@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'uniwind';
+@import 'heroui-native/styles';
 
 @import './radius.css';
 @import './spacing.css';
@@ -12,6 +13,7 @@
  *
  * See more: https://github.com/Unistyles-OSS/uniwind/issues/133#issuecomment-3485215951
  */
+@source './node_modules/heroui-native/lib';
 @source '../';
 
 @layer theme {
@@ -34,6 +36,7 @@
         var(--color-accent) 15%,
         transparent
       );
+      --color-accent-foreground: #f5f9fb;
 
       --color-info: #8bceff;
       --color-info-soft: color-mix(
@@ -41,7 +44,7 @@
         var(--color-info) 15%,
         transparent
       );
-      --color-info-foreground: #07509c;
+      --color-info-foreground: #003161;
 
       --color-success: #08c253;
       --color-success-soft: color-mix(
@@ -49,7 +52,7 @@
         var(--color-success) 15%,
         transparent
       );
-      --color-success-foreground: #00812e;
+      --color-success-foreground: #002d18;
 
       --color-warning: #fed487;
       --color-warning-soft: color-mix(
@@ -57,7 +60,7 @@
         var(--color-warning) 15%,
         transparent
       );
-      --color-warning-foreground: #ca9616;
+      --color-warning-foreground: #402900;
 
       --color-danger: #ea2f6a;
       --color-danger-soft: color-mix(
@@ -65,7 +68,7 @@
         var(--color-danger) 15%,
         transparent
       );
-      --color-danger-foreground: #ff4b84;
+      --color-danger-foreground: #fcf7f7;
 
       --color-field-background: #f7f7f7;
       --color-field-foreground: var(--color-foreground);
@@ -77,6 +80,42 @@
       --color-muted-foreground: #797979;
       --color-border: #efefef;
       --color-focus: var(--color-accent);
+
+      /* HeroUI Native tokens */
+      /* Base Colors */
+      --background: var(--color-background);
+      --foreground: var(--color-foreground);
+      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+      --surface: var(--color-surface);
+      --surface-foreground: var(--color-foreground);
+      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) */
+      --overlay: oklch(0.998 0.003 230);
+      --overlay-foreground: var(--color-foreground);
+      --muted: var(--color-muted);
+      --default: oklch(0.94 0.018 230);
+      --default-foreground: oklch(0.4 0.05 230);
+      /* Accent */
+      --accent: var(--color-accent);
+      --accent-foreground: var(--color-accent-foreground);
+      /* Form Field Defaults - Colors */
+      --field-background: var(--color-field-background);
+      --field-foreground: var(--color-field-foreground);
+      --field-placeholder: var(--muted);
+      --field-border: var(--color-field-border);
+      /* Status Colors */
+      --success: var(--color-success);
+      --success-foreground: var(--color-success-foreground);
+      --warning: var(--color-warning);
+      --warning-foreground: var(--color-warning-foreground);
+      --danger: var(--color-danger);
+      --danger-foreground: var(--color-danger-foreground);
+      /* Component Colors */
+      --segment: oklch(0.98 0.01 230);
+      --segment-foreground: oklch(0.25 0.04 230);
+      /* Misc Colors */
+      --border: var(--color-border);
+      --divider: var(--color-border);
+      --link: var(--color-accent);
     }
 
     /* Dark theme semantic tokens */
@@ -92,6 +131,7 @@
         var(--color-accent) 12%,
         transparent
       );
+      --color-accent-foreground: #121212;
 
       --color-info: #6bb8ff;
       --color-info-soft: color-mix(
@@ -99,7 +139,7 @@
         var(--color-info) 12%,
         transparent
       );
-      --color-info-foreground: #9cd6ff;
+      --color-info-foreground: #003161;
 
       --color-success: #00b14a;
       --color-success-soft: color-mix(
@@ -107,7 +147,7 @@
         var(--color-success) 12%,
         transparent
       );
-      --color-success-foreground: #00b14a;
+      --color-success-foreground: #002d18;
 
       --color-warning: #f6c270;
       --color-warning-soft: color-mix(
@@ -115,7 +155,7 @@
         var(--color-warning) 12%,
         transparent
       );
-      --color-warning-foreground: #f0c463;
+      --color-warning-foreground: #402900;
 
       --color-danger: #ff4b84;
       --color-danger-soft: color-mix(
@@ -123,7 +163,7 @@
         var(--color-danger) 12%,
         transparent
       );
-      --color-danger-foreground: #ff4b84;
+      --color-danger-foreground: #fcf7f7;
 
       /* Form Fields */
       --color-field-background: #1a1a1a;
@@ -138,6 +178,42 @@
       --color-border: #2c2c2c;
 
       --color-focus: var(--color-accent);
+
+      /* HeroUI Native tokens */
+      /* Base Colors */
+      --background: var(--color-background);
+      --foreground: var(--color-foreground);
+      /* Surface: Used for non-overlay components (cards, accordions, disclosure groups) */
+      --surface: var(--color-surface);
+      --surface-foreground: var(--color-foreground);
+      /* Overlay: Used for floating/overlay components (dialogs, popovers, modals, menus) */
+      --overlay: oklch(0.998 0.003 230);
+      --overlay-foreground: var(--color-foreground);
+      --muted: var(--color-muted);
+      --default: oklch(0.94 0.018 230);
+      --default-foreground: oklch(0.4 0.05 230);
+      /* Accent */
+      --accent: var(--color-accent);
+      --accent-foreground: var(--color-accent-foreground);
+      /* Form Field Defaults - Colors */
+      --field-background: var(--color-field-background);
+      --field-foreground: var(--color-field-foreground);
+      --field-placeholder: var(--muted);
+      --field-border: var(--color-field-border);
+      /* Status Colors */
+      --success: var(--color-success);
+      --success-foreground: var(--color-success-foreground);
+      --warning: var(--color-warning);
+      --warning-foreground: var(--color-warning-foreground);
+      --danger: var(--color-danger);
+      --danger-foreground: var(--color-danger-foreground);
+      /* Component Colors */
+      --segment: oklch(0.98 0.01 230);
+      --segment-foreground: oklch(0.25 0.04 230);
+      /* Misc Colors */
+      --border: var(--color-border);
+      --divider: var(--color-border);
+      --link: var(--color-accent);
     }
   }
 }
