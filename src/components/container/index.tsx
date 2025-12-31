@@ -85,17 +85,20 @@ function ContainerScroll({
   );
 }
 
+type ContainerCardProps = ComponentProps<typeof AnimatedComponent> & {
+  children?: React.ReactNode;
+  className?: string;
+};
+
 function ContainerCard({
   children,
   className,
   index,
-}: {
-  children?: React.ReactNode;
-  className?: string;
-  index?: number;
-}): React.ReactElement {
+  ...props
+}: ContainerCardProps): React.ReactElement {
   return (
     <AnimatedComponent
+      {...props}
       index={index}
       className={twMerge('bg-surface p-md gap-md rounded-md', className)}
     >

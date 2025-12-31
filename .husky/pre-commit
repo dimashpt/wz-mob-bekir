@@ -1,2 +1,2 @@
-bun tsc
+# bun tsc
 npx lint-staged

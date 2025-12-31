@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { forwardRef, useCallback } from 'react';
-import { Dimensions, Pressable, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -16,13 +16,12 @@ import Animated, {
 import { twMerge } from 'tailwind-merge';
 
 import { useHaptic } from '@/hooks';
+import { Clickable } from '../clickable';
 
 const WIDTH = Dimensions.get('screen').width;
 
 const SNAP_POINT = 96;
 const DRAG_TOSS = 0.05;
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const rowCloseSpringConfig = { duration: 250, dampingRatio: 1 };
 const overSwipedSpringConfig = { duration: 250, dampingRatio: 1 };
@@ -32,10 +31,6 @@ export type SwipeableProps = {
    * The content inside the Swipeable component.
    */
   children: React.ReactNode;
-  /**
-   * The index of the swipeable component.
-   */
-  index: number;
   /**
    * Callback function invoked when the left element is pressed.
    */
@@ -92,7 +87,6 @@ export const Swipeable = forwardRef(
   ({ spacing = 20, ...props }: SwipeableProps, _ref) => {
     const {
       children,
-      index,
       handleLeftElementPress,
       handleOnLeftOverswiped,
       handleRightElementPress,
@@ -357,10 +351,26 @@ export const Swipeable = forwardRef(
       });
 
     const overlayStyle = useAnimatedStyle(() => {
-      const transform = [{ translateX: animStatePos.value }];
+      const transform = [
+        { translateX: animStatePos.value },
+        {
+          scale: interpolate(
+            isTapped.value,
+            [0, 1],
+            [1, 0.98],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ];
+      const opacity = interpolate(
+        isTapped.value,
+        [0, 1],
+        [1, 0.9],
+        Extrapolation.CLAMP,
+      );
 
-      return { transform };
-    }, [animStatePos]);
+      return { transform, opacity };
+    }, [animStatePos, isTapped]);
 
     const leftStyle = useAnimatedStyle(() => {
       const opacity = percentOpenRight.value > 0 ? 1 : 0;
@@ -449,7 +459,7 @@ export const Swipeable = forwardRef(
 
     return (
       <Animated.View className="flex flex-row">
-        <AnimatedPressable
+        <Clickable
           onPress={handleOnPressLeft}
           className={twMerge(
             'absolute flex items-start justify-center rounded-md',
@@ -460,8 +470,8 @@ export const Swipeable = forwardRef(
           <Animated.View style={[{ paddingLeft: spacing }, leftTranslation]}>
             {leftElement}
           </Animated.View>
-        </AnimatedPressable>
-        <AnimatedPressable
+        </Clickable>
+        <Clickable
           onPress={handleOnPressRight}
           className={twMerge(
             'flex items-end justify-center rounded-md',
@@ -472,7 +482,7 @@ export const Swipeable = forwardRef(
           <Animated.View style={[{ paddingRight: spacing }, rightTranslation]}>
             {rightElement}
           </Animated.View>
-        </AnimatedPressable>
+        </Clickable>
         <GestureDetector gesture={cellGestures}>
           <Animated.View className="z-10 w-screen flex-1" style={overlayStyle}>
             {children}

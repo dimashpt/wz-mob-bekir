@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 
-import { Avatar, Chip, Icon, Text } from '@/components';
+import { Avatar, Checkbox, Chip, Icon, Text } from '@/components';
 import { AnimatedComponent } from '@/components/animated-component';
 import { Container } from '@/components/container';
 import { Swipeable } from '@/components/swipeable';
@@ -85,9 +85,13 @@ export default function ChatListItem({
         handleLongPress={handleLongPress}
         isSwipeEnabled={!isSelectionMode}
         triggerOverswipeOnFlick
-        index={index}
       >
-        <Container.Card className="gap-sm flex-row">
+        <Container.Card
+          className={twMerge(
+            'gap-sm flex-row border',
+            isSelected ? 'border-accent bg-accent-soft' : 'border-transparent',
+          )}
+        >
           {/* Create avatar from sender initials */}
           <View
             className={twMerge(
@@ -99,16 +103,7 @@ export default function ChatListItem({
               style={checkboxAnimatedStyle}
               className="items-center justify-center overflow-hidden"
             >
-              <View
-                className={twMerge(
-                  'size-2xl items-center justify-center rounded-full border-2',
-                  isSelected ? 'border-accent' : 'border-border bg-transparent',
-                )}
-              >
-                {isSelected && (
-                  <Icon name="tickCircle" size="2xl" className="text-accent" />
-                )}
-              </View>
+              <Checkbox isSelected={isSelected} size="medium" />
             </Animated.View>
             <Avatar name={item.meta.sender.name} textClassName="text-lg" />
           </View>

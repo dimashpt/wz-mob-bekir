@@ -4,6 +4,7 @@ export * from './avatar';
 export * from './banner';
 export * from './bottom-sheet';
 export * from './button';
+export * from './checkbox';
 export * from './chip';
 export * from './coming-soon';
 export * from './clickable';

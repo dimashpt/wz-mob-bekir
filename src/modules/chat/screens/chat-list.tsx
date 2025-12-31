@@ -1,4 +1,4 @@
-import React, { JSX, useEffect, useMemo, useState } from 'react';
+import React, { JSX, useMemo, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   Button,
+  Checkbox,
   Container,
   Filter,
   Option,
@@ -93,21 +94,40 @@ export default function ChatScreen(): JSX.Element {
     setSelectedIds(new Set());
   }
 
-  useEffect(() => {
-    if (isSelectionMode && selectedIds.size === 0) {
-      setIsSelectionMode(false);
+  const conversations = data?.data?.payload ?? [];
+  const allItemUuids = conversations.map((item) => item.uuid);
+  const isAllSelected =
+    isSelectionMode &&
+    allItemUuids.length > 0 &&
+    allItemUuids.every((uuid) => selectedIds.has(uuid));
+
+  function handleSelectAll(): void {
+    if (isAllSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(allItemUuids));
     }
-  }, [isSelectionMode, selectedIds.size]);
+  }
 
   return (
     <Container
-      className="bg-background p-lg flex-1"
+      className="bg-background p-lg gap-md flex-1"
       style={{ paddingTop: insets.top + 20 }}
     >
       <View className="flex-row items-center justify-between">
-        <Text variant="headingL" className="mb-lg">
-          {isSelectionMode ? `${selectedIds.size} selected` : t('chat.title')}
-        </Text>
+        <View className="gap-md flex-row items-center">
+          {isSelectionMode && (
+            <Checkbox
+              isSelected={isAllSelected}
+              size="medium"
+              className="bg-surface"
+              onPress={handleSelectAll}
+            />
+          )}
+          <Text variant={isSelectionMode ? 'headingXS' : 'headingL'}>
+            {isSelectionMode ? `${selectedIds.size} selected` : t('chat.title')}
+          </Text>
+        </View>
         {isSelectionMode ? (
           <Button text="Cancel" variant="ghost" onPress={exitSelectionMode} />
         ) : (
@@ -123,7 +143,7 @@ export default function ChatScreen(): JSX.Element {
           hideClearAll
           scrollViewProps={{
             contentContainerClassName: 'px-lg',
-            className: '-mx-lg mb-sm',
+            className: '-mx-lg',
           }}
         >
           <Filter.Options
