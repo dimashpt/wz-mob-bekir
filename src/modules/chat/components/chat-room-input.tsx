@@ -147,10 +147,17 @@ export function ChatRoomInput(
   }
 
   function handleSendMessage(): void {
+    const trimmedMessage = message.trim();
+
+    // Prevent sending empty or whitespace-only messages
+    if (!trimmedMessage) {
+      return;
+    }
+
     const echoId = generateEchoId();
 
     sendMessageMutation.mutate({
-      content: message.trim(),
+      content: trimmedMessage,
       content_attributes: {},
       echo_id: echoId,
       private: isPrivate,
@@ -191,7 +198,7 @@ export function ChatRoomInput(
       </View>
       <Button
         onPress={handleSendMessage}
-        disabled={!message}
+        disabled={!message.trim()}
         icon="send"
         size="small"
       />
