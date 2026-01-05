@@ -2,6 +2,7 @@ import appearance from './appearance.svg';
 import arrow from './arrow.svg';
 import attachment from './attachment.svg';
 import calendar from './calendar.svg';
+import camera from './camera.svg';
 import cart from './cart.svg';
 import chartGrow from './chart-grow.svg';
 import chat from './chat.svg';
@@ -14,14 +15,17 @@ import close from './close.svg';
 import dev from './dev.svg';
 import eyeSlash from './eye-slash.svg';
 import eye from './eye.svg';
+import fileAttachment from './file-attachment.svg';
 import filter from './filter.svg';
 import forward from './forward.svg';
 import gear from './gear.svg';
 import home from './home.svg';
+import image from './image.svg';
 import info from './info.svg';
 import keyboard from './keyboard.svg';
 import lock from './lock.svg';
 import logout from './logout.svg';
+import macro from './macro.svg';
 import minus from './minus.svg';
 import notification from './notification.svg';
 import order from './order.svg';
@@ -55,6 +59,7 @@ export const Icons = {
   arrow,
   attachment,
   calendar,
+  camera,
   cart,
   chartGrow,
   clock,
@@ -67,14 +72,17 @@ export const Icons = {
   dev,
   eye,
   eyeSlash,
+  fileAttachment,
   filter,
   forward,
   gear,
   home,
+  image,
   info,
   keyboard,
   lock,
   logout,
+  macro,
   minus,
   notification,
   order,

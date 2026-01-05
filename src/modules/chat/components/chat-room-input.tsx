@@ -1,12 +1,24 @@
-import React, { JSX, useState } from 'react';
+import React, { JSX, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { InfiniteData, useMutation } from '@tanstack/react-query';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { IMessage, InputToolbarProps } from 'react-native-gifted-chat';
+import { twMerge } from 'tailwind-merge';
 
-import { Button, Icon, InputField } from '@/components';
+import {
+  Button,
+  Icon,
+  IconNames,
+  InputField,
+  Option,
+  OptionBottomSheet,
+  OptionBottomSheetRef,
+  Text,
+} from '@/components';
 import { useDebounce } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
@@ -24,6 +36,24 @@ type Params = {
   conversation_id: string;
 };
 
+const ATTACHMENT_OPTIONS = [
+  {
+    value: 'camera',
+    label: 'Camera',
+  },
+  {
+    value: 'image',
+    label: 'Photo Library',
+  },
+  {
+    value: 'fileAttachment',
+    label: 'File Attachment',
+  },
+  {
+    value: 'macro',
+    label: 'Macro',
+  },
+];
 export function ChatRoomInput(
   _props: InputToolbarProps<IMessage>,
 ): JSX.Element {
@@ -32,7 +62,7 @@ export function ChatRoomInput(
   const { t } = useTranslation();
 
   const [isPrivate, setIsPrivate] = useState(false);
-
+  const optionBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const {
     value: message,
     setValue: setMessage,
@@ -168,43 +198,105 @@ export function ChatRoomInput(
     });
   }
 
+  async function onSelectAttachment(value: Option): Promise<void> {
+    if (value.value === 'camera') {
+      const result = await ImagePicker.requestCameraPermissionsAsync();
+
+      if (!result.granted) {
+        return;
+      }
+
+      await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+
+      return;
+    }
+
+    if (value.value === 'image') {
+      ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+    }
+
+    if (value.value === 'fileAttachment') {
+      DocumentPicker.getDocumentAsync({
+        type: 'application/pdf',
+      });
+
+      return;
+    }
+  }
+
   return (
-    <View className="pb-safe pt-sm bg-surface px-lg gap-sm flex-row items-center">
-      <Button
-        onPress={() => {}}
-        icon={<Icon name="plus" size="xl" className="text-muted-foreground" />}
-        size="small"
-        color="secondary"
-      />
-      <View className="flex-1">
-        <InputField
-          placeholder={
-            isPrivate
-              ? t('chat.input.placeholder_private')
-              : t('chat.input.placeholder')
+    <View className="pb-safe bg-surface gap-sm">
+      <View className="pt-sm px-lg gap-sm flex-row items-center">
+        <Button
+          onPress={optionBottomSheetRef.current?.present}
+          icon={
+            <Icon name="plus" size="xl" className="text-muted-foreground" />
           }
-          className="bg-background max-h-40"
-          inputClassName="py-sm"
-          value={message}
-          onChangeText={setMessage}
-          onPressRight={() => setIsPrivate(!isPrivate)}
-          right={
-            <Icon
-              name="lock"
-              size="base"
-              className={isPrivate ? 'text-accent' : 'text-muted-foreground'}
-            />
-          }
-          returnKeyType="send"
-          multiline
-          // onSubmitEditing={handleSendMessage}
+          size="small"
+          color="secondary"
+        />
+        <View className="flex-1">
+          <InputField
+            placeholder={
+              isPrivate
+                ? t('chat.input.placeholder_private')
+                : t('chat.input.placeholder')
+            }
+            className="bg-background max-h-40"
+            inputClassName="py-sm"
+            value={message}
+            onChangeText={setMessage}
+            onPressRight={() => setIsPrivate(!isPrivate)}
+            right={
+              <Icon
+                name="lock"
+                size="base"
+                className={isPrivate ? 'text-accent' : 'text-muted-foreground'}
+              />
+            }
+            returnKeyType="send"
+            multiline
+            // onSubmitEditing={handleSendMessage}
+          />
+        </View>
+        <Button
+          onPress={handleSendMessage}
+          disabled={!message.trim()}
+          icon="send"
+          size="small"
         />
       </View>
-      <Button
-        onPress={handleSendMessage}
-        disabled={!message.trim()}
-        icon="send"
-        size="small"
+      <OptionBottomSheet
+        ref={optionBottomSheetRef}
+        options={ATTACHMENT_OPTIONS}
+        onSelect={onSelectAttachment}
+        renderItem={({ item, index }) => (
+          <View
+            className={twMerge(
+              'px-md py-sm gap-sm w-full flex-row items-center',
+              index === ATTACHMENT_OPTIONS.length - 1
+                ? 'rounded-b-lg'
+                : 'border-border border-b',
+            )}
+          >
+            <Icon
+              name={item.value as IconNames}
+              size="2xl"
+              className="text-muted-foreground"
+            />
+            <Text variant="bodyS">{item.label}</Text>
+          </View>
+        )}
       />
     </View>
   );

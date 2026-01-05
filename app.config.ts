@@ -137,6 +137,19 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
           organization: 'wz-technology',
         },
       ],
+      [
+        'expo-document-picker',
+        {
+          iCloudContainerEnvironment: 'Production',
+        },
+      ],
+      [
+        'expo-image-picker',
+        {
+          photosPermission:
+            'The app accesses your photos to let you share them with your friends.',
+        },
+      ],
     ],
   };
 

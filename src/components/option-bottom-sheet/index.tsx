@@ -184,15 +184,19 @@ function OptionBottomSheetInner<TData = unknown>(
               </BottomSheetFooter>
             )
       }
-      handleComponent={(props) => (
-        <BottomSheetHandle {...props}>
-          <View className="bg-surface py-sm">
-            <Text variant="labelL" className="text-center">
-              {title}
-            </Text>
-          </View>
-        </BottomSheetHandle>
-      )}
+      handleComponent={
+        title
+          ? (props) => (
+              <BottomSheetHandle {...props}>
+                <View className="bg-surface py-sm">
+                  <Text variant="labelL" className="text-center">
+                    {title}
+                  </Text>
+                </View>
+              </BottomSheetHandle>
+            )
+          : undefined
+      }
     >
       <BottomSheetFlatList
         {...flatListProps}
