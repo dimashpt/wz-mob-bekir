@@ -20,6 +20,12 @@ import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useAuthStore } from '@/store';
 import ChatListItem from '../components/chat-list-item';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import {
+  getAssigneeFilterOptions,
+  getBulkStatusOptions,
+  getSortFilterOptions,
+  getStatusFilterOptions,
+} from '../constants/options';
 import { bulkUpdateAction } from '../services/conversation';
 import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
 import {
@@ -48,47 +54,10 @@ export default function ChatScreen(): JSX.Element {
   const assigneeBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const statusBottomSheetRef = useRef<OptionBottomSheetRef>(null);
 
-  const STATUS_OPTIONS: Option[] = useMemo(
-    () => [
-      { label: t('chat.filters.all'), value: 'all' },
-      { label: t('chat.status.open'), value: 'open' },
-      { label: t('chat.status.pending'), value: 'pending' },
-      { label: t('chat.status.snooze'), value: 'snoozed' },
-      { label: t('chat.status.resolve'), value: 'resolved' },
-    ],
-    [t],
-  );
-
-  const ASSIGNEE_OPTIONS: Option[] = useMemo(
-    () => [
-      { label: t('chat.filters.all'), value: 'all' },
-      { label: t('chat.filters.me'), value: 'me' },
-      { label: t('chat.filters.unassigned'), value: 'unassigned' },
-    ],
-    [t],
-  );
-
-  const SORT_OPTIONS: Option[] = useMemo(
-    () => [
-      { label: t('chat.filters.latest'), value: 'latest' },
-      {
-        label: t('chat.filters.sort_on_created_at'),
-        value: 'sort_on_created_at',
-      },
-      { label: t('chat.filters.sort_on_priority'), value: 'sort_on_priority' },
-    ],
-    [t],
-  );
-
-  const BULK_STATUS_OPTIONS: Option<ConversationStatus>[] = useMemo(
-    () => [
-      { label: t('chat.status.open'), value: 'open' },
-      { label: t('chat.status.pending'), value: 'pending' },
-      { label: t('chat.status.snooze'), value: 'snoozed' },
-      { label: t('chat.status.resolve'), value: 'resolved' },
-    ],
-    [t],
-  );
+  const STATUS_OPTIONS = getStatusFilterOptions();
+  const ASSIGNEE_OPTIONS = getAssigneeFilterOptions();
+  const SORT_OPTIONS = getSortFilterOptions();
+  const BULK_STATUS_OPTIONS = getBulkStatusOptions();
 
   const { data, isLoading, isRefetching, refetch } = useListConversationQuery(
     {},
@@ -131,10 +100,7 @@ export default function ChatScreen(): JSX.Element {
     },
   );
 
-  const selectedConversationIds = useMemo(
-    () => selectedConversations.map((conv) => conv.id),
-    [selectedConversations],
-  );
+  const selectedConversationIds = selectedConversations.map((conv) => conv.id);
 
   const listConversationsQueryKey = [
     CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(chatUser?.account_id ?? 0),
