@@ -33,7 +33,11 @@ export function ChatRoomInput(
 
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const [message, setMessage] = useDebounce('', 5000, {
+  const {
+    value: message,
+    setValue: setMessage,
+    reset: resetMessage,
+  } = useDebounce('', 5000, {
     onStartTyping: () => handleUpdateTypingStatus('on'),
     onEndTyping: () => handleUpdateTypingStatus('off'),
   });
@@ -67,7 +71,7 @@ export function ChatRoomInput(
       sendMessage(chatUser!.account_id, conversation_id, payload),
     onMutate: async (newMessage, context) => {
       // Clear the message input
-      setMessage('');
+      resetMessage();
 
       // Cancel any outgoing refetches
       // (so they don't overwrite the optimistic update)

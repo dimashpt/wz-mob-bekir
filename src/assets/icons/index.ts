@@ -19,6 +19,7 @@ import forward from './forward.svg';
 import gear from './gear.svg';
 import home from './home.svg';
 import info from './info.svg';
+import keyboard from './keyboard.svg';
 import lock from './lock.svg';
 import logout from './logout.svg';
 import minus from './minus.svg';
@@ -71,6 +72,7 @@ export const Icons = {
   gear,
   home,
   info,
+  keyboard,
   lock,
   logout,
   minus,

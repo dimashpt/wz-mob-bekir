@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 type UseDebounceReturn<T> = [
   T,
@@ -10,6 +10,7 @@ type UseDebounceReturn<T> = [
   setValue: React.Dispatch<React.SetStateAction<T>>;
   debouncedValue: T;
   isDebouncing: boolean;
+  reset: () => void;
 };
 
 interface UseDebounceOptions {
@@ -26,6 +27,7 @@ export function useDebounce<T = string>(
   const [debouncedValue, setDebouncedValue] = useState<T>(initialValue);
   const [isDebouncing, setIsDebouncing] = useState<boolean>(false);
   const [hasCalledStart, setHasCalledStart] = useState<boolean>(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // If value changes, set isDebouncing to true and call onStartTyping once
@@ -47,11 +49,33 @@ export function useDebounce<T = string>(
       }
     }, delay);
 
+    timeoutRef.current = handler;
+
     // Cleanup function to clear the timeout
     return () => {
       clearTimeout(handler);
+      timeoutRef.current = null;
     };
   }, [value, delay, debouncedValue, hasCalledStart, options]);
+
+  const reset = useCallback((): void => {
+    // Clear any pending timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
+    // Reset all values and statuses
+    setValue(initialValue);
+    setDebouncedValue(initialValue);
+    setIsDebouncing(false);
+    setHasCalledStart(false);
+
+    // Fire onEndTyping callback
+    if (options?.onEndTyping) {
+      options.onEndTyping();
+    }
+  }, [initialValue, options]);
 
   const arrayReturn = [
     value,
@@ -64,6 +88,7 @@ export function useDebounce<T = string>(
   arrayReturn.setValue = setValue;
   arrayReturn.debouncedValue = debouncedValue;
   arrayReturn.isDebouncing = isDebouncing;
+  arrayReturn.reset = reset;
 
   return arrayReturn;
 }
