@@ -1,6 +1,7 @@
 import { API } from '@/lib/axios';
 import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
 import {
+  BulkUpdateActionPayload,
   LabelListResponse,
   ListConversationsParams,
   ListConversationsResponse,
@@ -144,6 +145,24 @@ export async function updateParticipants(
 ): Promise<UpdateParticipantsResponse> {
   const response = await API.put<UpdateParticipantsResponse>(
     CONVERSATIONS_ENDPOINTS.PARTICIPANTS(accountId, conversationId),
+    payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Bulk updates the action for the given conversations.
+ * @param accountId - The ID of the account.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function bulkUpdateAction(
+  accountId: number,
+  payload: BulkUpdateActionPayload,
+): Promise<void> {
+  const response = await API.post<void>(
+    CONVERSATIONS_ENDPOINTS.BULK_UPDATE_ACTION(accountId),
     payload,
   );
 

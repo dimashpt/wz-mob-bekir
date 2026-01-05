@@ -1,6 +1,7 @@
 import React, { JSX, useMemo, useRef, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,20 +17,27 @@ import {
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { useAuthStore } from '@/store';
 import ChatListItem from '../components/chat-list-item';
+import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { bulkUpdateAction } from '../services/conversation';
 import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
 import {
   useListConversationQuery,
   useListLabelsQuery,
 } from '../services/conversation/repository';
 import {
+  BulkUpdateActionPayload,
   ConversationStatus,
+  Label,
   ListConversationsParams,
 } from '../services/conversation/types';
 
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { chatUser } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<ListConversationsParams>({});
@@ -122,6 +130,77 @@ export default function ChatScreen(): JSX.Element {
       inbox_ids: uniqueInboxIds,
     },
   );
+
+  const selectedConversationIds = useMemo(
+    () => selectedConversations.map((conv) => conv.id),
+    [selectedConversations],
+  );
+
+  const listConversationsQueryKey = [
+    CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(chatUser?.account_id ?? 0),
+    filters,
+  ];
+
+  const bulkUpdateMutation = useMutation({
+    mutationFn: (payload: BulkUpdateActionPayload) =>
+      bulkUpdateAction(chatUser?.account_id ?? 0, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: listConversationsQueryKey });
+      setIsSelectionMode(false);
+      setSelectedIds(new Set());
+    },
+  });
+
+  function handleBulkUpdateLabels(selectedLabels: Option<Label>[]): void {
+    if (selectedConversationIds.length === 0) return;
+
+    labelsBottomSheetRef.current?.close();
+
+    bulkUpdateMutation.mutate({
+      ids: selectedConversationIds,
+      type: 'Conversation',
+      labels: {
+        add: selectedLabels.map((label) => label.value),
+      },
+    });
+  }
+
+  function handleBulkUpdateAssignee(option: Option): void {
+    if (selectedConversationIds.length === 0) return;
+
+    assigneeBottomSheetRef.current?.close();
+
+    const assigneeId = Number(option.value);
+    const payload: BulkUpdateActionPayload = {
+      ids: selectedConversationIds,
+      type: 'Conversation',
+    };
+
+    if (assigneeId === 0) {
+      // Unassign - set assignee_id to 0 or omit it based on API behavior
+      // Check API docs, but typically unassigning might require a different approach
+      // For now, we'll set it to 0
+      payload.fields = { assignee_id: 0 };
+    } else {
+      payload.fields = { assignee_id: assigneeId };
+    }
+
+    bulkUpdateMutation.mutate(payload);
+  }
+
+  function handleBulkUpdateStatus(option: Option<ConversationStatus>): void {
+    if (selectedConversationIds.length === 0) return;
+
+    statusBottomSheetRef.current?.close();
+
+    bulkUpdateMutation.mutate({
+      ids: selectedConversationIds,
+      type: 'Conversation',
+      fields: {
+        status: option.value as ConversationStatus,
+      },
+    });
+  }
 
   function setFilters(newFilters: Partial<ListConversationsParams>): void {
     _setFilters((prev) => ({ ...prev, ...newFilters }));
@@ -315,9 +394,9 @@ export default function ChatScreen(): JSX.Element {
         options={labels ?? []}
         title={t('chat.labels.title')}
         multiselect
-        onSelect={() => {
-          // TODO: Implement bulk labels update
-        }}
+        onSelect={(selectedLabels) =>
+          handleBulkUpdateLabels(selectedLabels as Option<Label>[])
+        }
         selectedValues={[]}
       />
       <OptionBottomSheet
@@ -331,17 +410,15 @@ export default function ChatScreen(): JSX.Element {
           ...(agents ?? []),
         ]}
         title={t('chat.assignment.agent')}
-        onSelect={() => {
-          // TODO: Implement bulk assignee update
-        }}
+        onSelect={(option) => handleBulkUpdateAssignee(option as Option)}
       />
       <OptionBottomSheet
         ref={statusBottomSheetRef}
         options={BULK_STATUS_OPTIONS}
         title={t('chat.filters.status_label')}
-        onSelect={() => {
-          // TODO: Implement bulk status update
-        }}
+        onSelect={(option) =>
+          handleBulkUpdateStatus(option as Option<ConversationStatus>)
+        }
       />
     </Container>
   );

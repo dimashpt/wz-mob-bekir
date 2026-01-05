@@ -222,3 +222,15 @@ export interface UpdateParticipantsPayload {
 }
 
 export type UpdateParticipantsResponse = Agent[];
+
+export interface BulkUpdateActionPayload {
+  ids: number[];
+  type: 'Conversation';
+  fields?: {
+    assignee_id?: number;
+    status?: ConversationStatus;
+  };
+  labels?: {
+    add?: string[];
+  };
+}

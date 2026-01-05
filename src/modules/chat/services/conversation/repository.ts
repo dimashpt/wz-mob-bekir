@@ -39,7 +39,10 @@ export function useListConversationQuery<T = ListConversationsResponse>(
   const query = useQuery<ListConversationsResponse, Error, T>({
     ...params,
     enabled: Boolean(chatUser?.account_id),
-    queryKey: [CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS, finalQueryParams],
+    queryKey: [
+      CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(chatUser?.account_id ?? 0),
+      finalQueryParams,
+    ],
     queryFn: () =>
       listConversations(chatUser?.account_id ?? 0, finalQueryParams),
   });

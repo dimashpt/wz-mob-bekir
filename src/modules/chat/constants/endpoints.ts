@@ -35,4 +35,6 @@ export const CONVERSATIONS_ENDPOINTS = {
     messageId: number,
   ) =>
     `${baseUrl(accountId)}/conversations/${conversationId}/messages/${messageId}`,
+  BULK_UPDATE_ACTION: (accountId: number) =>
+    `${baseUrl(accountId)}/bulk_actions`,
 } as const;
