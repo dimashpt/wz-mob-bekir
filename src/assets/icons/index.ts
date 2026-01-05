@@ -35,8 +35,10 @@ import search from './search.svg';
 import send from './send.svg';
 import shortcut from './shortcut.svg';
 import signal from './signal.svg';
+import slider from './slider.svg';
 import store from './store.svg';
 import storybook from './storybook.svg';
+import tag from './tag.svg';
 import tickCircle from './tick-circle.svg';
 import tick from './tick.svg';
 import translate from './translate.svg';
@@ -85,8 +87,10 @@ export const Icons = {
   signal,
   send,
   shortcut,
+  slider,
   store,
   storybook,
+  tag,
   tick,
   tickCircle,
   translate,

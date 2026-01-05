@@ -1,4 +1,4 @@
-import React, { JSX, useMemo, useState } from 'react';
+import React, { JSX, useMemo, useRef, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
@@ -10,13 +10,22 @@ import {
   Container,
   Filter,
   Option,
+  OptionBottomSheet,
+  OptionBottomSheetRef,
   Skeleton,
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import ChatListItem from '../components/chat-list-item';
-import { useListConversationQuery } from '../services/conversation/repository';
-import { ListConversationsParams } from '../services/conversation/types';
+import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
+import {
+  useListConversationQuery,
+  useListLabelsQuery,
+} from '../services/conversation/repository';
+import {
+  ConversationStatus,
+  ListConversationsParams,
+} from '../services/conversation/types';
 
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
@@ -26,6 +35,10 @@ export default function ChatScreen(): JSX.Element {
   const [filters, _setFilters] = useState<ListConversationsParams>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const assigneeBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const statusBottomSheetRef = useRef<OptionBottomSheetRef>(null);
 
   const STATUS_OPTIONS: Option[] = useMemo(
     () => [
@@ -59,9 +72,55 @@ export default function ChatScreen(): JSX.Element {
     [t],
   );
 
+  const BULK_STATUS_OPTIONS: Option<ConversationStatus>[] = useMemo(
+    () => [
+      { label: t('chat.status.open'), value: 'open' },
+      { label: t('chat.status.pending'), value: 'pending' },
+      { label: t('chat.status.snooze'), value: 'snoozed' },
+      { label: t('chat.status.resolve'), value: 'resolved' },
+    ],
+    [t],
+  );
+
   const { data, isLoading, isRefetching, refetch } = useListConversationQuery(
     {},
     filters,
+  );
+
+  const conversations = data?.data?.payload ?? [];
+  const selectedConversations = conversations.filter((conv) =>
+    selectedIds.has(conv.uuid),
+  );
+  const uniqueInboxIds = useMemo(
+    () =>
+      Array.from(
+        new Set(selectedConversations.map((conv) => conv.inbox_id)),
+      ).filter((id) => id > 0),
+    [selectedConversations],
+  );
+
+  const { data: labels } = useListLabelsQuery({
+    select: (data) =>
+      (data.payload ?? []).map((label) => ({
+        label: label.title,
+        value: label.title,
+        data: label,
+      })),
+  });
+
+  const { data: agents } = useListAssignableAgentsQuery(
+    {
+      enabled: isSelectionMode && uniqueInboxIds.length > 0,
+      select: (data) =>
+        (data.payload ?? []).map((agent) => ({
+          label: agent.name,
+          value: String(agent.id),
+          data: agent,
+        })),
+    },
+    {
+      inbox_ids: uniqueInboxIds,
+    },
   );
 
   function setFilters(newFilters: Partial<ListConversationsParams>): void {
@@ -94,7 +153,6 @@ export default function ChatScreen(): JSX.Element {
     setSelectedIds(new Set());
   }
 
-  const conversations = data?.data?.payload ?? [];
   const allItemUuids = conversations.map((item) => item.uuid);
   const isAllSelected =
     isSelectionMode &&
@@ -138,7 +196,7 @@ export default function ChatScreen(): JSX.Element {
           />
         )}
       </View>
-      {showFilters && (
+      {showFilters && !isSelectionMode && (
         <Filter
           hideClearAll
           scrollViewProps={{
@@ -224,6 +282,66 @@ export default function ChatScreen(): JSX.Element {
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
+      />
+      {isSelectionMode && (
+        <View
+          className="gap-sm py-sm absolute right-0 left-0 flex-row justify-center"
+          style={{
+            bottom: TAB_BAR_HEIGHT,
+          }}
+        >
+          <Button
+            icon="tag"
+            variant="outlined"
+            disabled={selectedIds.size === 0}
+            onPress={() => labelsBottomSheetRef.current?.present()}
+          />
+          <Button
+            icon="userSettings"
+            variant="outlined"
+            disabled={selectedIds.size === 0}
+            onPress={() => assigneeBottomSheetRef.current?.present()}
+          />
+          <Button
+            icon="slider"
+            variant="outlined"
+            disabled={selectedIds.size === 0}
+            onPress={() => statusBottomSheetRef.current?.present()}
+          />
+        </View>
+      )}
+      <OptionBottomSheet
+        ref={labelsBottomSheetRef}
+        options={labels ?? []}
+        title={t('chat.labels.title')}
+        multiselect
+        onSelect={() => {
+          // TODO: Implement bulk labels update
+        }}
+        selectedValues={[]}
+      />
+      <OptionBottomSheet
+        ref={assigneeBottomSheetRef}
+        options={[
+          {
+            label: t('chat.assignment.priority_none'),
+            value: String(0),
+            data: {} as import('../services/conversation-room/types').Agent,
+          },
+          ...(agents ?? []),
+        ]}
+        title={t('chat.assignment.agent')}
+        onSelect={() => {
+          // TODO: Implement bulk assignee update
+        }}
+      />
+      <OptionBottomSheet
+        ref={statusBottomSheetRef}
+        options={BULK_STATUS_OPTIONS}
+        title={t('chat.filters.status_label')}
+        onSelect={() => {
+          // TODO: Implement bulk status update
+        }}
       />
     </Container>
   );

@@ -42,6 +42,7 @@ export default function ChatRoomScreen(): JSX.Element {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoading,
   } = useListMessagesInfiniteQuery(
     { select: mapInfiniteMessagesToGiftedChatMessages },
     conversation_id,
@@ -126,7 +127,7 @@ export default function ChatRoomScreen(): JSX.Element {
               className="size-8"
               textClassName="text-lg"
             />
-            <Text variant="labelL">
+            <Text variant="labelL" loading={isLoading}>
               {messages?.pages?.[0]?.meta?.contact?.name}
             </Text>
           </View>
