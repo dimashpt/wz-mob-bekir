@@ -11,16 +11,21 @@ import { twMerge } from 'tailwind-merge';
 
 import {
   Button,
+  Clickable,
   Icon,
   IconNames,
+  Image,
+  ImagePreviewModal,
   InputField,
   Option,
   OptionBottomSheet,
   OptionBottomSheetRef,
+  snackbar,
   Text,
 } from '@/components';
 import { useDebounce } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
+import { resizeImage } from '@/utils/image';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { sendMessage, updateTypingStatus } from '../services/conversation-room';
@@ -63,6 +68,8 @@ export function ChatRoomInput(
 
   const [isPrivate, setIsPrivate] = useState(false);
   const optionBottomSheetRef = useRef<OptionBottomSheetRef>(null);
+  const [resizedImageUri, setResizedImageUri] = useState<string | null>(null);
+  const imagePreviewRef = useRef<ImagePreviewModal>(null);
   const {
     value: message,
     setValue: setMessage,
@@ -203,15 +210,20 @@ export function ChatRoomInput(
       const result = await ImagePicker.requestCameraPermissionsAsync();
 
       if (!result.granted) {
+        snackbar.error(t('chat.input.camera_permission_error'));
         return;
       }
 
-      await ImagePicker.launchCameraAsync({
+      const cameraResult = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
         quality: 1,
       });
+
+      if (!cameraResult.canceled) {
+        const resizedUri = await resizeImage(cameraResult.assets?.[0].uri, 128);
+
+        setResizedImageUri(resizedUri);
+      }
 
       return;
     }
@@ -219,8 +231,6 @@ export function ChatRoomInput(
     if (value.value === 'image') {
       ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [1, 1],
         quality: 1,
       });
     }
@@ -236,6 +246,13 @@ export function ChatRoomInput(
 
   return (
     <View className="pb-safe bg-surface gap-sm">
+      {resizedImageUri && (
+        <Clickable
+          onPress={() => imagePreviewRef.current?.open(resizedImageUri)}
+        >
+          <Image source={{ uri: resizedImageUri }} className="h-40 w-full" />
+        </Clickable>
+      )}
       <View className="pt-sm px-lg gap-sm flex-row items-center">
         <Button
           onPress={optionBottomSheetRef.current?.present}
@@ -261,10 +278,11 @@ export function ChatRoomInput(
               <Icon
                 name="lock"
                 size="base"
-                className={isPrivate ? 'text-accent' : 'text-muted-foreground'}
+                className={twMerge(
+                  isPrivate ? 'text-accent' : 'text-muted-foreground',
+                )}
               />
             }
-            returnKeyType="send"
             multiline
             // onSubmitEditing={handleSendMessage}
           />
@@ -297,6 +315,10 @@ export function ChatRoomInput(
             <Text variant="bodyS">{item.label}</Text>
           </View>
         )}
+      />
+      <ImagePreviewModal
+        ref={imagePreviewRef}
+        onClose={() => setResizedImageUri(null)}
       />
     </View>
   );

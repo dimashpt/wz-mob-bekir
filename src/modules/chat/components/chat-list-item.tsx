@@ -123,8 +123,8 @@ export default function ChatListItem({
                 </Text>
               </View>
             </View>
-            <View className="flex-row items-center justify-between">
-              <View className="gap-xs flex-row items-center">
+            <View className="gap-md flex-row items-center justify-between">
+              <View className="gap-xs shrink flex-row items-center">
                 {item.last_non_activity_message.sender.type === 'user' && (
                   <Icon
                     name="tick"
@@ -132,7 +132,12 @@ export default function ChatListItem({
                     className="text-muted-foreground"
                   />
                 )}
-                <Text variant="bodyXS" color="muted" numberOfLines={2}>
+                <Text
+                  variant="bodyXS"
+                  color="muted"
+                  numberOfLines={1}
+                  className="shrink"
+                >
                   {item.last_non_activity_message.content}
                 </Text>
               </View>

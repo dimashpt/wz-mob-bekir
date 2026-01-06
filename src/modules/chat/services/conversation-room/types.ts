@@ -17,6 +17,20 @@ export interface Message {
   sender?: Sender;
   source_id: null;
   status: string;
+  attachments?: Attachment[];
+}
+
+export interface Attachment {
+  account_id: number;
+  data_url: string;
+  extension: string | null;
+  file_size: number;
+  file_type: 'image' | 'file';
+  height: number | null;
+  id: number;
+  message_id: number;
+  thumb_url: string;
+  width: number | null;
 }
 
 interface Sender {

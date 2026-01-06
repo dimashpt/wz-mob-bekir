@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
-import { View } from 'react-native';
+import type { ImagePreviewModal as ImagePreviewModalType } from '@/components/image-preview-modal';
+
+import { useMemo, useRef } from 'react';
+import { Linking, View } from 'react-native';
 
 import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -14,12 +16,13 @@ import { runOnJS } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
-import { Clickable, Icon, Text } from '@/components';
+import { Clickable, Icon, Image, ImagePreviewModal, Text } from '@/components';
 import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import {
+  Attachment,
   ConversationMessagesResponse,
   Message,
 } from '../services/conversation-room/types';
@@ -68,15 +71,26 @@ const messageBubbleTextVariants = tv({
 export type ChatMessage = IMessage & Message;
 type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
 
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+}
+
 export function MessageItem({
   currentMessage: message,
   onDelete,
 }: MessageItemProps): React.JSX.Element {
   const { chatUser } = useAuthStore();
+  const imagePreviewRef = useRef<ImagePreviewModalType>(null);
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
   const isReplyMessage = message.content_attributes.in_reply_to;
+  const attachments = message.attachments ?? [];
+  const hasAttachments = attachments.length > 0;
 
   const queryKey = [
     CONVERSATIONS_ENDPOINTS.MESSAGES(
@@ -116,6 +130,90 @@ export function MessageItem({
     return 'incoming';
   }
 
+  function handleImagePress(imageUrl: string): void {
+    imagePreviewRef.current?.open(imageUrl);
+  }
+
+  async function handleFilePress(fileUrl: string): Promise<void> {
+    try {
+      const canOpen = await Linking.canOpenURL(fileUrl);
+      if (canOpen) {
+        await Linking.openURL(fileUrl);
+      }
+    } catch (error) {
+      // Handle error silently or show snackbar if needed
+    }
+  }
+
+  function renderAttachment(attachment: Attachment): React.JSX.Element {
+    const messageType = getMessageType();
+    const isImage = attachment.file_type === 'image';
+
+    if (isImage) {
+      const fullImageUrl = attachment.data_url || attachment.thumb_url;
+      const thumbnailUrl = attachment.thumb_url || attachment.data_url;
+      const aspectRatio =
+        attachment.width && attachment.height
+          ? attachment.width / attachment.height
+          : 1;
+
+      return (
+        <Clickable
+          key={attachment.id}
+          onPress={() => handleImagePress(fullImageUrl)}
+          className="mb-xs overflow-hidden rounded-md"
+        >
+          <Image
+            source={{ uri: thumbnailUrl }}
+            style={{
+              width: '100%',
+              maxWidth: 250,
+              aspectRatio: aspectRatio,
+            }}
+            contentFit="cover"
+            className="rounded-md"
+          />
+        </Clickable>
+      );
+    }
+
+    // File attachment
+    const fileName = attachment.extension
+      ? `file.${attachment.extension}`
+      : 'file';
+    const fileSize = formatFileSize(attachment.file_size);
+
+    return (
+      <Clickable
+        key={attachment.id}
+        onPress={() => handleFilePress(attachment.data_url)}
+        className="mb-xs gap-sm border-border bg-surface-soft p-sm flex-row items-center rounded-md border"
+      >
+        <Icon
+          name="fileAttachment"
+          size="base"
+          className={messageBubbleTextVariants({ type: messageType })}
+        />
+        <View className="shrink">
+          <Text
+            variant="bodyS"
+            numberOfLines={1}
+            className={messageBubbleTextVariants({ type: messageType })}
+          >
+            {fileName}
+          </Text>
+          <Text
+            variant="labelXS"
+            className={messageBubbleTextVariants({ type: messageType })}
+            style={{ opacity: 0.7 }}
+          >
+            {fileSize}
+          </Text>
+        </View>
+      </Clickable>
+    );
+  }
+
   // TODO: Render other message types
   // if (message.content_attributes) {}
   // if (message.content_type === 'incoming_email') {}
@@ -123,62 +221,72 @@ export function MessageItem({
 
   // Render regular message with bubble
   return (
-    <GestureDetector gesture={longPressGesture}>
-      <View
-        className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
-      >
-        {isReplyMessage ? (
-          <Clickable
-            onPress={() => {}}
-            className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
-          >
-            <Icon
-              name="forward"
-              size="sm"
-              className="text-white/70 dark:text-black/70"
-              transform="scale(-1,1)"
-            />
-            <View className="shrink">
-              <Text
-                variant="bodyXS"
-                numberOfLines={3}
-                className="text-white/70 dark:text-black/70"
-              >
-                {replyMessage}
-              </Text>
-            </View>
-          </Clickable>
-        ) : null}
-        <Text
-          variant="bodyS"
-          className={messageBubbleTextVariants({ type: getMessageType() })}
+    <>
+      <GestureDetector gesture={longPressGesture}>
+        <View
+          className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
         >
-          {message.text}
-        </Text>
-        <View className="gap-xs flex-row items-center justify-end">
-          {isPrivate && (
-            <Icon name="lock" size="sm" className="text-muted-foreground" />
-          )}
-          {isTemplate && (
-            <Icon name="robot" size="sm" className="text-muted-foreground" />
-          )}
-          <Text variant="labelXS" color="muted">
-            {dayjs(message.createdAt).format('HH:mm')}
-          </Text>
-          {isOutgoing && (
-            <Icon
-              name={message.pending ? 'clock' : 'tick'}
-              size="base"
-              className={
-                message.status === 'read'
-                  ? 'text-info'
-                  : 'text-muted-foreground'
-              }
-            />
-          )}
+          {isReplyMessage ? (
+            <Clickable
+              onPress={() => {}}
+              className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
+            >
+              <Icon
+                name="forward"
+                size="sm"
+                className="text-white/70 dark:text-black/70"
+                transform="scale(-1,1)"
+              />
+              <View className="shrink">
+                <Text
+                  variant="bodyXS"
+                  numberOfLines={3}
+                  className="text-white/70 dark:text-black/70"
+                >
+                  {replyMessage}
+                </Text>
+              </View>
+            </Clickable>
+          ) : null}
+          {hasAttachments ? (
+            <View className="mb-xs gap-xs">
+              {attachments.map((attachment) => renderAttachment(attachment))}
+            </View>
+          ) : null}
+          {message.text ? (
+            <Text
+              variant="bodyS"
+              className={messageBubbleTextVariants({ type: getMessageType() })}
+            >
+              {message.text}
+            </Text>
+          ) : null}
+          <View className="gap-xs flex-row items-center justify-end">
+            {isPrivate && (
+              <Icon name="lock" size="sm" className="text-muted-foreground" />
+            )}
+            {isTemplate && (
+              <Icon name="robot" size="sm" className="text-muted-foreground" />
+            )}
+            <Text variant="labelXS" color="muted">
+              {dayjs(message.createdAt).format('HH:mm')}
+            </Text>
+            {isOutgoing && (
+              <Icon
+                name={message.pending ? 'clock' : 'tick'}
+                size="base"
+                className={
+                  message.status === 'read'
+                    ? 'text-info'
+                    : 'text-muted-foreground'
+                }
+              />
+            )}
+          </View>
         </View>
-      </View>
-    </GestureDetector>
+      </GestureDetector>
+      <ImagePreviewModal ref={imagePreviewRef} />
+    </>
   );
 }
 
