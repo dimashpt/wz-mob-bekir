@@ -25,7 +25,7 @@ import {
 } from '@/components';
 import { useDebounce } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
-import { resizeImage } from '@/utils/image';
+import { formatFileSize } from '@/utils/formatter';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { sendMessage, updateTypingStatus } from '../services/conversation-room';
@@ -68,7 +68,9 @@ export function ChatRoomInput(
 
   const [isPrivate, setIsPrivate] = useState(false);
   const optionBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const [resizedImageUri, setResizedImageUri] = useState<string | null>(null);
+  const [attachment, setAttachment] = useState<
+    ImagePicker.ImagePickerAsset | DocumentPicker.DocumentPickerAsset
+  >();
   const imagePreviewRef = useRef<ImagePreviewModal>(null);
   const {
     value: message,
@@ -219,50 +221,180 @@ export function ChatRoomInput(
         quality: 1,
       });
 
-      if (!cameraResult.canceled) {
-        const resizedUri = await resizeImage(cameraResult.assets?.[0].uri, 128);
+      setAttachment(cameraResult?.assets?.[0]);
 
-        setResizedImageUri(resizedUri);
-      }
+      // TODO: Process image when submitting before sending the message
+      // if (!cameraResult.canceled) {
+      //   const resizedUri = await resizeImage(cameraResult.assets?.[0].uri, 128);
+
+      //   // {
+      //   //   account_id: chatUser?.account_id ?? 0,
+      //   //   data_url: resizedUri,
+      //   //   extension: cameraResult.assets?.[0].mimeType?.split('/')[1] ?? null,
+      //   //   file_size: cameraResult.assets?.[0].fileSize ?? 0,
+      //   //   file_type: 'image',
+      //   //   height: cameraResult.assets?.[0].height ?? null,
+      //   //   id: Date.now(),
+      //   //   message_id: Date.now(),
+      //   //   thumb_url: resizedUri,
+      //   //   width: cameraResult.assets?.[0].width ?? null,
+      //   // },
+      // }
 
       return;
     }
 
     if (value.value === 'image') {
-      ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 1,
       });
+
+      setAttachment(result.assets?.[0]);
+
+      return;
     }
 
     if (value.value === 'fileAttachment') {
-      DocumentPicker.getDocumentAsync({
+      const result = await DocumentPicker.getDocumentAsync({
         type: 'application/pdf',
       });
+
+      if (!result.canceled) {
+        setAttachment(result.assets?.[0]);
+      }
 
       return;
     }
   }
 
+  function isImage(
+    attachment:
+      | ImagePicker.ImagePickerAsset
+      | DocumentPicker.DocumentPickerAsset,
+  ): attachment is ImagePicker.ImagePickerAsset {
+    return (attachment as ImagePicker.ImagePickerAsset).type === 'image';
+  }
+
+  function isFile(
+    attachment:
+      | ImagePicker.ImagePickerAsset
+      | DocumentPicker.DocumentPickerAsset,
+  ): attachment is DocumentPicker.DocumentPickerAsset {
+    return (attachment as DocumentPicker.DocumentPickerAsset).mimeType !== null;
+  }
+
+  function renderAttachment(): React.JSX.Element | null {
+    // Render image attachment
+    if (attachment && isImage(attachment)) {
+      return (
+        <Clickable
+          onPress={() => imagePreviewRef.current?.open(attachment.uri)}
+          className="self-start rounded-md"
+        >
+          <Image
+            source={{ uri: attachment.uri }}
+            className="aspect-square h-20 w-full rounded-md object-contain"
+          />
+          <Clickable
+            onPress={() => setAttachment(undefined)}
+            className="absolute top-1 right-1"
+          >
+            <Icon name="closeCircle" size="xl" className="text-muted" />
+          </Clickable>
+        </Clickable>
+      );
+    }
+
+    // Render file attachment
+    if (attachment && isFile(attachment)) {
+      return (
+        <Clickable
+          onPress={() => {}}
+          className="p-md border-border gap-sm flex-row items-center rounded-md border"
+        >
+          <Icon
+            name="fileAttachment"
+            size="2xl"
+            className="text-muted-foreground"
+          />
+          <View className="shrink">
+            <Text variant="labelS" numberOfLines={1} ellipsizeMode="middle">
+              {attachment.name}
+            </Text>
+            <Text variant="bodyXS" color="muted">
+              {formatFileSize(attachment.size ?? 0)}
+            </Text>
+          </View>
+          <Clickable
+            onPress={() => setAttachment(undefined)}
+            className="absolute top-1 right-1"
+          >
+            <Icon name="closeCircle" size="xl" className="text-muted" />
+          </Clickable>
+        </Clickable>
+      );
+    }
+
+    return null;
+  }
+
   return (
     <View className="pb-safe bg-surface gap-sm">
-      {resizedImageUri && (
-        <Clickable
-          onPress={() => imagePreviewRef.current?.open(resizedImageUri)}
-        >
-          <Image source={{ uri: resizedImageUri }} className="h-40 w-full" />
-        </Clickable>
-      )}
-      <View className="pt-sm px-lg gap-sm flex-row items-center">
-        <Button
-          onPress={optionBottomSheetRef.current?.present}
-          icon={
-            <Icon name="plus" size="xl" className="text-muted-foreground" />
-          }
-          size="small"
-          color="secondary"
-        />
-        <View className="flex-1">
+      <View className="pt-sm px-lg gap-sm flex-row items-end">
+        {!attachment && (
+          <Button
+            onPress={optionBottomSheetRef.current?.present}
+            icon={
+              <Icon name="plus" size="xl" className="text-muted-foreground" />
+            }
+            size="small"
+            color="secondary"
+          />
+        )}
+        <View className="gap-sm flex-1">
+          {renderAttachment()}
+          {/* {attachment?.type === 'image' && (
+            <Clickable
+              onPress={() => imagePreviewRef.current?.open(attachment.uri)}
+              className="self-start rounded-md"
+            >
+              <Image
+                source={{ uri: attachment.uri }}
+                className="aspect-square h-20 w-full rounded-md object-contain"
+              />
+              <Clickable
+                onPress={() => setAttachment(undefined)}
+                className="absolute top-1 right-1"
+              >
+                <Icon name="closeCircle" size="xl" className="text-muted" />
+              </Clickable>
+            </Clickable>
+          )}
+          {attachment?.type === 'file' && (
+            <Clickable
+              onPress={() => {}}
+              className="p-md border-border gap-sm flex-row items-center rounded-md border"
+            >
+              <Icon
+                name="fileAttachment"
+                size="2xl"
+                className="text-muted-foreground"
+              />
+              <View>
+                <Text variant="labelS">Filename.pdf</Text>
+                <Text variant="bodyXS" color="muted">
+                  5 MB
+                </Text>
+              </View>
+              <Clickable
+                onPress={() => setAttachment(undefined)}
+                className="absolute top-1 right-1"
+              >
+                <Icon name="closeCircle" size="xl" className="text-muted" />
+              </Clickable>
+            </Clickable>
+          )} */}
           <InputField
             placeholder={
               isPrivate
@@ -270,7 +402,7 @@ export function ChatRoomInput(
                 : t('chat.input.placeholder')
             }
             className="bg-background max-h-40"
-            inputClassName="py-sm"
+            inputClassName="py-1.5"
             value={message}
             onChangeText={setMessage}
             onPressRight={() => setIsPrivate(!isPrivate)}
@@ -316,10 +448,7 @@ export function ChatRoomInput(
           </View>
         )}
       />
-      <ImagePreviewModal
-        ref={imagePreviewRef}
-        onClose={() => setResizedImageUri(null)}
-      />
+      <ImagePreviewModal ref={imagePreviewRef} />
     </View>
   );
 }

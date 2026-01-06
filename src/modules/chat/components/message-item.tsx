@@ -116,7 +116,7 @@ export function MessageItem({
   }, [message.content_attributes.in_reply_to]);
   const longPressGesture = Gesture.LongPress()
     .enabled(Boolean(onDelete))
-    .minDuration(750)
+    .minDuration(3_000)
     .maxDistance(20)
     .onStart(() => onDelete && runOnJS(onDelete)(message.id));
 
@@ -140,6 +140,7 @@ export function MessageItem({
       if (canOpen) {
         await Linking.openURL(fileUrl);
       }
+      // eslint-disable-next-line unused-imports/no-unused-vars
     } catch (error) {
       // Handle error silently or show snackbar if needed
     }

@@ -227,7 +227,7 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               <Clickable
                 disabled={secret ? false : !onPressRight}
                 onPress={secret ? toggleSecureTextVisibility : onPressRight}
-                className="pr-md pl-xs py-md items-center justify-center rounded-md"
+                className="pr-md pl-xs py-sm items-center justify-center rounded-md"
               >
                 {loading ? (
                   <ActivityIndicator size={8} />
