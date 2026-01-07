@@ -12,9 +12,11 @@ import {
   IMessage,
   SystemMessageProps,
 } from 'react-native-gifted-chat';
+import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 import { runOnJS } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
+import { useCSSVariable } from 'uniwind';
 
 import { Clickable, Icon, Image, ImagePreviewModal, Text } from '@/components';
 import { queryClient } from '@/lib/react-query';
@@ -254,12 +256,11 @@ export function MessageItem({
             </View>
           ) : null}
           {message.text ? (
-            <Text
-              variant="bodyS"
-              className={messageBubbleTextVariants({ type: getMessageType() })}
-            >
-              {message.text}
-            </Text>
+            <TextMarkdown
+              text={message.text}
+              isPrivate={isPrivate}
+              isOutgoing={isOutgoing}
+            />
           ) : null}
           <View className="gap-xs flex-row items-center justify-end">
             {isPrivate && (
@@ -316,6 +317,82 @@ function DaySeparator({ createdAt }: DayProps): React.JSX.Element {
         </Text>
       </View>
     </View>
+  );
+}
+
+function TextMarkdown({
+  text,
+  isPrivate,
+  isOutgoing,
+}: {
+  text: string;
+  isPrivate: boolean;
+  isOutgoing: boolean;
+}): React.JSX.Element {
+  const [textForeground, textForegroundInverted, textPrivate] = useCSSVariable([
+    '--color-foreground',
+    '--color-foreground-inverted',
+    '--color-yellow-600',
+  ]) as [string, string, string];
+  const textColor = isPrivate
+    ? textPrivate
+    : isOutgoing
+      ? textForegroundInverted
+      : textForeground;
+
+  return (
+    <Markdown
+      markdownit={MarkdownIt({ typographer: true, linkify: true })}
+      mergeStyle
+      style={{
+        text: {
+          fontSize: 14,
+          fontFamily: 'PlusJakartaSans_400Regular',
+          color: textColor,
+        },
+        strong: {
+          fontFamily: 'PlusJakartaSans_600SemiBold',
+          fontWeight: '600',
+          color: textColor,
+        },
+        em: {
+          fontStyle: 'italic',
+          color: textColor,
+        },
+        paragraph: {
+          marginTop: 0,
+          marginBottom: 0,
+          fontFamily: 'PlusJakartaSans_400Regular',
+          color: textColor,
+        },
+        bullet_list: {
+          minWidth: 200,
+          color: textColor,
+        },
+        ordered_list: {
+          minWidth: 200,
+          color: textColor,
+        },
+        list_item: {
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          color: textColor,
+        },
+        bullet_list_icon: {
+          marginLeft: 0,
+          marginRight: 8,
+          fontWeight: '900',
+        },
+        ordered_list_icon: {
+          marginLeft: 0,
+          marginRight: 8,
+          fontWeight: '900',
+        },
+      }}
+    >
+      {text}
+    </Markdown>
   );
 }
 
