@@ -132,6 +132,18 @@ export default function ChatListItem({
                     className="text-muted-foreground"
                   />
                 )}
+                {item.last_non_activity_message.attachments?.length ? (
+                  <Icon
+                    name={
+                      item.last_non_activity_message.attachments?.[0]
+                        .file_type === 'image'
+                        ? 'image'
+                        : 'fileAttachment'
+                    }
+                    size="sm"
+                    className="text-muted-foreground"
+                  />
+                ) : null}
                 <Text
                   variant="bodyXS"
                   color="muted"

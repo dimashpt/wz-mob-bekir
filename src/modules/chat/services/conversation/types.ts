@@ -1,4 +1,4 @@
-import { Agent } from '../conversation-room/types';
+import { Agent, Attachment } from '../conversation-room/types';
 
 type ConversationStatusFilter = ConversationStatus | 'all';
 type AssigneeTypeFilter = 'me' | 'unassigned' | 'all';
@@ -118,6 +118,7 @@ interface LastNonActivityMessage {
   source_id: null;
   status: string;
   updated_at: string;
+  attachments?: Attachment[];
 }
 
 interface Sender {

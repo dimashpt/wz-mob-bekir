@@ -179,9 +179,7 @@ export function MessageItem({
     }
 
     // File attachment
-    const fileName = attachment.extension
-      ? `file.${attachment.extension}`
-      : 'file';
+    const fileName = decodeURI(attachment?.data_url?.split('/')?.pop() ?? '');
     const fileSize = formatFileSize(attachment.file_size);
 
     return (
@@ -199,6 +197,7 @@ export function MessageItem({
           <Text
             variant="bodyS"
             numberOfLines={1}
+            ellipsizeMode="middle"
             className={messageBubbleTextVariants({ type: messageType })}
           >
             {fileName}

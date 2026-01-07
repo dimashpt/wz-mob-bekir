@@ -159,10 +159,17 @@ export interface UpdateTypingStatusPayload {
 }
 
 export interface SendMessagePayload {
+  attachments?: {
+    uri: string;
+    type?: string;
+    name?: string;
+  }[];
   content: string;
   content_attributes: ContentAttributes;
   echo_id: string;
   private: boolean;
+  cc_emails?: string[];
+  bcc_emails?: string[];
 }
 
 export interface CustomAttribute {

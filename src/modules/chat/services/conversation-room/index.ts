@@ -1,4 +1,5 @@
 import { API } from '@/lib/axios';
+import { objectToFormData } from '@/utils/data-transform';
 import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
 import { Conversation } from '../conversation/types';
 import {
@@ -147,9 +148,16 @@ export async function sendMessage(
   conversationId: string,
   payload: SendMessagePayload,
 ): Promise<Message> {
+  const formData = objectToFormData(payload);
+
   const response = await API.post(
     CONVERSATIONS_ENDPOINTS.SEND_MESSAGE(accountId, conversationId),
-    payload,
+    payload.attachments ? formData : payload,
+    {
+      headers: payload.attachments
+        ? { 'Content-Type': 'multipart/form-data' }
+        : undefined,
+    },
   );
 
   return response.data;

@@ -24,7 +24,13 @@ export function objectToFormData(obj: Record<string, any>): FormData {
   const formData = new FormData();
 
   Object.entries(obj).forEach(([key, value]) => {
-    formData.append(key, value);
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        formData.append(`${key}[]`, item);
+      });
+    } else {
+      formData.append(key, value);
+    }
   });
 
   return formData;

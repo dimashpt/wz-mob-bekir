@@ -26,6 +26,7 @@ import {
 import { useDebounce } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
 import { formatFileSize } from '@/utils/formatter';
+import { resizeImage } from '@/utils/image';
 import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { sendMessage, updateTypingStatus } from '../services/conversation-room';
@@ -106,8 +107,28 @@ export function ChatRoomInput(
         conversation_id,
       ),
     ],
-    mutationFn: (payload: SendMessagePayload) =>
-      sendMessage(chatUser!.account_id, conversation_id, payload),
+    mutationFn: async (payload: SendMessagePayload) => {
+      if (attachment && isImage(attachment)) {
+        const resizedUri = await resizeImage(attachment.uri, 256);
+
+        payload.attachments = [
+          {
+            uri: resizedUri,
+            type: attachment.mimeType,
+          },
+        ];
+      } else if (attachment && isFile(attachment)) {
+        payload.attachments = [
+          {
+            uri: attachment.uri,
+            type: attachment.mimeType,
+            name: attachment.name ?? attachment.uri.split('/').pop(),
+          },
+        ];
+      }
+
+      return sendMessage(chatUser!.account_id, conversation_id, payload);
+    },
     onMutate: async (newMessage, context) => {
       // Clear the message input
       resetMessage();
@@ -121,6 +142,13 @@ export function ChatRoomInput(
         context.client.getQueryData<ConversationMessagesResponse>(queryKey);
 
       const messagePayload = {
+        attachments: [
+          {
+            data_url: attachment?.uri ?? '',
+            file_type: isImage(attachment!) ? 'image' : 'file',
+            id: Date.now(),
+          },
+        ],
         content: newMessage.content,
         private: newMessage.private,
         content_attributes: newMessage.content_attributes,
@@ -150,6 +178,8 @@ export function ChatRoomInput(
           };
         },
       );
+
+      setAttachment(undefined);
 
       // Return a context object with the snapshotted value
       return { previousMessages };
@@ -222,24 +252,6 @@ export function ChatRoomInput(
       });
 
       setAttachment(cameraResult?.assets?.[0]);
-
-      // TODO: Process image when submitting before sending the message
-      // if (!cameraResult.canceled) {
-      //   const resizedUri = await resizeImage(cameraResult.assets?.[0].uri, 128);
-
-      //   // {
-      //   //   account_id: chatUser?.account_id ?? 0,
-      //   //   data_url: resizedUri,
-      //   //   extension: cameraResult.assets?.[0].mimeType?.split('/')[1] ?? null,
-      //   //   file_size: cameraResult.assets?.[0].fileSize ?? 0,
-      //   //   file_type: 'image',
-      //   //   height: cameraResult.assets?.[0].height ?? null,
-      //   //   id: Date.now(),
-      //   //   message_id: Date.now(),
-      //   //   thumb_url: resizedUri,
-      //   //   width: cameraResult.assets?.[0].width ?? null,
-      //   // },
-      // }
 
       return;
     }
@@ -354,47 +366,6 @@ export function ChatRoomInput(
         )}
         <View className="gap-sm flex-1">
           {renderAttachment()}
-          {/* {attachment?.type === 'image' && (
-            <Clickable
-              onPress={() => imagePreviewRef.current?.open(attachment.uri)}
-              className="self-start rounded-md"
-            >
-              <Image
-                source={{ uri: attachment.uri }}
-                className="aspect-square h-20 w-full rounded-md object-contain"
-              />
-              <Clickable
-                onPress={() => setAttachment(undefined)}
-                className="absolute top-1 right-1"
-              >
-                <Icon name="closeCircle" size="xl" className="text-muted" />
-              </Clickable>
-            </Clickable>
-          )}
-          {attachment?.type === 'file' && (
-            <Clickable
-              onPress={() => {}}
-              className="p-md border-border gap-sm flex-row items-center rounded-md border"
-            >
-              <Icon
-                name="fileAttachment"
-                size="2xl"
-                className="text-muted-foreground"
-              />
-              <View>
-                <Text variant="labelS">Filename.pdf</Text>
-                <Text variant="bodyXS" color="muted">
-                  5 MB
-                </Text>
-              </View>
-              <Clickable
-                onPress={() => setAttachment(undefined)}
-                className="absolute top-1 right-1"
-              >
-                <Icon name="closeCircle" size="xl" className="text-muted" />
-              </Clickable>
-            </Clickable>
-          )} */}
           <InputField
             placeholder={
               isPrivate
@@ -421,7 +392,7 @@ export function ChatRoomInput(
         </View>
         <Button
           onPress={handleSendMessage}
-          disabled={!message.trim()}
+          disabled={attachment ? false : !message.trim()}
           icon="send"
           size="small"
         />
