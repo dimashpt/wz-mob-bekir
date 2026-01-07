@@ -215,6 +215,7 @@ export function useListAssignableAgentsQuery<
     enabled: params.enabled ?? Boolean(chatUser?.account_id),
     queryKey: [
       CONVERSATIONS_ENDPOINTS.ASSIGNABLE_AGENTS(chatUser?.account_id ?? 0),
+      requestParams,
     ],
     queryFn: () => listAssignableAgents(chatUser!.account_id, requestParams),
   });

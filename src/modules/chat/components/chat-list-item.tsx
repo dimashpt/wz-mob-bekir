@@ -17,6 +17,15 @@ import { Swipeable } from '@/components/swipeable';
 import { formatDisplayDate } from '@/utils/date';
 import { Conversation } from '../services/conversation/types';
 
+type ChatListItemProps = {
+  item: Conversation;
+  index: number;
+  isSelectionMode?: boolean;
+  isSelected?: boolean;
+  onPress?: () => void;
+  onLongPress?: () => void;
+  handleUnread: (conversationId: number) => void;
+};
 export default function ChatListItem({
   item,
   index,
@@ -24,14 +33,8 @@ export default function ChatListItem({
   isSelected = false,
   onPress,
   onLongPress,
-}: {
-  item: Conversation;
-  index: number;
-  isSelectionMode?: boolean;
-  isSelected?: boolean;
-  onPress?: () => void;
-  onLongPress?: () => void;
-}): React.JSX.Element {
+  handleUnread,
+}: ChatListItemProps): React.JSX.Element {
   const router = useRouter();
 
   const priorityClassName = {
@@ -45,9 +48,10 @@ export default function ChatListItem({
   function handlePress(): void {
     if (onPress) {
       onPress();
-    } else {
-      router.push(`/chat-room?conversation_id=${item.id}`);
+      return;
     }
+
+    router.push(`/chat-room?conversation_id=${item.id}`);
   }
 
   function handleLongPress(): void {
@@ -80,11 +84,22 @@ export default function ChatListItem({
     <AnimatedComponent index={index % 10}>
       <Swipeable
         spacing={35}
-        rightElement={<Icon name="trash" size="2xl" className="text-white" />}
         handlePress={handlePress}
         handleLongPress={handleLongPress}
         isSwipeEnabled={!isSelectionMode}
         triggerOverswipeOnFlick
+        // Left element configuration
+        leftElement={
+          <Icon name="chatBadge" size="2xl" className="text-white" />
+        }
+        handleLeftElementPress={() => handleUnread(item.id)}
+        handleOnLeftOverswiped={() => handleUnread(item.id)}
+        leftElementClassName="bg-info"
+        // Right element configuration
+        rightElement={<Icon name="slider" size="2xl" className="text-white" />}
+        handleRightElementPress={() => {}}
+        handleOnRightOverswiped={() => {}}
+        rightElementClassName="bg-success"
       >
         <Container.Card
           className={twMerge(
@@ -162,6 +177,16 @@ export default function ChatListItem({
                 )}
                 {item.meta.assignee && (
                   <Avatar name={item.meta.assignee.name} className="size-5" />
+                )}
+                {item.unread_count > 0 && (
+                  <Chip
+                    label={item.unread_count.toString()}
+                    variant="blue"
+                    className="bg-accent aspect-square"
+                    textProps={{
+                      className: 'text-foreground-inverted',
+                    }}
+                  />
                 )}
               </View>
             </View>

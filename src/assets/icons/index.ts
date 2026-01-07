@@ -5,6 +5,7 @@ import calendar from './calendar.svg';
 import camera from './camera.svg';
 import cart from './cart.svg';
 import chartGrow from './chart-grow.svg';
+import chatBadge from './chat-badge.svg';
 import chat from './chat.svg';
 import chevronCircle from './chevron-circle.svg';
 import chevron from './chevron.svg';
@@ -64,6 +65,7 @@ export const Icons = {
   chartGrow,
   clock,
   chat,
+  chatBadge,
   chevron,
   chevronCircle,
   cleanup,

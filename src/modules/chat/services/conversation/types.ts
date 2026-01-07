@@ -235,3 +235,7 @@ export interface BulkUpdateActionPayload {
     add?: string[];
   };
 }
+
+export interface UnreadConversationPayload {}
+
+export interface UnreadConversationResponse extends Conversation {}

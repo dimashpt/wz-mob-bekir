@@ -73,8 +73,8 @@ export const Chip: React.FC<ChipProps> = ({
       {prefix}
       <Text
         variant="labelXS"
-        className={textVariants({ variant })}
         {...textProps}
+        className={twMerge(textVariants({ variant }), textProps?.className)}
       >
         {label}
       </Text>

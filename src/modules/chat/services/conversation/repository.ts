@@ -25,26 +25,18 @@ export function useListConversationQuery<T = ListConversationsResponse>(
     UseQueryOptions<ListConversationsResponse, Error, T>,
     'queryKey' | 'queryFn'
   > = {},
-  requestParams: ListConversationsParams,
+  requestParams: ListConversationsParams = {},
 ): UseQueryResult<T, Error> {
   const { chatUser } = useAuthStore();
-  const finalQueryParams: ListConversationsParams = {
-    page: 1,
-    assignee_type: 'me',
-    status: 'open',
-    sort_by: 'latest',
-    ...requestParams,
-  };
 
   const query = useQuery<ListConversationsResponse, Error, T>({
     ...params,
     enabled: Boolean(chatUser?.account_id),
     queryKey: [
       CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(chatUser?.account_id ?? 0),
-      finalQueryParams,
+      requestParams,
     ],
-    queryFn: () =>
-      listConversations(chatUser?.account_id ?? 0, finalQueryParams),
+    queryFn: () => listConversations(chatUser?.account_id ?? 0, requestParams),
   });
 
   return query;
@@ -67,7 +59,7 @@ export function useListLabelsQuery<T = LabelListResponse>(
   const query = useQuery<LabelListResponse, Error, T>({
     ...params,
     enabled: Boolean(chatUser?.account_id),
-    queryKey: [CONVERSATIONS_ENDPOINTS.LABELS, chatUser?.account_id],
+    queryKey: [CONVERSATIONS_ENDPOINTS.LABELS(chatUser?.account_id ?? 0)],
     queryFn: () => listLabels(chatUser?.account_id ?? 0),
   });
 

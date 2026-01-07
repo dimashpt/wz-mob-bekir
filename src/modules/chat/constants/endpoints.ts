@@ -37,4 +37,10 @@ export const CONVERSATIONS_ENDPOINTS = {
     `${baseUrl(accountId)}/conversations/${conversationId}/messages/${messageId}`,
   BULK_UPDATE_ACTION: (accountId: number) =>
     `${baseUrl(accountId)}/bulk_actions`,
+  MUTE_CONVERSATION: (accountId: number, conversationId: string) =>
+    `${baseUrl(accountId)}/conversations/${conversationId}/mute`,
+  UNMUTE_CONVERSATION: (accountId: number, conversationId: string) =>
+    `${baseUrl(accountId)}/conversations/${conversationId}/unmute`,
+  UNREAD_CONVERSATION: (accountId: number, conversationId: number) =>
+    `${baseUrl(accountId)}/conversations/${conversationId}/unread`,
 } as const;

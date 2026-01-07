@@ -81,6 +81,14 @@ export type SwipeableProps = {
    * No of pointers
    */
   noOfPointers?: number;
+  /**
+   * The class name for the left element.
+   */
+  leftElementClassName?: string;
+  /**
+   * The class name for the right element.
+   */
+  rightElementClassName?: string;
 };
 
 export const Swipeable = forwardRef(
@@ -98,6 +106,8 @@ export const Swipeable = forwardRef(
       triggerOverswipeOnFlick = false,
       isSwipeEnabled = true,
       noOfPointers = 1,
+      leftElementClassName,
+      rightElementClassName,
     } = props;
 
     const hapticWarning = useHaptic('success');
@@ -463,7 +473,8 @@ export const Swipeable = forwardRef(
           onPress={handleOnPressLeft}
           className={twMerge(
             'absolute flex items-start justify-center rounded-md',
-            hasLeftElement ? 'bg-accent' : '',
+            hasLeftElement ? 'bg-info' : '',
+            leftElementClassName ?? '',
           )}
           style={[StyleSheet.absoluteFillObject, leftStyle]}
         >
@@ -476,6 +487,7 @@ export const Swipeable = forwardRef(
           className={twMerge(
             'flex items-end justify-center rounded-md',
             hasRightElement ? 'bg-danger' : '',
+            rightElementClassName ?? '',
           )}
           style={[StyleSheet.absoluteFillObject, rightStyle]}
         >

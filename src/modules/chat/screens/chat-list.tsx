@@ -26,7 +26,7 @@ import {
   getSortFilterOptions,
   getStatusFilterOptions,
 } from '../constants/options';
-import { bulkUpdateAction } from '../services/conversation';
+import { bulkUpdateAction, unreadConversation } from '../services/conversation';
 import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
 import {
   useListConversationQuery,
@@ -37,6 +37,7 @@ import {
   ConversationStatus,
   Label,
   ListConversationsParams,
+  ListConversationsResponse,
 } from '../services/conversation/types';
 
 export default function ChatScreen(): JSX.Element {
@@ -46,7 +47,12 @@ export default function ChatScreen(): JSX.Element {
   const queryClient = useQueryClient();
 
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, _setFilters] = useState<ListConversationsParams>({});
+  const [filters, _setFilters] = useState<ListConversationsParams>({
+    page: 1,
+    assignee_type: 'me',
+    status: 'open',
+    sort_by: 'latest',
+  });
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -212,6 +218,28 @@ export default function ChatScreen(): JSX.Element {
     }
   }
 
+  const unreadConversationMutation = useMutation({
+    mutationKey: ['unread-conversation'],
+    mutationFn: (conversationId: number) =>
+      unreadConversation(chatUser?.account_id ?? 0, conversationId),
+    onSuccess: (data, payload, __, context) => {
+      context.client.setQueryData(
+        listConversationsQueryKey,
+        (old: ListConversationsResponse) => {
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              payload: old.data.payload.map((item) =>
+                item.id === payload ? data : item,
+              ),
+            },
+          };
+        },
+      );
+    },
+  });
+
   return (
     <Container
       className="bg-background p-lg gap-md flex-1"
@@ -312,6 +340,7 @@ export default function ChatScreen(): JSX.Element {
               isSelectionMode ? () => handleItemPress(item.uuid) : undefined
             }
             onLongPress={() => handleItemLongPress(item.uuid)}
+            handleUnread={() => unreadConversationMutation.mutate(item.id)}
           />
         )}
         ListEmptyComponent={() => (

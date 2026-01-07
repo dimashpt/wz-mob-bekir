@@ -5,6 +5,7 @@ import {
   LabelListResponse,
   ListConversationsParams,
   ListConversationsResponse,
+  UnreadConversationResponse,
   UpdateAssigneePayload,
   UpdateAssigneeResponse,
   UpdateAssigneeTeamPayload,
@@ -164,6 +165,23 @@ export async function bulkUpdateAction(
   const response = await API.post<void>(
     CONVERSATIONS_ENDPOINTS.BULK_UPDATE_ACTION(accountId),
     payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Unreads the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the response.
+ */
+export async function unreadConversation(
+  accountId: number,
+  conversationId: number,
+): Promise<UnreadConversationResponse> {
+  const response = await API.post<UnreadConversationResponse>(
+    CONVERSATIONS_ENDPOINTS.UNREAD_CONVERSATION(accountId, conversationId),
   );
 
   return response.data;

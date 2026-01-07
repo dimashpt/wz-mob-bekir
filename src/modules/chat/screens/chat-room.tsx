@@ -7,6 +7,8 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar, Container, Header, Icon, PagerView, Text } from '@/components';
+import { useOnMount } from '@/hooks';
+import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
@@ -113,6 +115,17 @@ export default function ChatRoomScreen(): JSX.Element {
   });
 
   const meta = messages?.pages?.[0]?.meta;
+
+  useOnMount(() => {
+    // Invalidate the list conversations query to update the unread count
+    queryClient.invalidateQueries({
+      queryKey: [
+        CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(
+          conversation?.account_id ?? 0,
+        ),
+      ],
+    });
+  });
 
   return (
     <Container className="bg-background flex-1">
