@@ -55,3 +55,7 @@ export const labelEndpoints = {
 export const macroEndpoints = {
   list: (accountId: number) => `${base(accountId)}/macros`,
 } as const;
+
+export const inboxEndpoints = {
+  list: (accountId: number) => `${base(accountId)}/inboxes`,
+} as const;

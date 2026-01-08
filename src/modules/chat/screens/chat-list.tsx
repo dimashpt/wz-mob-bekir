@@ -36,6 +36,7 @@ import {
   ListConversationsParams,
   ListConversationsResponse,
 } from '../services/conversation/types';
+import { useListInboxesQuery } from '../services/inbox/repository';
 import { useListLabelsQuery } from '../services/label/repository';
 import { Label } from '../services/label/types';
 
@@ -87,6 +88,15 @@ export default function ChatScreen(): JSX.Element {
         label: label.title,
         value: label.title,
         data: label,
+      })),
+  });
+
+  const { data: inboxes } = useListInboxesQuery({
+    select: (data) =>
+      (data.payload ?? []).map((inbox) => ({
+        label: inbox.name,
+        value: String(inbox.id),
+        data: inbox,
       })),
   });
 
@@ -172,7 +182,19 @@ export default function ChatScreen(): JSX.Element {
   }
 
   function setFilters(newFilters: Partial<ListConversationsParams>): void {
-    _setFilters((prev) => ({ ...prev, ...newFilters }));
+    const finalFilters = { ...filters, ...newFilters };
+
+    Object.keys(finalFilters).forEach((key) => {
+      if (
+        ['', undefined, null].includes(
+          finalFilters[key as keyof ListConversationsParams] as string,
+        )
+      ) {
+        delete finalFilters[key as keyof ListConversationsParams];
+      }
+    });
+
+    _setFilters(finalFilters);
   }
 
   function handleItemPress(itemUuid: string): void {
@@ -309,13 +331,16 @@ export default function ChatScreen(): JSX.Element {
           <Filter.Options
             name="inbox_id"
             label={t('chat.filters.inbox_label')}
-            value={filters.inbox_id}
+            value={filters.inbox_id ?? ''}
             onChange={(value) =>
               setFilters({
                 inbox_id: value as ListConversationsParams['inbox_id'],
               })
             }
-            options={[]}
+            options={[
+              { label: t('chat.filters.all'), value: '' },
+              ...(inboxes ?? []),
+            ]}
           />
         </Filter>
       )}

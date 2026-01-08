@@ -67,3 +67,8 @@ export const labelKeys = {
 export const macroKeys = {
   list: (accountId: number) => ['macro-list', accountId],
 };
+
+// Query keys factory for the inbox repository.
+export const inboxKeys = {
+  list: (accountId: number) => ['inbox-list', accountId],
+};
