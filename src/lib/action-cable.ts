@@ -1,48 +1,82 @@
-import { BaseActionCableConnector } from './action-cable-base';
+import { ActionCable, Cable } from '@kesha-antonov/react-native-action-cable';
 
-export interface Conversation {}
+import { logger } from '@/utils/logger';
 
-interface ActionCableConfig {
-  pubSubToken: string;
-  accountId: number;
-  userId: number;
+const cable = new Cable({});
+const channelName = 'RoomChannel';
+const PRESENCE_INTERVAL = 20_000;
+
+export interface ActionCableEvent<T = unknown> {
+  event: string;
+  data: T;
 }
 
-class ActionCableConnector extends BaseActionCableConnector {
-  protected events: { [key: string]: (event: string, data: unknown) => void };
+export class ActionCableConnector {
+  events: { [key: string]: (event: string, data: unknown) => void };
+  protected accountId: number;
 
   constructor(pubSubToken: string, accountId: number, userId: number) {
-    super(pubSubToken, accountId, userId);
-    this.events = {
-      'message.created': this.onEvent,
-      'message.updated': this.onEvent,
-      'conversation.created': this.onEvent,
-      'conversation.status_changed': this.onEvent,
-      'conversation.read': this.onEvent,
-      'assignee.changed': this.onEvent,
-      'conversation.updated': this.onEvent,
-      'conversation.typing_on': this.onEvent,
-      'conversation.typing_off': this.onEvent,
-      'contact.updated': this.onEvent,
-      'notification.created': this.onEvent,
-      'notification.deleted': this.onEvent,
-      'presence.update': this.onEvent,
-    };
+    const connectActionCable = ActionCable.createConsumer(
+      `${(process.env.EXPO_PUBLIC_CHAT_BASE_URL ?? '').replace('https', 'wss')}/cable`,
+    );
+
+    const channel = cable.setChannel(
+      channelName,
+      connectActionCable.subscriptions.create(
+        {
+          channel: channelName,
+          pubsub_token: pubSubToken,
+          account_id: accountId,
+          user_id: userId,
+        },
+        {
+          updatePresence(): void {
+            this.perform('update_presence');
+          },
+        },
+      ),
+    );
+
+    channel.on('received', this.onReceived);
+    channel.on('connected', this.handleConnected);
+    channel.on('disconnect', this.handleDisconnected);
+
+    this.events = {};
+    this.accountId = accountId;
+
+    setInterval(() => {
+      cable.channel(channelName).perform('update_presence');
+    }, PRESENCE_INTERVAL);
   }
 
-  onEvent = (event: string, data: unknown): void => {
-    if (event !== 'presence.update') {
-      console.log('[WS] Event received:', event);
+  protected isAValidEvent = (data: unknown): boolean => {
+    const { account_id } = data as { account_id: number };
+    return this.accountId === account_id;
+  };
+
+  private onReceived = (
+    { event, data }: ActionCableEvent = { event: '', data: null },
+  ): void => {
+    if (this.isAValidEvent(data)) {
+      if (this.events[event] && typeof this.events[event] === 'function') {
+        this.events[event](event, data);
+      }
     }
   };
+
+  private handleConnected(): void {
+    logger.info('[WS] Connected');
+    // Do something when websocket connected
+  }
+
+  private handleDisconnected(): void {
+    logger.info('[WS] Disconnected');
+    // Do something when websocket disconnected
+  }
 }
 
-export const ActionCable = {
-  init: ({
-    pubSubToken,
-    accountId,
-    userId,
-  }: ActionCableConfig): ActionCableConnector => {
-    return new ActionCableConnector(pubSubToken, accountId, userId);
-  },
-};
+export class WebSocketConnector extends ActionCableConnector {
+  constructor(pubSubToken: string, accountId: number, userId: number) {
+    super(pubSubToken, accountId, userId);
+  }
+}

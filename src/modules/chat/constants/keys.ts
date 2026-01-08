@@ -38,11 +38,10 @@ export const conversationKeys = {
   updateBulk: ['conversation-update-bulk'],
   updateTypingStatus: ['conversation-update-typing-status'],
   // Messages
-  messages: (accountId: number, conversationId: string, before?: number) => [
+  messages: (accountId: number, conversationId: string) => [
     'message-list',
     accountId,
     conversationId,
-    before ?? 0,
     'infinite',
   ],
   sendMessage: ['message-send'],
