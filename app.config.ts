@@ -150,6 +150,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
             'The app accesses your photos to let you share them with your friends.',
         },
       ],
+      './scripts/rocketsim.ts',
     ],
   };
 
