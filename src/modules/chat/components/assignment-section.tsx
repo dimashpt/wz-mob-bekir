@@ -73,7 +73,7 @@ export function AssignmentSection({
     conversation?.id?.toString() ?? '',
   );
 
-  const updateLastSeenQueryKey = conversationKeys.updateLastSeen(
+  const conversationDetailsQueryKey = conversationKeys.details(
     chatUser?.account_id ?? 0,
     conversation?.id?.toString() ?? '',
   );
@@ -117,14 +117,16 @@ export function AssignmentSection({
     mutationFn: (payload: UpdateAssigneeTeamPayload) =>
       updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
-      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
+      await context.client.cancelQueries({
+        queryKey: conversationDetailsQueryKey,
+      });
 
       const previousTeam = context.client.getQueryData<Conversation>(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
       );
 
       context.client.setQueryData(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
         (old: Conversation) => ({
           ...old,
           meta: {
@@ -145,14 +147,16 @@ export function AssignmentSection({
     mutationFn: (payload: UpdatePriorityPayload) =>
       updatePriority(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
-      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
+      await context.client.cancelQueries({
+        queryKey: conversationDetailsQueryKey,
+      });
 
       const previousPriority = context.client.getQueryData<Conversation>(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
       );
 
       context.client.setQueryData(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
         (old: Conversation) => ({
           ...old,
           priority: payload.priority,

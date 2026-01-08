@@ -16,6 +16,7 @@ import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import { deleteMessage } from '../services/conversation';
 import {
+  useConversationDetailsQuery,
   useListMessagesInfiniteQuery,
   useUpdateLastSeenQuery,
 } from '../services/conversation/repository';
@@ -33,10 +34,6 @@ export default function ChatRoomScreen(): JSX.Element {
   const pagerViewRef = useRef<PagerView>(null);
   const [activeTab, setActiveTab] = useState(0);
   const { chatUser } = useAuthStore();
-  const { data: conversation } = useUpdateLastSeenQuery(
-    undefined,
-    conversation_id,
-  );
 
   const {
     data: messages,
@@ -46,6 +43,14 @@ export default function ChatRoomScreen(): JSX.Element {
     isLoading,
   } = useListMessagesInfiniteQuery(
     { select: mapInfiniteMessagesToGiftedChatMessages },
+    conversation_id,
+  );
+
+  // Update the last seen timestamp for the conversation
+  useUpdateLastSeenQuery(undefined, conversation_id);
+
+  const { data: conversation } = useConversationDetailsQuery(
+    {},
     conversation_id,
   );
 

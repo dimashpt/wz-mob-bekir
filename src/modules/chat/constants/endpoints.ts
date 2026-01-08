@@ -6,6 +6,8 @@ const base = (accountId: number): string =>
 export const conversationEndpoints = {
   // Conversations
   list: (accountId: number) => `${base(accountId)}/conversations`,
+  details: (accountId: number, conversationId: string) =>
+    `${base(accountId)}/conversations/${conversationId}`,
   updateLastSeen: (accountId: number, conversationId: string) =>
     `${base(accountId)}/conversations/${conversationId}/update_last_seen`,
   participants: (accountId: number, conversationId: string) =>
@@ -54,6 +56,8 @@ export const labelEndpoints = {
 
 export const macroEndpoints = {
   list: (accountId: number) => `${base(accountId)}/macros`,
+  execute: (accountId: number, macroId: string) =>
+    `${base(accountId)}/macros/${macroId}/execute`,
 } as const;
 
 export const inboxEndpoints = {

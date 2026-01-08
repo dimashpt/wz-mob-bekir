@@ -45,7 +45,7 @@ export function StatusSection({
   const { chatUser } = useAuthStore();
   const { t } = useTranslation();
 
-  const updateLastSeenQueryKey = conversationKeys.updateLastSeen(
+  const conversationDetailsQueryKey = conversationKeys.details(
     chatUser?.account_id ?? 0,
     conversation?.id?.toString() ?? '',
   );
@@ -55,14 +55,16 @@ export function StatusSection({
     mutationFn: (payload: UpdateStatusPayload) =>
       updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
-      await context.client.cancelQueries({ queryKey: updateLastSeenQueryKey });
+      await context.client.cancelQueries({
+        queryKey: conversationDetailsQueryKey,
+      });
 
       const previousStatus = context.client.getQueryData<Conversation>(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
       );
 
       context.client.setQueryData(
-        updateLastSeenQueryKey,
+        conversationDetailsQueryKey,
         (old: Conversation) => ({
           ...old,
           status: payload.status,

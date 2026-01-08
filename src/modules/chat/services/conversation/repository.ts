@@ -10,6 +10,7 @@ import {
 
 import { useAuthStore } from '@/store';
 import {
+  conversationDetails,
   listConversations,
   listMessages,
   listParticipants,
@@ -18,6 +19,7 @@ import {
 import { conversationKeys } from '../../constants/keys';
 import {
   Conversation,
+  ConversationDetailsResponse,
   ConversationMessagesResponse,
   ConversationParticipantsResponse,
   ListConversationsParams,
@@ -45,6 +47,36 @@ export function useListConversationQuery<T = ListConversationsResponse>(
     enabled: Boolean(chatUser?.account_id),
     queryKey: conversationKeys.list(chatUser?.account_id ?? 0, requestParams),
     queryFn: () => listConversations(chatUser?.account_id ?? 0, requestParams),
+  });
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch the details for a conversation.
+ * @param params - Optional parameters for the query, including select for data transformation.
+ * @param conversationId - The ID of the conversation.
+ * @returns The query object containing the conversation details.
+ * @template T - The type of data returned after selection (defaults to ConversationDetailsResponse).
+ */
+export function useConversationDetailsQuery<T = ConversationDetailsResponse>(
+  params: Omit<
+    UseQueryOptions<ConversationDetailsResponse, Error, T>,
+    'queryKey' | 'queryFn'
+  > = {},
+  conversationId: string,
+): UseQueryResult<T, Error> {
+  const { chatUser } = useAuthStore();
+
+  const query = useQuery<ConversationDetailsResponse, Error, T>({
+    ...params,
+    enabled: Boolean(chatUser?.account_id && conversationId),
+    queryKey: conversationKeys.details(
+      chatUser?.account_id ?? 0,
+      conversationId,
+    ),
+    queryFn: () =>
+      conversationDetails(chatUser?.account_id ?? 0, conversationId),
   });
 
   return query;

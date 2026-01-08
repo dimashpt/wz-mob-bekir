@@ -159,6 +159,8 @@ interface ConversationCounter {
   unassigned_count: number;
 }
 
+export interface ConversationDetailsResponse extends Conversation {}
+
 export type ConversationStatus = 'open' | 'pending' | 'snoozed' | 'resolved';
 
 export interface UpdateStatusPayload {

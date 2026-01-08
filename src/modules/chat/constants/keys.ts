@@ -13,6 +13,11 @@ export const conversationKeys = {
   // Conversations
   list: (accountId: number, params?: ListConversationsParams) =>
     ['conversation-list', accountId, params].filter(Boolean),
+  details: (accountId: number, conversationId: string) => [
+    'conversation-details',
+    accountId,
+    conversationId,
+  ],
   updateLastSeen: (accountId: number, conversationId: string) => [
     'conversation-update-last-seen',
     accountId,

@@ -4,6 +4,7 @@ import { conversationEndpoints } from '../../constants/endpoints';
 import {
   BulkUpdateActionPayload,
   Conversation,
+  ConversationDetailsResponse,
   ConversationMessagesResponse,
   ConversationParticipantsResponse,
   ListConversationsParams,
@@ -38,6 +39,23 @@ export async function listConversations(
   const response = await API.get<ListConversationsResponse>(
     conversationEndpoints.list(accountId),
     { params },
+  );
+
+  return response.data;
+}
+
+/**
+ * Gets the details for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the response.
+ */
+export async function conversationDetails(
+  accountId: number,
+  conversationId: string,
+): Promise<ConversationDetailsResponse> {
+  const response = await API.get<ConversationDetailsResponse>(
+    conversationEndpoints.details(accountId, conversationId),
   );
 
   return response.data;
