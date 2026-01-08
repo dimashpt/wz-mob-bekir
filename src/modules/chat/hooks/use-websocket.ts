@@ -1,14 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-import { InfiniteData } from '@tanstack/react-query';
-
 import { WebSocketConnector } from '@/lib/action-cable';
-import { queryClient } from '@/lib/react-query';
-import { conversationKeys } from '@/modules/chat/constants/keys';
+import { Message } from '@/modules/chat/services/conversation/types';
 import {
-  ConversationMessagesResponse,
-  Message,
-} from '@/modules/chat/services/conversation/types';
+  addMessageToQuery,
+  updateMessageByIdInQuery,
+} from '@/modules/chat/utils/message';
 import { useAuthStore } from '@/store';
 
 export function useWebsocket(): void {
@@ -58,51 +55,15 @@ export function useWebsocket(): void {
     }
 
     async function onMessageCreated(_: string, data: Message): Promise<void> {
-      const queryKey = conversationKeys.messages(
-        account,
-        String(data.conversation_id),
-      );
-
-      // Cancel any outgoing refetches
-      // (so they don't overwrite the optimistic update)
-      await queryClient.cancelQueries({ queryKey });
-
-      queryClient.setQueryData(
-        queryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page, index) => ({
-              ...page,
-              // Append the message to the first page
-              payload: index === 0 ? [...page.payload, data] : page.payload,
-            })),
-          };
-        },
-      );
+      await addMessageToQuery(account, String(data.conversation_id), data);
     }
 
     async function onMessageUpdated(_: string, data: Message): Promise<void> {
-      const queryKey = conversationKeys.messages(
+      await updateMessageByIdInQuery(
         account,
         String(data.conversation_id),
-      );
-
-      await queryClient.cancelQueries({ queryKey });
-
-      queryClient.setQueryData(
-        queryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              payload: page.payload.map((message) =>
-                message.id === data.id ? data : message,
-              ),
-            })),
-          };
-        },
+        data.id,
+        data,
       );
     }
 

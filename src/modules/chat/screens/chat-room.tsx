@@ -21,7 +21,11 @@ import {
   useUpdateLastSeenQuery,
 } from '../services/conversation/repository';
 import { ConversationMessagesResponse } from '../services/conversation/types';
-import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
+import {
+  mapInfiniteMessagesToGiftedChatMessages,
+  markMessageAsDeletedInQuery,
+  updateMessageByIdInQuery,
+} from '../utils/message';
 
 type Params = {
   conversation_id: string;
@@ -64,53 +68,25 @@ export default function ChatRoomScreen(): JSX.Element {
     mutationFn: (messageId: number) =>
       deleteMessage(chatUser?.account_id ?? 0, conversation_id, messageId),
     onMutate: async (messageId, context) => {
-      await context.client.cancelQueries({ queryKey });
-
       const previousMessages =
         context.client.getQueryData<InfiniteData<ConversationMessagesResponse>>(
           queryKey,
         );
 
-      context.client.setQueryData(
-        queryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              payload: page.payload.map((_message) =>
-                _message.id === messageId
-                  ? {
-                      ..._message,
-                      content: 'This message was deleted',
-                      content_attributes: {
-                        ..._message.content_attributes,
-                        deleted: true,
-                      },
-                    }
-                  : _message,
-              ),
-            })),
-          };
-        },
+      await markMessageAsDeletedInQuery(
+        chatUser?.account_id ?? 0,
+        conversation_id,
+        messageId,
       );
 
       return { previousMessages };
     },
-    onSuccess: (data, messageId, __, context) => {
-      context.client.setQueryData(
-        queryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              payload: page.payload.map((_message) =>
-                _message.id === messageId ? data : _message,
-              ),
-            })),
-          };
-        },
+    onSuccess: async (data, messageId) => {
+      await updateMessageByIdInQuery(
+        chatUser?.account_id ?? 0,
+        conversation_id,
+        messageId,
+        data,
       );
     },
   });

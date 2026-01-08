@@ -1,7 +1,7 @@
 import React, { JSX, useRef, useState } from 'react';
 import { View } from 'react-native';
 
-import { InfiniteData, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams } from 'expo-router';
@@ -36,7 +36,11 @@ import {
   SendMessagePayload,
   UpdateTypingStatusPayload,
 } from '../services/conversation/types';
-import { generateEchoId } from '../utils/message';
+import {
+  addMessageToQuery,
+  generateEchoId,
+  updateMessageByEchoIdInQuery,
+} from '../utils/message';
 
 type Params = {
   conversation_id: string;
@@ -88,11 +92,6 @@ export function ChatRoomInput(
       updateTypingStatus(chatUser!.account_id, conversation_id, payload),
   });
 
-  const messageListKey = conversationKeys.messages(
-    chatUser!.account_id,
-    conversation_id,
-  );
-
   const sendMessageMutation = useMutation({
     mutationKey: conversationKeys.sendMessage,
     mutationFn: async (payload: SendMessagePayload) => {
@@ -122,9 +121,10 @@ export function ChatRoomInput(
       // Clear the message input
       resetMessage();
 
-      // Cancel any outgoing refetches
-      // (so they don't overwrite the optimistic update)
-      await context.client.cancelQueries({ queryKey: messageListKey });
+      const messageListKey = conversationKeys.messages(
+        chatUser!.account_id,
+        conversation_id,
+      );
 
       // Snapshot the previous value
       const previousMessages =
@@ -157,19 +157,10 @@ export function ChatRoomInput(
       } as Message;
 
       // Optimistically update to the new value
-      context.client.setQueryData(
-        messageListKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page, index) => ({
-              ...page,
-              // Append the message to the first page
-              payload:
-                index === 0 ? [...page.payload, messagePayload] : page.payload,
-            })),
-          };
-        },
+      await addMessageToQuery(
+        chatUser!.account_id,
+        conversation_id,
+        messagePayload,
       );
 
       setAttachment(undefined);
@@ -177,24 +168,20 @@ export function ChatRoomInput(
       // Return a context object with the snapshotted value
       return { previousMessages };
     },
-    onSuccess: (data, payload, __, context) => {
+    onSuccess: async (data, payload) => {
       // Update the message status and data with the server response
-      context.client.setQueryData(
-        messageListKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          return {
-            ...old,
-            pages: old.pages.map((page) => ({
-              ...page,
-              payload: page.payload.map((message) =>
-                message.echo_id === payload.echo_id ? data : message,
-              ),
-            })),
-          };
-        },
+      await updateMessageByEchoIdInQuery(
+        chatUser!.account_id,
+        conversation_id,
+        payload.echo_id,
+        data,
       );
     },
     onError: (_, __, onMutateResult, context) => {
+      const messageListKey = conversationKeys.messages(
+        chatUser!.account_id,
+        conversation_id,
+      );
       context.client.setQueryData(
         messageListKey,
         onMutateResult?.previousMessages ?? {},
