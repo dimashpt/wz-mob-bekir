@@ -7,7 +7,7 @@ import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, IconNames, Text } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationKeys } from '../constants/keys';
 import { updateStatus } from '../services/conversation';
 import {
   Conversation,
@@ -45,20 +45,13 @@ export function StatusSection({
   const { chatUser } = useAuthStore();
   const { t } = useTranslation();
 
-  const updateLastSeenQueryKey = [
-    CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
-      chatUser?.account_id ?? 0,
-      conversation?.id?.toString() ?? '',
-    ),
-  ];
+  const updateLastSeenQueryKey = conversationKeys.updateLastSeen(
+    chatUser?.account_id ?? 0,
+    conversation?.id?.toString() ?? '',
+  );
 
   const updateStatusMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_STATUS(
-        chatUser?.account_id ?? 0,
-        conversation?.id ?? 0,
-      ),
-    ],
+    mutationKey: conversationKeys.updateStatus,
     mutationFn: (payload: UpdateStatusPayload) =>
       updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {

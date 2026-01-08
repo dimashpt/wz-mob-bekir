@@ -1,4 +1,4 @@
-import { Agent, Attachment } from '../conversation-room/types';
+import { Agent } from '../agent/types';
 
 type ConversationStatusFilter = ConversationStatus | 'all';
 type AssigneeTypeFilter = 'me' | 'unassigned' | 'all';
@@ -51,11 +51,11 @@ interface Meta {
   assignee: Assignee;
   channel: string;
   hmac_verified: boolean;
-  sender: Sender2;
+  sender: MetaSender;
   team: Team;
 }
 
-interface Team {
+export interface Team {
   account_id: number;
   allow_auto_assign: boolean;
   description: string;
@@ -64,7 +64,7 @@ interface Team {
   name: string;
 }
 
-interface Sender2 {
+interface MetaSender {
   additional_attributes: Customattributes;
   availability_status: string;
   created_at: number;
@@ -198,18 +198,6 @@ export interface UpdatePriorityPayload {
 
 export interface UpdatePriorityResponse {}
 
-export interface LabelListResponse {
-  payload: Label[];
-}
-
-export interface Label {
-  color: string;
-  description: string;
-  id: number;
-  show_on_sidebar: boolean;
-  title: string;
-}
-
 export interface UpdateLabelConversationPayload {
   labels: string[];
 }
@@ -239,3 +227,137 @@ export interface BulkUpdateActionPayload {
 export interface UnreadConversationPayload {}
 
 export interface UnreadConversationResponse extends Conversation {}
+
+export interface ConversationMessagesResponse {
+  meta: ConversationMeta;
+  payload: Message[];
+}
+
+export interface Message {
+  content: string;
+  content_attributes: ContentAttributes;
+  content_type: string;
+  conversation_id: number;
+  created_at: number;
+  echo_id: string; // Used for optimistic updates
+  id: number;
+  inbox_id: number;
+  message_type: number;
+  private: boolean;
+  sender?: Sender;
+  source_id: null;
+  status: string;
+  attachments?: Attachment[];
+}
+
+export interface Attachment {
+  account_id: number;
+  data_url: string;
+  extension: string | null;
+  file_size: number;
+  file_type: 'image' | 'file';
+  height: number | null;
+  id: number;
+  message_id: number;
+  thumb_url: string;
+  width: number | null;
+}
+
+interface ContentAttributes {
+  in_reply_to?: number;
+  submitted_email?: string;
+  deleted?: boolean;
+}
+
+export interface ConversationMeta {
+  additional_attributes: Additionalattributes;
+  agent_last_seen_at: string;
+  assignee: Assignee;
+  assignee_last_seen_at: string;
+  contact: Contact;
+  labels: string[];
+}
+
+interface Contact {
+  additional_attributes: Customattributes;
+  custom_attributes: Customattributes;
+  email: string;
+  id: number;
+  identifier: null;
+  name: string;
+  phone_number: null;
+  thumbnail: string;
+  type: string;
+}
+
+interface Customattributes {}
+
+interface Assignee {
+  availability_status: string;
+  available_name: string;
+  avatar_url: string;
+  id: number;
+  name: string;
+  thumbnail: string;
+  type: string;
+}
+
+interface Initiatedat {
+  timestamp: string;
+}
+
+interface Browser {
+  browser_name: string;
+  browser_version: string;
+  device_name: string;
+  platform_name: string;
+  platform_version: string;
+}
+
+export type ConversationParticipantsResponse = {
+  account_id: number;
+  auto_offline: boolean;
+  availability_status: string;
+  available_name: string;
+  confirmed: boolean;
+  email: string;
+  id: number;
+  name: string;
+  role: string;
+  thumbnail: string;
+};
+
+export interface UpdateTypingStatusPayload {
+  is_private: boolean;
+  typing_status: 'off' | 'on';
+}
+
+export interface SendMessagePayload {
+  attachments?: {
+    uri: string;
+    type?: string;
+    name?: string;
+  }[];
+  content: string;
+  content_attributes: ContentAttributes;
+  echo_id: string;
+  private: boolean;
+  cc_emails?: string[];
+  bcc_emails?: string[];
+}
+
+export interface CustomAttribute {
+  id: number;
+  attributeDisplayName: string;
+  attributeDisplayType: string;
+  attributeDescription: string;
+  attributeKey: string;
+  regexPattern: string;
+  regexCue: string;
+  attributeValues: string[];
+  attributeModel: string;
+  defaultValue: string;
+  createdAt: string;
+  updatedAt: string;
+  value: string;
+}

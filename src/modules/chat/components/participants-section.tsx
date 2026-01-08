@@ -14,15 +14,14 @@ import {
   Text,
 } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationEndpoints } from '../constants/endpoints';
+import { conversationKeys } from '../constants/keys';
+import { Agent } from '../services/agent/types';
 import { updateParticipants } from '../services/conversation';
-import { useListParticipantsQuery } from '../services/conversation-room/repository';
-import {
-  Agent,
-  ConversationParticipantsResponse,
-} from '../services/conversation-room/types';
+import { useListParticipantsQuery } from '../services/conversation/repository';
 import {
   Conversation,
+  ConversationParticipantsResponse,
   UpdateParticipantsPayload,
 } from '../services/conversation/types';
 
@@ -43,19 +42,17 @@ export function ParticipantsSection({
     useListParticipantsQuery(undefined, conversation?.id?.toString() ?? '');
 
   const listParticipantsQueryKey = [
-    CONVERSATIONS_ENDPOINTS.PARTICIPANTS(
+    conversationEndpoints.participants(
       chatUser?.account_id ?? 0,
       conversation?.id?.toString() ?? '',
     ),
   ];
 
   const updateParticipantsMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.PARTICIPANTS(
-        chatUser?.account_id ?? 0,
-        conversation?.id?.toString() ?? '',
-      ),
-    ],
+    mutationKey: conversationKeys.participants(
+      chatUser?.account_id ?? 0,
+      conversation?.id?.toString() ?? '',
+    ),
     mutationFn: (payload: UpdateParticipantsPayload) =>
       updateParticipants(
         chatUser?.account_id ?? 0,

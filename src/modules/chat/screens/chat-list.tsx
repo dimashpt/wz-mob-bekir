@@ -19,26 +19,25 @@ import {
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useAuthStore } from '@/store';
 import ChatListItem from '../components/chat-list-item';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationKeys } from '../constants/keys';
 import {
   getAssigneeFilterOptions,
   getBulkStatusOptions,
   getSortFilterOptions,
   getStatusFilterOptions,
 } from '../constants/options';
+import { useListAssignableAgentsQuery } from '../services/agent/repository';
+import { Agent } from '../services/agent/types';
 import { bulkUpdateAction, unreadConversation } from '../services/conversation';
-import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
-import {
-  useListConversationQuery,
-  useListLabelsQuery,
-} from '../services/conversation/repository';
+import { useListConversationQuery } from '../services/conversation/repository';
 import {
   BulkUpdateActionPayload,
   ConversationStatus,
-  Label,
   ListConversationsParams,
   ListConversationsResponse,
 } from '../services/conversation/types';
+import { useListLabelsQuery } from '../services/label/repository';
+import { Label } from '../services/label/types';
 
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
@@ -108,16 +107,14 @@ export default function ChatScreen(): JSX.Element {
 
   const selectedConversationIds = selectedConversations.map((conv) => conv.id);
 
-  const listConversationsQueryKey = [
-    CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(chatUser?.account_id ?? 0),
-    filters,
-  ];
-
   const bulkUpdateMutation = useMutation({
+    mutationKey: conversationKeys.updateBulk,
     mutationFn: (payload: BulkUpdateActionPayload) =>
       bulkUpdateAction(chatUser?.account_id ?? 0, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: listConversationsQueryKey });
+      queryClient.invalidateQueries({
+        queryKey: conversationKeys.list(chatUser?.account_id ?? 0, filters),
+      });
       setIsSelectionMode(false);
       setSelectedIds(new Set());
     },
@@ -219,12 +216,12 @@ export default function ChatScreen(): JSX.Element {
   }
 
   const unreadConversationMutation = useMutation({
-    mutationKey: ['unread-conversation'],
+    mutationKey: conversationKeys.unread,
     mutationFn: (conversationId: number) =>
       unreadConversation(chatUser?.account_id ?? 0, conversationId),
     onSuccess: (data, payload, __, context) => {
       context.client.setQueryData(
-        listConversationsQueryKey,
+        conversationKeys.list(chatUser?.account_id ?? 0, filters),
         (old: ListConversationsResponse) => {
           return {
             ...old,
@@ -400,7 +397,7 @@ export default function ChatScreen(): JSX.Element {
           {
             label: t('chat.assignment.priority_none'),
             value: String(0),
-            data: {} as import('../services/conversation-room/types').Agent,
+            data: {} as Agent,
           },
           ...(agents ?? []),
         ]}

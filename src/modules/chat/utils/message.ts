@@ -7,7 +7,7 @@ import { MESSAGE_TYPES } from '../constants/flags';
 import {
   ConversationMessagesResponse,
   Message,
-} from '../services/conversation-room/types';
+} from '../services/conversation/types';
 
 type SectionGroupMessages = {
   data: Message[];

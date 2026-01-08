@@ -5,11 +5,10 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 
 import { Container, Divider, MenuItem, Text } from '@/components';
-import { Meta } from '../services/conversation-room/types';
-import { Conversation } from '../services/conversation/types';
+import { Conversation, ConversationMeta } from '../services/conversation/types';
 
 type AttributesSectionProps = {
-  meta?: Meta;
+  meta?: ConversationMeta;
   conversation?: Conversation;
 };
 

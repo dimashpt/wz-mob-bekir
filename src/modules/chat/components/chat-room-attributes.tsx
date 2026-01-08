@@ -3,9 +3,8 @@ import React, { JSX } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Container } from '@/components';
-import { useListAssignableAgentsQuery } from '../services/conversation-room/repository';
-import { Meta } from '../services/conversation-room/types';
-import { Conversation } from '../services/conversation/types';
+import { useListAssignableAgentsQuery } from '../services/agent/repository';
+import { Conversation, ConversationMeta } from '../services/conversation/types';
 import { AssignmentSection } from './assignment-section';
 import { AttributesSection } from './attributes-section';
 import { LabelsSection } from './labels-section';
@@ -13,7 +12,7 @@ import { ParticipantsSection } from './participants-section';
 import { StatusSection } from './status-section';
 
 type ChatRoomAttributesProps = {
-  meta?: Meta;
+  meta?: ConversationMeta;
   conversation?: Conversation;
 };
 

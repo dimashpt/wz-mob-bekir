@@ -1,10 +1,15 @@
 import { API } from '@/lib/axios';
-import { CONVERSATIONS_ENDPOINTS } from '../../constants/endpoints';
+import { objectToFormData } from '@/utils/data-transform';
+import { conversationEndpoints } from '../../constants/endpoints';
 import {
   BulkUpdateActionPayload,
-  LabelListResponse,
+  Conversation,
+  ConversationMessagesResponse,
+  ConversationParticipantsResponse,
   ListConversationsParams,
   ListConversationsResponse,
+  Message,
+  SendMessagePayload,
   UnreadConversationResponse,
   UpdateAssigneePayload,
   UpdateAssigneeResponse,
@@ -17,6 +22,7 @@ import {
   UpdatePriorityResponse,
   UpdateStatusPayload,
   UpdateStatusResponse,
+  UpdateTypingStatusPayload,
 } from './types';
 
 /**
@@ -30,7 +36,7 @@ export async function listConversations(
   params: ListConversationsParams,
 ): Promise<ListConversationsResponse> {
   const response = await API.get<ListConversationsResponse>(
-    CONVERSATIONS_ENDPOINTS.LIST_CONVERSATIONS(accountId),
+    conversationEndpoints.list(accountId),
     { params },
   );
 
@@ -50,7 +56,7 @@ export async function updateStatus(
   payload: UpdateStatusPayload,
 ): Promise<UpdateStatusResponse> {
   const response = await API.post<UpdateStatusResponse>(
-    CONVERSATIONS_ENDPOINTS.UPDATE_STATUS(accountId, conversationId),
+    conversationEndpoints.updateStatus(accountId, conversationId),
     payload,
   );
 
@@ -70,7 +76,7 @@ export async function updateAssignee(
   payload: UpdateAssigneePayload | UpdateAssigneeTeamPayload,
 ): Promise<UpdateAssigneeResponse> {
   const response = await API.post<UpdateAssigneeResponse>(
-    CONVERSATIONS_ENDPOINTS.UPDATE_ASSIGNEE(accountId, conversationId),
+    conversationEndpoints.updateAssignee(accountId, conversationId),
     payload,
   );
 
@@ -90,23 +96,8 @@ export async function updatePriority(
   payload: UpdatePriorityPayload,
 ): Promise<UpdatePriorityResponse> {
   const response = await API.post<UpdatePriorityResponse>(
-    CONVERSATIONS_ENDPOINTS.UPDATE_PRIORITY(accountId, conversationId),
+    conversationEndpoints.updatePriority(accountId, conversationId),
     payload,
-  );
-
-  return response.data;
-}
-
-/**
- * Lists the labels for the given account.
- * @param accountId - The ID of the account.
- * @returns A promise that resolves to the labels.
- */
-export async function listLabels(
-  accountId: number,
-): Promise<LabelListResponse> {
-  const response = await API.get<LabelListResponse>(
-    CONVERSATIONS_ENDPOINTS.LABELS(accountId),
   );
 
   return response.data;
@@ -125,7 +116,7 @@ export async function updateLabels(
   payload: UpdateLabelConversationPayload,
 ): Promise<UpdateLabelConversationResponse> {
   const response = await API.post<UpdateLabelConversationResponse>(
-    CONVERSATIONS_ENDPOINTS.UPDATE_LABELS(accountId, conversationId),
+    conversationEndpoints.updateLabels(accountId, conversationId),
     payload,
   );
 
@@ -145,7 +136,7 @@ export async function updateParticipants(
   payload: UpdateParticipantsPayload,
 ): Promise<UpdateParticipantsResponse> {
   const response = await API.put<UpdateParticipantsResponse>(
-    CONVERSATIONS_ENDPOINTS.PARTICIPANTS(accountId, conversationId),
+    conversationEndpoints.participants(accountId, conversationId),
     payload,
   );
 
@@ -163,7 +154,7 @@ export async function bulkUpdateAction(
   payload: BulkUpdateActionPayload,
 ): Promise<void> {
   const response = await API.post<void>(
-    CONVERSATIONS_ENDPOINTS.BULK_UPDATE_ACTION(accountId),
+    conversationEndpoints.updateBulk(accountId),
     payload,
   );
 
@@ -181,7 +172,161 @@ export async function unreadConversation(
   conversationId: number,
 ): Promise<UnreadConversationResponse> {
   const response = await API.post<UnreadConversationResponse>(
-    CONVERSATIONS_ENDPOINTS.UNREAD_CONVERSATION(accountId, conversationId),
+    conversationEndpoints.unread(accountId, conversationId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the last seen timestamp for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the conversation.
+ */
+export async function updateLastSeen(
+  accountId: number,
+  conversationId: string,
+): Promise<Conversation> {
+  const response = await API.post<Conversation>(
+    conversationEndpoints.updateLastSeen(accountId, conversationId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Lists the messages for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param before - The first message id to fetch messages before.
+ * @returns A promise that resolves to the messages.
+ */
+export async function listMessages(
+  accountId: number,
+  conversationId: string,
+  before?: number,
+): Promise<ConversationMessagesResponse> {
+  const response = await API.get<ConversationMessagesResponse>(
+    conversationEndpoints.messages(accountId, conversationId),
+    { params: { before } },
+  );
+
+  return response.data;
+}
+
+/**
+ * Lists the participants for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the participants.
+ */
+export async function listParticipants(
+  accountId: number,
+  conversationId: string,
+): Promise<ConversationParticipantsResponse[]> {
+  const response = await API.get<ConversationParticipantsResponse[]>(
+    conversationEndpoints.participants(accountId, conversationId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the typing status for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateTypingStatus(
+  accountId: number,
+  conversationId: string,
+  payload: UpdateTypingStatusPayload,
+): Promise<void> {
+  const response = await API.post(
+    conversationEndpoints.updateTypingStatus(accountId, conversationId),
+    payload,
+  );
+
+  return response.data;
+}
+
+/**
+ * Sends a message to the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function sendMessage(
+  accountId: number,
+  conversationId: string,
+  payload: SendMessagePayload,
+): Promise<Message> {
+  const formData = objectToFormData(payload);
+
+  const response = await API.post(
+    conversationEndpoints.sendMessage(accountId, conversationId),
+    payload.attachments ? formData : payload,
+    {
+      headers: payload.attachments
+        ? { 'Content-Type': 'multipart/form-data' }
+        : undefined,
+    },
+  );
+
+  return response.data;
+}
+
+/**
+ * Deletes a message from the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param messageId - The ID of the message.
+ * @returns A promise that resolves to the response.
+ */
+export async function deleteMessage(
+  accountId: number,
+  conversationId: string,
+  messageId: number,
+): Promise<Message> {
+  const response = await API.delete<Message>(
+    conversationEndpoints.deleteMessage(accountId, conversationId, messageId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Mutes the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the response.
+ */
+export async function muteConversation(
+  accountId: number,
+  conversationId: string,
+): Promise<void> {
+  const response = await API.post(
+    conversationEndpoints.mute(accountId, conversationId),
+  );
+
+  return response.data;
+}
+
+/**
+ * Unmutes the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @returns A promise that resolves to the response.
+ */
+export async function unmuteConversation(
+  accountId: number,
+  conversationId: string,
+): Promise<void> {
+  const response = await API.post(
+    conversationEndpoints.unmute(accountId, conversationId),
   );
 
   return response.data;

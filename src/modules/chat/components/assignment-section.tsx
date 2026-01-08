@@ -12,25 +12,23 @@ import {
   OptionBottomSheetRef,
 } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationKeys } from '../constants/keys';
+import { Agent } from '../services/agent/types';
 import { updateAssignee, updatePriority } from '../services/conversation';
-import { useListTeamsQuery } from '../services/conversation-room/repository';
-import {
-  Agent,
-  ConversationMessagesResponse,
-  Meta,
-  Team,
-} from '../services/conversation-room/types';
 import {
   Conversation,
+  ConversationMessagesResponse,
+  ConversationMeta,
   ConversationPriority,
+  Team,
   UpdateAssigneePayload,
   UpdateAssigneeTeamPayload,
   UpdatePriorityPayload,
 } from '../services/conversation/types';
+import { useListTeamsQuery } from '../services/team/repository';
 
 type AssignmentSectionProps = {
-  meta?: Meta;
+  meta?: ConversationMeta;
   conversation?: Conversation;
   agents?: Option<Agent>[];
   teams?: Option<Team>[];
@@ -70,28 +68,18 @@ export function AssignmentSection({
     ],
   });
 
-  const listMessagesQueryKey = [
-    CONVERSATIONS_ENDPOINTS.MESSAGES(
-      chatUser?.account_id ?? 0,
-      conversation?.id?.toString() ?? '',
-    ),
-    'infinite',
-  ];
+  const listMessagesQueryKey = conversationKeys.messages(
+    chatUser?.account_id ?? 0,
+    conversation?.id?.toString() ?? '',
+  );
 
-  const updateLastSeenQueryKey = [
-    CONVERSATIONS_ENDPOINTS.UPDATE_LAST_SEEN(
-      chatUser?.account_id ?? 0,
-      conversation?.id?.toString() ?? '',
-    ),
-  ];
+  const updateLastSeenQueryKey = conversationKeys.updateLastSeen(
+    chatUser?.account_id ?? 0,
+    conversation?.id?.toString() ?? '',
+  );
 
   const updateAssigneeMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_ASSIGNEE(
-        chatUser?.account_id ?? 0,
-        conversation?.id ?? 0,
-      ),
-    ],
+    mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneePayload) =>
       updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
@@ -125,12 +113,7 @@ export function AssignmentSection({
   });
 
   const updateAssigneeTeamMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_ASSIGNEE(
-        chatUser?.account_id ?? 0,
-        conversation?.id ?? 0,
-      ),
-    ],
+    mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneeTeamPayload) =>
       updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
@@ -158,12 +141,7 @@ export function AssignmentSection({
   });
 
   const updatePriorityMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_PRIORITY(
-        chatUser?.account_id ?? 0,
-        conversation?.id ?? 0,
-      ),
-    ],
+    mutationKey: conversationKeys.updatePriority,
     mutationFn: (payload: UpdatePriorityPayload) =>
       updatePriority(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {

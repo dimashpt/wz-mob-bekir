@@ -27,15 +27,15 @@ import { useDebounce } from '@/hooks';
 import { useAuthStore } from '@/store/auth-store';
 import { formatFileSize } from '@/utils/formatter';
 import { resizeImage } from '@/utils/image';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
-import { sendMessage, updateTypingStatus } from '../services/conversation-room';
+import { conversationKeys } from '../constants/keys';
+import { sendMessage, updateTypingStatus } from '../services/conversation';
 import {
   ConversationMessagesResponse,
   Message,
   SendMessagePayload,
   UpdateTypingStatusPayload,
-} from '../services/conversation-room/types';
+} from '../services/conversation/types';
 import { generateEchoId } from '../utils/message';
 
 type Params = {
@@ -83,30 +83,18 @@ export function ChatRoomInput(
   });
 
   const toggleTypingMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_TYPING_STATUS(
-        chatUser!.account_id,
-        conversation_id,
-      ),
-    ],
+    mutationKey: conversationKeys.updateTypingStatus,
     mutationFn: (payload: UpdateTypingStatusPayload) =>
       updateTypingStatus(chatUser!.account_id, conversation_id, payload),
   });
 
-  const queryKey = [
-    CONVERSATIONS_ENDPOINTS.MESSAGES(
-      chatUser?.account_id ?? 0,
-      conversation_id,
-    ),
-    'infinite',
-  ];
+  const messageListKey = conversationKeys.messages(
+    chatUser!.account_id,
+    conversation_id,
+  );
+
   const sendMessageMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.SEND_MESSAGE(
-        chatUser!.account_id,
-        conversation_id,
-      ),
-    ],
+    mutationKey: conversationKeys.sendMessage,
     mutationFn: async (payload: SendMessagePayload) => {
       if (attachment && isImage(attachment)) {
         const resizedUri = await resizeImage(attachment.uri, 256);
@@ -115,6 +103,7 @@ export function ChatRoomInput(
           {
             uri: resizedUri,
             type: attachment.mimeType,
+            name: attachment.fileName ?? attachment.uri.split('/').pop(),
           },
         ];
       } else if (attachment && isFile(attachment)) {
@@ -135,20 +124,24 @@ export function ChatRoomInput(
 
       // Cancel any outgoing refetches
       // (so they don't overwrite the optimistic update)
-      await context.client.cancelQueries({ queryKey });
+      await context.client.cancelQueries({ queryKey: messageListKey });
 
       // Snapshot the previous value
       const previousMessages =
-        context.client.getQueryData<ConversationMessagesResponse>(queryKey);
+        context.client.getQueryData<ConversationMessagesResponse>(
+          messageListKey,
+        );
 
       const messagePayload = {
-        attachments: [
-          {
-            data_url: attachment?.uri ?? '',
-            file_type: isImage(attachment!) ? 'image' : 'file',
-            id: Date.now(),
-          },
-        ],
+        attachments: attachment
+          ? [
+              {
+                data_url: attachment?.uri ?? '',
+                file_type: isImage(attachment!) ? 'image' : 'file',
+                id: Date.now(),
+              },
+            ]
+          : undefined,
         content: newMessage.content,
         private: newMessage.private,
         content_attributes: newMessage.content_attributes,
@@ -165,7 +158,7 @@ export function ChatRoomInput(
 
       // Optimistically update to the new value
       context.client.setQueryData(
-        queryKey,
+        messageListKey,
         (old: InfiniteData<ConversationMessagesResponse>) => {
           return {
             ...old,
@@ -187,7 +180,7 @@ export function ChatRoomInput(
     onSuccess: (data, payload, __, context) => {
       // Update the message status and data with the server response
       context.client.setQueryData(
-        queryKey,
+        messageListKey,
         (old: InfiniteData<ConversationMessagesResponse>) => {
           return {
             ...old,
@@ -203,7 +196,7 @@ export function ChatRoomInput(
     },
     onError: (_, __, onMutateResult, context) => {
       context.client.setQueryData(
-        queryKey,
+        messageListKey,
         onMutateResult?.previousMessages ?? {},
       );
     },

@@ -21,13 +21,13 @@ import { useCSSVariable } from 'uniwind';
 import { Clickable, Icon, Image, ImagePreviewModal, Text } from '@/components';
 import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationEndpoints } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import {
   Attachment,
   ConversationMessagesResponse,
   Message,
-} from '../services/conversation-room/types';
+} from '../services/conversation/types';
 import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 
 interface MessageItemProps extends BubbleProps<ChatMessage> {
@@ -95,7 +95,7 @@ export function MessageItem({
   const hasAttachments = attachments.length > 0;
 
   const queryKey = [
-    CONVERSATIONS_ENDPOINTS.MESSAGES(
+    conversationEndpoints.messages(
       chatUser?.account_id ?? 0,
       (message.conversation_id ?? '').toString(),
     ),

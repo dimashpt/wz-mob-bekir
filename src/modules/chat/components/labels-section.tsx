@@ -14,21 +14,19 @@ import {
   Text,
 } from '@/components';
 import { useAuthStore } from '@/store/auth-store';
-import { CONVERSATIONS_ENDPOINTS } from '../constants/endpoints';
+import { conversationKeys } from '../constants/keys';
 import { updateLabels } from '../services/conversation';
 import {
-  ConversationMessagesResponse,
-  Meta,
-} from '../services/conversation-room/types';
-import { useListLabelsQuery } from '../services/conversation/repository';
-import {
   Conversation,
-  Label,
+  ConversationMessagesResponse,
+  ConversationMeta,
   UpdateLabelConversationPayload,
 } from '../services/conversation/types';
+import { useListLabelsQuery } from '../services/label/repository';
+import { Label } from '../services/label/types';
 
 type LabelsSectionProps = {
-  meta?: Meta;
+  meta?: ConversationMeta;
   conversation?: Conversation;
   labels?: Option<Label>[];
 };
@@ -50,21 +48,13 @@ export function LabelsSection({
       })),
   });
 
-  const listMessagesQueryKey = [
-    CONVERSATIONS_ENDPOINTS.MESSAGES(
-      chatUser?.account_id ?? 0,
-      conversation?.id?.toString() ?? '',
-    ),
-    'infinite',
-  ];
+  const listMessagesQueryKey = conversationKeys.messages(
+    chatUser?.account_id ?? 0,
+    conversation?.id?.toString() ?? '',
+  );
 
   const updateLabelsMutation = useMutation({
-    mutationKey: [
-      CONVERSATIONS_ENDPOINTS.UPDATE_LABELS(
-        chatUser?.account_id ?? 0,
-        conversation?.id ?? 0,
-      ),
-    ],
+    mutationKey: conversationKeys.updateLabels,
     mutationFn: (payload: UpdateLabelConversationPayload) =>
       updateLabels(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
