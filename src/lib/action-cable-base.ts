@@ -1,5 +1,7 @@
 import { ActionCable, Cable } from '@kesha-antonov/react-native-action-cable';
 
+import { logger } from '@/utils/logger';
+
 const cable = new Cable({});
 const channelName = 'RoomChannel';
 const PRESENCE_INTERVAL = 20_000;
@@ -10,12 +12,12 @@ export interface ActionCableEvent<T = unknown> {
 }
 
 export class BaseActionCableConnector {
-  protected events: { [key: string]: (data: unknown) => void };
+  protected events: { [key: string]: (event: string, data: unknown) => void };
   protected accountId: number;
 
   constructor(pubSubToken: string, accountId: number, userId: number) {
     const connectActionCable = ActionCable.createConsumer(
-      `wss://${process.env.EXPO_PUBLIC_CHAT_BASE_URL}`,
+      `${(process.env.EXPO_PUBLIC_CHAT_BASE_URL ?? '').replace('https', 'wss')}/cable`,
     );
 
     const channel = cable.setChannel(
@@ -57,16 +59,18 @@ export class BaseActionCableConnector {
   ): void => {
     if (this.isAValidEvent(data)) {
       if (this.events[event] && typeof this.events[event] === 'function') {
-        this.events[event](data);
+        this.events[event](event, data);
       }
     }
   };
 
   private handleConnected(): void {
+    logger.info('[WS] Connected');
     // Do something when websocket connected
   }
 
   private handleDisconnected(): void {
+    logger.info('[WS] Disconnected');
     // Do something when websocket disconnected
   }
 }
