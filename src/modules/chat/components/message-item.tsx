@@ -188,7 +188,12 @@ export function MessageItem({
       <Clickable
         key={attachment.id}
         onPress={() => handleFilePress(attachment.data_url)}
-        className="mb-xs gap-sm border-border bg-surface-soft p-sm flex-row items-center rounded-md border"
+        className={twMerge(
+          'mb-xs gap-sm bg-surface-soft p-sm flex-row items-center rounded-md border',
+          isPrivate
+            ? 'border-warning bg-warning/20'
+            : 'border-border bg-surface/20',
+        )}
       >
         <Icon
           name="fileAttachment"

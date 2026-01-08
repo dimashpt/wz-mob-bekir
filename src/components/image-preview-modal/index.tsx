@@ -322,7 +322,7 @@ export function ImagePreviewModal({
       onRequestClose={closeModal}
     >
       <GestureHandlerRootView>
-        <Animated.View className="flex-1">
+        <Animated.View className="pt-safe flex-1">
           <Animated.View className="absolute inset-0" style={blurStyle}>
             <BlurView
               intensity={Platform.OS === 'ios' ? 30 : 20}

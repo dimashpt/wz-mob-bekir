@@ -34,22 +34,28 @@ export function useWebsocket(): void {
     } = {
       'message.created': onMessageCreated,
       'message.updated': onMessageUpdated,
-      'conversation.created': () => {},
-      'conversation.status_changed': () => {},
-      'conversation.read': () => {},
-      'assignee.changed': () => {},
-      'conversation.updated': () => {},
-      'conversation.typing_on': () => {},
-      'conversation.typing_off': () => {},
-      'contact.updated': () => {},
-      'notification.created': () => {},
-      'notification.deleted': () => {},
-      'presence.update': () => {},
-      'conversation.contact_changed': () => {},
-      'contact.deleted': () => {},
-      'conversation.mentioned': () => {},
-      'first.reply.created': () => {},
+      'conversation.created': onEvent,
+      'conversation.status_changed': onEvent,
+      'conversation.read': onEvent,
+      'assignee.changed': onEvent,
+      'conversation.updated': onEvent,
+      'conversation.typing_on': onEvent,
+      'conversation.typing_off': onEvent,
+      'contact.updated': onEvent,
+      'notification.created': onEvent,
+      'notification.deleted': onEvent,
+      'presence.update': onEvent,
+      'conversation.contact_changed': onEvent,
+      'contact.deleted': onEvent,
+      'conversation.mentioned': onEvent,
+      'first.reply.created': onEvent,
     };
+
+    function onEvent(event: string, _: unknown): void {
+      if (event !== 'presence.update') {
+        console.log('[WS] Event received:', event);
+      }
+    }
 
     async function onMessageCreated(_: string, data: Message): Promise<void> {
       const queryKey = conversationKeys.messages(
