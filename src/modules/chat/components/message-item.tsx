@@ -16,6 +16,7 @@ import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { BlurView } from 'expo-blur';
 import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   BubbleProps,
@@ -279,6 +280,8 @@ export function MessageItem({
       setMenuPosition({ x: menuX, y: menuY });
       setIsMenuOpen(true);
     });
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }
 
   function handleCloseMenu(): void {
