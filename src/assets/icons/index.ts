@@ -28,6 +28,7 @@ import lock from './lock.svg';
 import logout from './logout.svg';
 import macro from './macro.svg';
 import minus from './minus.svg';
+import notificationOff from './notification-off.svg';
 import notification from './notification.svg';
 import order from './order.svg';
 import plus from './plus.svg';
@@ -87,6 +88,7 @@ export const Icons = {
   macro,
   minus,
   notification,
+  notificationOff,
   order,
   plus,
   product,

@@ -25,6 +25,7 @@ type ChatListItemProps = {
   onPress?: () => void;
   onLongPress?: () => void;
   handleUnread: (conversationId: number) => void;
+  handleMute: (conversationId: number) => void;
 };
 export default function ChatListItem({
   item,
@@ -34,6 +35,7 @@ export default function ChatListItem({
   onPress,
   onLongPress,
   handleUnread,
+  handleMute,
 }: ChatListItemProps): React.JSX.Element {
   const router = useRouter();
 
@@ -96,10 +98,12 @@ export default function ChatListItem({
         handleOnLeftOverswiped={() => handleUnread(item.id)}
         leftElementClassName="bg-info"
         // Right element configuration
-        rightElement={<Icon name="slider" size="2xl" className="text-white" />}
-        handleRightElementPress={() => {}}
-        handleOnRightOverswiped={() => {}}
-        rightElementClassName="bg-success"
+        rightElement={
+          <Icon name="notificationOff" size="2xl" className="text-white" />
+        }
+        handleRightElementPress={() => handleMute(item.id)}
+        handleOnRightOverswiped={() => handleMute(item.id)}
+        rightElementClassName={item.muted ? 'bg-success' : 'bg-danger'}
       >
         <Container.Card
           className={twMerge(
@@ -173,6 +177,13 @@ export default function ChatListItem({
                   <Icon
                     name="signal"
                     className={priorityClassName[item.priority]}
+                  />
+                )}
+                {item.muted && (
+                  <Icon
+                    name="notificationOff"
+                    size="sm"
+                    className="text-muted-foreground"
                   />
                 )}
                 {item.meta.assignee && (

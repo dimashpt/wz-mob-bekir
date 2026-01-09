@@ -28,10 +28,16 @@ import {
 } from '../constants/options';
 import { useListAssignableAgentsQuery } from '../services/agent/repository';
 import { Agent } from '../services/agent/types';
-import { bulkUpdateAction, unreadConversation } from '../services/conversation';
+import {
+  bulkUpdateAction,
+  muteConversation,
+  unmuteConversation,
+  unreadConversation,
+} from '../services/conversation';
 import { useListConversationQuery } from '../services/conversation/repository';
 import {
   BulkUpdateActionPayload,
+  Conversation,
   ConversationStatus,
   ListConversationsParams,
   ListConversationsResponse,
@@ -239,8 +245,8 @@ export default function ChatScreen(): JSX.Element {
 
   const unreadConversationMutation = useMutation({
     mutationKey: conversationKeys.unread,
-    mutationFn: (conversationId: number) =>
-      unreadConversation(chatUser?.account_id ?? 0, conversationId),
+    mutationFn: (conversation: Conversation) =>
+      unreadConversation(chatUser?.account_id ?? 0, conversation.id),
     onSuccess: (data, payload, __, context) => {
       context.client.setQueryData(
         conversationKeys.list(chatUser?.account_id ?? 0, filters),
@@ -250,7 +256,7 @@ export default function ChatScreen(): JSX.Element {
             data: {
               ...old.data,
               payload: old.data.payload.map((item) =>
-                item.id === payload ? data : item,
+                item.id === payload.id ? data : item,
               ),
             },
           };
@@ -258,6 +264,59 @@ export default function ChatScreen(): JSX.Element {
       );
     },
   });
+
+  const muteConversationMutation = useMutation({
+    mutationKey: conversationKeys.mute,
+    mutationFn: (conversation: Conversation) =>
+      muteConversation(chatUser?.account_id ?? 0, conversation.id.toString()),
+    onSuccess: (_, payload, ___, context) => {
+      context.client.setQueryData(
+        conversationKeys.list(chatUser?.account_id ?? 0, filters),
+        (old: ListConversationsResponse) => {
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              payload: old.data.payload.map((item) =>
+                item.id === payload.id ? { ...item, muted: true } : item,
+              ),
+            },
+          };
+        },
+      );
+    },
+  });
+
+  const unmuteConversationMutation = useMutation({
+    mutationKey: conversationKeys.unmute,
+    mutationFn: (conversationId: number) =>
+      unmuteConversation(chatUser?.account_id ?? 0, conversationId.toString()),
+    onSuccess: (_, payload, ___, context) => {
+      context.client.setQueryData(
+        conversationKeys.list(chatUser?.account_id ?? 0, filters),
+        (old: ListConversationsResponse) => {
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              payload: old.data.payload.map((item) =>
+                item.id === payload ? { ...item, muted: false } : item,
+              ),
+            },
+          };
+        },
+      );
+    },
+  });
+
+  function toggleMute(conversation: Conversation): void {
+    if (conversation.muted) {
+      unmuteConversationMutation.mutate(conversation.id);
+      return;
+    }
+
+    muteConversationMutation.mutate(conversation);
+  }
 
   return (
     <Container
@@ -362,7 +421,8 @@ export default function ChatScreen(): JSX.Element {
               isSelectionMode ? () => handleItemPress(item.uuid) : undefined
             }
             onLongPress={() => handleItemLongPress(item.uuid)}
-            handleUnread={() => unreadConversationMutation.mutate(item.id)}
+            handleUnread={() => unreadConversationMutation.mutate(item)}
+            handleMute={() => toggleMute(item)}
           />
         )}
         ListEmptyComponent={() => (
