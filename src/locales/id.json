@@ -28,7 +28,8 @@
     "profile": "Profil",
     "orders": "Pesanan",
     "products": "Produk",
-    "chat": "Percakapan"
+    "chat": "Percakapan",
+    "notification": "Notifikasi"
   },
   "date_time_picker": {
     "pick_range": "Pilih Rentang",

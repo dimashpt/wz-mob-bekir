@@ -121,7 +121,7 @@ export const TabBar = ({
     >
       <BlurView
         intensity={20}
-        className="gap-md px-xl py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
+        className="gap-sm px-xl py-sm bg-surface border-border relative shrink flex-row self-center overflow-hidden rounded-full border shadow-sm"
         style={{
           maxWidth: screenWidth - spacingLg * 2,
         }}

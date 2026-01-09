@@ -45,6 +45,13 @@ export default function TabLayout(): JSX.Element {
         }}
       />
       <Tabs.Screen
+        name="orders"
+        options={{
+          title: t('tab.orders'),
+          tabBarIcon: () => 'order',
+        }}
+      />
+      <Tabs.Screen
         name="chat"
         options={{
           title: t('tab.chat'),
@@ -53,10 +60,10 @@ export default function TabLayout(): JSX.Element {
         }}
       />
       <Tabs.Screen
-        name="orders"
+        name="notification"
         options={{
-          title: t('tab.orders'),
-          tabBarIcon: () => 'order',
+          title: t('tab.notification'),
+          tabBarIcon: () => 'notification',
         }}
       />
       <Tabs.Screen

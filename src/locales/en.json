@@ -29,7 +29,8 @@
     "profile": "Profile",
     "orders": "Orders",
     "products": "Products",
-    "chat": "Chat"
+    "chat": "Chat",
+    "notification": "Notification"
   },
   "date_time_picker": {
     "pick_range": "Pick Range",
