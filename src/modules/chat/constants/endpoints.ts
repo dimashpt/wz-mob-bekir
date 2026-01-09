@@ -63,3 +63,8 @@ export const macroEndpoints = {
 export const inboxEndpoints = {
   list: (accountId: number) => `${base(accountId)}/inboxes`,
 } as const;
+
+export const attributeEndpoints = {
+  list: (accountId: number) =>
+    `${base(accountId)}/custom_attribute_definitions`,
+} as const;

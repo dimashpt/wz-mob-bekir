@@ -76,3 +76,8 @@ export const macroKeys = {
 export const inboxKeys = {
   list: (accountId: number) => ['inbox-list', accountId],
 };
+
+// Query keys factory for the attribute repository.
+export const attributeKeys = {
+  list: (accountId: number) => ['attribute-list', accountId],
+};
