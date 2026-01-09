@@ -13,6 +13,7 @@ import cleanup from './cleanup.svg';
 import clock from './clock.svg';
 import closeCircle from './close-circle.svg';
 import close from './close.svg';
+import copy from './copy.svg';
 import dev from './dev.svg';
 import eyeSlash from './eye-slash.svg';
 import eye from './eye.svg';
@@ -72,6 +73,7 @@ export const Icons = {
   cleanup,
   close,
   closeCircle,
+  copy,
   dev,
   eye,
   eyeSlash,

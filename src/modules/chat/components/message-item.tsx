@@ -1,10 +1,20 @@
 import type { ImagePreviewModal as ImagePreviewModalType } from '@/components/image-preview-modal';
 
-import { useMemo, useRef } from 'react';
-import { Linking, View } from 'react-native';
+import { useMemo, useRef, useState } from 'react';
+import {
+  Dimensions,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import { InfiniteData } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import { BlurView } from 'expo-blur';
+import * as Clipboard from 'expo-clipboard';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import {
   BubbleProps,
@@ -19,8 +29,10 @@ import { tv } from 'tailwind-variants';
 import { useCSSVariable } from 'uniwind';
 
 import { Clickable, Icon, Image, ImagePreviewModal, Text } from '@/components';
+import { snackbar } from '@/components/snackbar';
 import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
+import { formatFileSize } from '@/utils/formatter';
 import { conversationEndpoints } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
 import {
@@ -29,6 +41,8 @@ import {
   Message,
 } from '../services/conversation/types';
 import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
+
+const MENU_WIDTH = 150;
 
 interface MessageItemProps extends BubbleProps<ChatMessage> {
   onDelete: (messageId: number) => void;
@@ -73,12 +87,87 @@ const messageBubbleTextVariants = tv({
 export type ChatMessage = IMessage & Message;
 type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
 
-function formatFileSize(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+interface MessageBubbleContentProps {
+  message: ChatMessage;
+  messageType: MessageType;
+  replyMessage?: string;
+  attachments: Attachment[];
+  isReplyMessage: boolean | number | undefined;
+  hasAttachments: boolean;
+  renderAttachment: (attachment: Attachment) => React.JSX.Element;
+}
+
+function MessageBubbleContent({
+  message,
+  messageType,
+  replyMessage,
+  attachments,
+  isReplyMessage,
+  hasAttachments,
+  renderAttachment,
+}: MessageBubbleContentProps): React.JSX.Element {
+  const isOutgoing = messageType === 'outgoing';
+  const isPrivate = messageType === 'private';
+  const isTemplate = messageType === 'template';
+
+  return (
+    <>
+      {isReplyMessage && replyMessage ? (
+        <Clickable
+          onPress={() => {}}
+          className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
+        >
+          <Icon
+            name="forward"
+            size="sm"
+            className="text-white/70 dark:text-black/70"
+            transform="scale(-1,1)"
+          />
+          <View className="shrink">
+            <Text
+              variant="bodyXS"
+              numberOfLines={3}
+              className="text-white/70 dark:text-black/70"
+            >
+              {replyMessage}
+            </Text>
+          </View>
+        </Clickable>
+      ) : null}
+      {hasAttachments ? (
+        <View className="mb-xs gap-xs">
+          {attachments.map((attachment) => renderAttachment(attachment))}
+        </View>
+      ) : null}
+      {message.text ? (
+        <TextMarkdown
+          text={message.text}
+          isPrivate={isPrivate}
+          isOutgoing={isOutgoing}
+        />
+      ) : null}
+      <View className="gap-xs flex-row items-center justify-end">
+        {isPrivate && (
+          <Icon name="lock" size="sm" className="text-muted-foreground" />
+        )}
+        {isTemplate && (
+          <Icon name="robot" size="sm" className="text-muted-foreground" />
+        )}
+        <Text variant="labelXS" color="muted">
+          {dayjs(message.createdAt).format('HH:mm')}
+        </Text>
+        {isOutgoing && (
+          <Icon
+            name={message.pending ? 'clock' : 'tick'}
+            size="base"
+            className={
+              message.status === 'read' ? 'text-info' : 'text-muted-foreground'
+            }
+          />
+        )}
+      </View>
+    </>
+  );
 }
 
 export function MessageItem({
@@ -87,6 +176,19 @@ export function MessageItem({
 }: MessageItemProps): React.JSX.Element {
   const { chatUser } = useAuthStore();
   const imagePreviewRef = useRef<ImagePreviewModalType>(null);
+  const messageLayoutRef = useRef<View>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [messagePosition, setMessagePosition] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
@@ -116,11 +218,80 @@ export function MessageItem({
 
     return repliedMessage?.text ?? '~';
   }, [message.content_attributes.in_reply_to]);
+
+  function handleOpenMenu(): void {
+    if (!messageLayoutRef.current) return;
+
+    // Measure position at the moment of long press to get current position
+    messageLayoutRef.current.measureInWindow((x, y, width, height) => {
+      // Store message position to render it above blur
+      setMessagePosition({ x, y, width, height });
+      const menuWidth = MENU_WIDTH;
+      // More accurate menu height: 2 items × (py-sm × 2 + text height ~20px) ≈ 72px
+      // Adding border and shadow buffer
+      const menuHeight = 80;
+      const spacing = 4;
+      const { width: screenWidth, height: screenHeight } =
+        Dimensions.get('window');
+      const safeAreaBottom = 100; // Safe area at bottom
+
+      // Calculate Y position - prefer below, fallback to above
+      let menuY = y + height + spacing;
+      const showAbove =
+        menuY + menuHeight > screenHeight - safeAreaBottom &&
+        y > menuHeight + spacing;
+
+      if (showAbove) {
+        // Position menu above: make it closer to match visual spacing when below
+        // Shadow creates visual gap, so use minimal spacing
+        menuY = y - menuHeight + 6;
+      }
+
+      // Calculate X position - align based on message direction, ensure it stays on screen
+      let menuX = isOutgoing ? x + width - menuWidth : x;
+
+      // Ensure menu doesn't overflow screen edges
+      if (menuX < spacing) {
+        menuX = spacing;
+      } else if (menuX + menuWidth > screenWidth - spacing) {
+        menuX = screenWidth - menuWidth - spacing;
+      }
+
+      setMenuPosition({ x: menuX, y: menuY });
+      setIsMenuOpen(true);
+    });
+  }
+
+  function handleCloseMenu(): void {
+    setIsMenuOpen(false);
+    setIsHighlighted(false);
+    setMenuPosition(null);
+    setMessagePosition(null);
+  }
+
+  function handleCopy(): void {
+    if (message.text) {
+      Clipboard.setStringAsync(message.text);
+      snackbar.success('Message copied');
+    }
+    handleCloseMenu();
+  }
+
+  function handleDelete(): void {
+    if (onDelete) {
+      onDelete(message.id);
+    }
+    handleCloseMenu();
+  }
+
   const longPressGesture = Gesture.LongPress()
     .enabled(Boolean(onDelete))
-    .minDuration(3_000)
+    .minDuration(500)
     .maxDistance(20)
-    .onStart(() => onDelete && runOnJS(onDelete)(message.id));
+    .onStart(() => {
+      runOnJS(setIsHighlighted)(true);
+      runOnJS(handleOpenMenu)();
+    });
 
   function getMessageType(): MessageType {
     if (isPrivate) return 'private';
@@ -182,7 +353,7 @@ export function MessageItem({
 
     // File attachment
     const fileName = decodeURI(attachment?.data_url?.split('/')?.pop() ?? '');
-    const fileSize = formatFileSize(attachment.file_size);
+    const fileSize = formatFileSize(attachment.file_size ?? 0);
 
     return (
       <Clickable
@@ -231,68 +402,146 @@ export function MessageItem({
     <>
       <GestureDetector gesture={longPressGesture}>
         <View
-          className={twMerge(messageBubbleVariants({ type: getMessageType() }))}
+          ref={messageLayoutRef}
+          className={twMerge(
+            messageBubbleVariants({ type: getMessageType() }),
+            isHighlighted && 'opacity-100',
+          )}
+          style={isHighlighted ? { zIndex: 1000 } : undefined}
         >
-          {isReplyMessage ? (
-            <Clickable
-              onPress={() => {}}
-              className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
-            >
-              <Icon
-                name="forward"
-                size="sm"
-                className="text-white/70 dark:text-black/70"
-                transform="scale(-1,1)"
-              />
-              <View className="shrink">
-                <Text
-                  variant="bodyXS"
-                  numberOfLines={3}
-                  className="text-white/70 dark:text-black/70"
-                >
-                  {replyMessage}
-                </Text>
-              </View>
-            </Clickable>
-          ) : null}
-          {hasAttachments ? (
-            <View className="mb-xs gap-xs">
-              {attachments.map((attachment) => renderAttachment(attachment))}
-            </View>
-          ) : null}
-          {message.text ? (
-            <TextMarkdown
-              text={message.text}
-              isPrivate={isPrivate}
-              isOutgoing={isOutgoing}
-            />
-          ) : null}
-          <View className="gap-xs flex-row items-center justify-end">
-            {isPrivate && (
-              <Icon name="lock" size="sm" className="text-muted-foreground" />
-            )}
-            {isTemplate && (
-              <Icon name="robot" size="sm" className="text-muted-foreground" />
-            )}
-            <Text variant="labelXS" color="muted">
-              {dayjs(message.createdAt).format('HH:mm')}
-            </Text>
-            {isOutgoing && (
-              <Icon
-                name={message.pending ? 'clock' : 'tick'}
-                size="base"
-                className={
-                  message.status === 'read'
-                    ? 'text-info'
-                    : 'text-muted-foreground'
-                }
-              />
-            )}
-          </View>
+          <MessageBubbleContent
+            message={message}
+            messageType={getMessageType()}
+            replyMessage={replyMessage}
+            attachments={attachments}
+            isReplyMessage={isReplyMessage}
+            hasAttachments={hasAttachments}
+            renderAttachment={renderAttachment}
+          />
         </View>
       </GestureDetector>
       <ImagePreviewModal ref={imagePreviewRef} />
+      {isMenuOpen && menuPosition && messagePosition && (
+        <MessageContextMenu
+          position={menuPosition}
+          messagePosition={messagePosition}
+          message={message}
+          messageType={getMessageType()}
+          replyMessage={replyMessage}
+          attachments={attachments}
+          isReplyMessage={isReplyMessage}
+          hasAttachments={hasAttachments}
+          renderAttachment={renderAttachment}
+          onCopy={handleCopy}
+          onDelete={handleDelete}
+          onClose={handleCloseMenu}
+        />
+      )}
     </>
+  );
+}
+
+interface MessageContextMenuProps {
+  position: { x: number; y: number };
+  messagePosition: { x: number; y: number; width: number; height: number };
+  message: ChatMessage;
+  messageType: MessageType;
+  replyMessage?: string;
+  attachments: Attachment[];
+  isReplyMessage: boolean | number | undefined;
+  hasAttachments: boolean;
+  renderAttachment: (attachment: Attachment) => React.JSX.Element;
+  onCopy: () => void;
+  onDelete: () => void;
+  onClose: () => void;
+}
+
+function MessageContextMenu({
+  position,
+  messagePosition,
+  message,
+  messageType,
+  replyMessage,
+  attachments,
+  isReplyMessage,
+  hasAttachments,
+  renderAttachment,
+  onCopy,
+  onDelete,
+  onClose,
+}: MessageContextMenuProps): React.JSX.Element {
+  return (
+    <Modal
+      transparent
+      visible
+      animationType="fade"
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+          <BlurView
+            intensity={Platform.OS === 'ios' ? 30 : 20}
+            tint="dark"
+            experimentalBlurMethod="dimezisBlurView"
+            style={StyleSheet.absoluteFill}
+          />
+          <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
+        </View>
+        {/* Render message bubble above blur to keep it readable */}
+        <View
+          style={{
+            position: 'absolute',
+            left: messagePosition.x,
+            top: messagePosition.y,
+            width: messagePosition.width,
+            height: messagePosition.height,
+          }}
+          pointerEvents="none"
+        >
+          <View
+            className={twMerge(messageBubbleVariants({ type: messageType }))}
+          >
+            <MessageBubbleContent
+              message={message}
+              messageType={messageType}
+              replyMessage={replyMessage}
+              attachments={attachments}
+              isReplyMessage={isReplyMessage}
+              hasAttachments={hasAttachments}
+              renderAttachment={renderAttachment}
+            />
+          </View>
+        </View>
+        <View
+          className="absolute bg-transparent"
+          style={{ left: position.x, top: position.y, minWidth: MENU_WIDTH }}
+        >
+          <View className="bg-surface border-border overflow-hidden rounded-lg border shadow-lg">
+            <Clickable
+              onPress={onCopy}
+              className="px-md py-sm gap-sm border-border active:bg-surface-soft flex-row items-center border-b"
+            >
+              <Icon name="copy" size="base" className="text-foreground" />
+              <Text variant="bodyS">Copy</Text>
+            </Clickable>
+            <Clickable
+              onPress={onDelete}
+              className="px-md py-sm gap-sm active:bg-surface-soft flex-row items-center"
+            >
+              <Icon name="trash" size="base" className="text-danger" />
+              <Text variant="bodyS" className="text-danger">
+                Delete
+              </Text>
+            </Clickable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
