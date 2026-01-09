@@ -55,12 +55,12 @@ export function useProfileQuery(
  * @param queryOptions - Optional parameters for the query.
  * @returns The query object containing the chat profile.
  */
-export function useChatProfileQuery(
+export function useChatProfileQuery<T = ChatProfileResponse>(
   queryOptions: Omit<
-    UseQueryOptions<ChatProfileResponse, Error>,
+    UseQueryOptions<ChatProfileResponse, Error, T>,
     'queryKey' | 'queryFn'
   > = {},
-): UseQueryResult<ChatProfileResponse, Error> {
+): UseQueryResult<T, Error> {
   const query = useQuery({
     ...queryOptions,
     queryKey: profileKeys.chatProfile,
