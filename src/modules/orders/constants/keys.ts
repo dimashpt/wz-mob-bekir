@@ -21,7 +21,8 @@ export const orderKeys = {
     id,
     params,
   ],
-  address: (params: AddressRequestParams) => ['store-address', params],
+  address: (params?: AddressRequestParams) =>
+    ['store-address', params].filter(Boolean),
 };
 
 export const storeKeys = {

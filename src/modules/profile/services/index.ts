@@ -1,6 +1,6 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { USER_ENDPOINTS } from '../constants/endpoints';
+import { userEndpoints } from '../constants/endpoints';
 import { ProfileResponse } from './types';
 
 /**
@@ -9,7 +9,7 @@ import { ProfileResponse } from './types';
  */
 export async function getProfile(): Promise<ProfileResponse> {
   const response = await API.get<SuccessResponse<ProfileResponse>>(
-    USER_ENDPOINTS.PROFILE,
+    userEndpoints.profile,
   );
 
   return response.data.data;

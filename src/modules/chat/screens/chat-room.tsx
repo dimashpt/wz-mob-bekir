@@ -64,7 +64,7 @@ export default function ChatRoomScreen(): JSX.Element {
   );
 
   const deleteMessageMutation = useMutation({
-    mutationKey: ['delete-message'],
+    mutationKey: conversationKeys.deleteMessage,
     mutationFn: (messageId: number) =>
       deleteMessage(chatUser?.account_id ?? 0, conversation_id, messageId),
     onMutate: async (messageId, context) => {

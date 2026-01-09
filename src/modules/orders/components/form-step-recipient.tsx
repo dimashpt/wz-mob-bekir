@@ -17,7 +17,7 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
-import { orderEndpoints } from '../constants/endpoints';
+import { orderKeys } from '../constants/keys';
 import { useOrderForm } from '../context/order-form-context';
 import { Customer, CustomerAddress } from '../services/customer';
 import { useCustomersQuery } from '../services/customer/repository';
@@ -84,7 +84,7 @@ export function FormStepRecipient(): JSX.Element {
 
   // Handle the address search mutation
   const searchAddressesMutation = useMutation({
-    mutationKey: [orderEndpoints.address],
+    mutationKey: orderKeys.address(),
     mutationFn: (params: AddressRequestParams & { address: CustomerAddress }) =>
       getAddress({
         page: 1,

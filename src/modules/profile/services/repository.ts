@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/store';
-import { USER_ENDPOINTS } from '../constants/endpoints';
+import { profileKeys } from '../constants/keys';
 import * as UserService from './index';
 import { ProfileResponse } from './types';
 
@@ -33,7 +33,7 @@ export function useProfileQuery(
 ): UseQueryResult<ProfileResponse, Error> {
   const query = useQuery({
     ...params,
-    queryKey: [USER_ENDPOINTS.PROFILE],
+    queryKey: profileKeys.profile,
     queryFn: UserService.getProfile,
   });
   const { setUser } = useAuthStore();

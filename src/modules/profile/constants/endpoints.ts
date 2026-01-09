@@ -2,6 +2,6 @@
  * User API Endpoints
  */
 
-export const USER_ENDPOINTS = {
-  PROFILE: '/auth/v1/me',
+export const userEndpoints = {
+  profile: '/auth/v1/me',
 } as const;

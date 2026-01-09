@@ -13,7 +13,7 @@ import {
   Text,
 } from '@/components';
 import { snackbar } from '@/components/snackbar';
-import { authEndpoints } from '@/modules/auth/constants/endpoints';
+import { authKeys } from '@/modules/auth/constants/keys';
 import { logout } from '@/modules/auth/services';
 import { ProfileResponse } from '@/modules/profile/services/types';
 import { useAuthStore } from '@/store';
@@ -30,7 +30,7 @@ export function ProfileCard({ profile }: ProfileCardProps): JSX.Element | null {
   const user = profile?.user ?? _user;
 
   const logoutMutation = useMutation({
-    mutationKey: [authEndpoints.logout],
+    mutationKey: authKeys.logout,
     mutationFn: logout,
     onSuccess: () => snackbar.success(t('profile.message.logout_success')),
     onSettled: () => {
