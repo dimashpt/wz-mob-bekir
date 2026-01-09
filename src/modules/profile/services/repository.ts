@@ -3,13 +3,15 @@ import { useEffect } from 'react';
 import {
   DefinedInitialDataOptions,
   useQuery,
+  UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
 
 import { useAuthStore } from '@/store';
 import { profileKeys } from '../constants/keys';
 import * as UserService from './index';
-import { ProfileResponse } from './types';
+import { getChatProfile } from './index';
+import { ChatProfileResponse, ProfileResponse } from './types';
 
 type UserQuery = Omit<
   Partial<
@@ -44,6 +46,26 @@ export function useProfileQuery(
       setUser(query.data.user);
     }
   }, [query.data]);
+
+  return query;
+}
+
+/**
+ * Custom hook to fetch the chat profile for the given account.
+ * @param queryOptions - Optional parameters for the query.
+ * @returns The query object containing the chat profile.
+ */
+export function useChatProfileQuery(
+  queryOptions: Omit<
+    UseQueryOptions<ChatProfileResponse, Error>,
+    'queryKey' | 'queryFn'
+  > = {},
+): UseQueryResult<ChatProfileResponse, Error> {
+  const query = useQuery({
+    ...queryOptions,
+    queryKey: profileKeys.chatProfile,
+    queryFn: getChatProfile,
+  });
 
   return query;
 }

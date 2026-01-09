@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Container, Text } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
-import { useProfileQuery } from '@/modules/profile/services/repository';
+import {
+  useChatProfileQuery,
+  useProfileQuery,
+} from '@/modules/profile/services/repository';
 import { useAppStore } from '@/store';
 import { DeveloperFeaturesSection } from '../components/developer-features-section';
 import { PreferencesSection } from '../components/preferences-section';
@@ -15,7 +18,9 @@ import { VersionCode } from '../components/version-code';
 function ProfileScreen(): ReactElement {
   const { t } = useTranslation();
   const { showBetaFeatures } = useAppStore();
+
   const { data: profile, refetch, isRefetching } = useProfileQuery();
+  const { data: chatProfile } = useChatProfileQuery();
 
   async function handleRefresh(): Promise<void> {
     await refetch();
