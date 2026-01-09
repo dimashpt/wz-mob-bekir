@@ -36,7 +36,7 @@ import { FormStepOrder } from '../components/form-step-order';
 import { FormStepRecipient } from '../components/form-step-recipient';
 import { FormStepShipment } from '../components/form-step-shipment';
 import { FormStepSummary } from '../components/form-step-summary';
-import { ORDER_ENDPOINTS } from '../constants/endpoints';
+import { orderKeys } from '../constants/keys';
 import { useOrderForm } from '../context/order-form-context';
 import { createOrder } from '../services/order';
 import { OrderFormValues } from '../utils/order-form-schema';
@@ -84,14 +84,12 @@ export default function OrderFormScreen(): JSX.Element {
     useOrderForm();
 
   const createOrderMutation = useMutation({
-    mutationKey: [ORDER_ENDPOINTS.CREATE_ORDER],
+    mutationKey: orderKeys.create,
     mutationFn: createOrder,
     onSuccess: () => {
       snackbar.success(t('order_form.message.success'));
       router.back();
-      queryClient.invalidateQueries({
-        queryKey: [ORDER_ENDPOINTS.LIST_ORDERS],
-      });
+      queryClient.invalidateQueries({ queryKey: orderKeys.list() });
     },
     onSettled: () => confirmationSheetRef.current?.close(),
   });

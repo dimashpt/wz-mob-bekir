@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { Container, Icon, InputField, snackbar, Text } from '@/components';
 import { Button } from '@/components/button';
 import { API } from '@/lib/axios';
-import { AUTH_ENDPOINTS } from '@/modules/auth/constants/endpoints';
+import { authEndpoints } from '@/modules/auth/constants/endpoints';
 import { loginChat } from '@/modules/auth/services';
 import { useAuthStore } from '@/store';
 import { emailSchema, stringSchema } from '@/utils/validation';
@@ -46,7 +46,7 @@ export default function ChatLoginScreen(): JSX.Element {
 
   // Mutation
   const loginMutation = useMutation({
-    mutationKey: [AUTH_ENDPOINTS.CHAT_LOGIN],
+    mutationKey: [authEndpoints.chatLogin],
     mutationFn: loginChat,
     onSuccess: (data) => {
       // Check if MFA is required

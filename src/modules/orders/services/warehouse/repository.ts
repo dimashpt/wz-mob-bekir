@@ -5,7 +5,7 @@ import {
   UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 
-import { WAREHOUSE_ENDPOINTS } from '../../constants/endpoints';
+import { warehouseKeys } from '../../constants/keys';
 import * as WarehouseService from './index';
 import { WarehouseListRequestParams, WarehouseListResponse } from './types';
 
@@ -41,7 +41,7 @@ export function useWarehousesInfiniteQuery<
     number
   >({
     ...params,
-    queryKey: [WAREHOUSE_ENDPOINTS.LIST_WAREHOUSES, 'infinite', requestParams],
+    queryKey: warehouseKeys.list(requestParams),
     queryFn: ({ pageParam }) =>
       WarehouseService.getWarehouses({
         ...requestParams,

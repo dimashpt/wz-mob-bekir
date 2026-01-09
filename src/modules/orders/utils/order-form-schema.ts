@@ -12,7 +12,8 @@ import {
   required,
   stringSchema,
 } from '@/utils/validation';
-import { Address, Customer } from '../services/order';
+import { Customer } from '../services/customer';
+import { Address } from '../services/order';
 import { LogisticProvider } from '../services/shipment';
 import { Warehouse } from '../services/warehouse';
 

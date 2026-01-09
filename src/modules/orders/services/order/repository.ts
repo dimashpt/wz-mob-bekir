@@ -8,12 +8,10 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { CUSTOMER_ENDPOINTS, ORDER_ENDPOINTS } from '../../constants/endpoints';
+import { orderKeys } from '../../constants/keys';
 import * as OrderService from './index';
 import {
   AddressResponse,
-  CustomerRequestParams,
-  CustomerResponse,
   OrderDetailsResponse,
   OrderHistoryResponse,
   OrderRequestParams,
@@ -50,7 +48,7 @@ export function useOrderInfiniteQuery<T = InfiniteData<OrderResponse>>(
     number
   >({
     ...params,
-    queryKey: [ORDER_ENDPOINTS.LIST_ORDERS, 'infinite', requestParams],
+    queryKey: orderKeys.list(requestParams),
     queryFn: ({ pageParam }) =>
       OrderService.getOrders({
         ...requestParams,
@@ -84,7 +82,7 @@ export function useOrderDetailsQuery<T = OrderDetailsResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<OrderDetailsResponse, Error, T>({
     ...params,
-    queryKey: [ORDER_ENDPOINTS.GET_ORDER_DETAILS, id],
+    queryKey: orderKeys.details(id),
     queryFn: () => OrderService.getOrderDetails(id),
   });
 
@@ -106,7 +104,7 @@ export function useOrderHistoriesQuery<T = OrderHistoryResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<OrderHistoryResponse, Error, T>({
     ...params,
-    queryKey: [ORDER_ENDPOINTS.GET_ORDER_HISTORIES, id],
+    queryKey: orderKeys.histories(id, {}),
     queryFn: () =>
       OrderService.getOrderHistories(id, {
         page: 1,
@@ -131,45 +129,16 @@ export function useAddressQuery<T = AddressResponse>(
   > = {},
   search?: string,
 ): UseQueryResult<T, Error> {
+  const queryParams = {
+    page: 1,
+    per_page: 5,
+    search_by: 'subdistrict',
+    search,
+  };
   const query = useQuery<OrderService.AddressResponse, Error, T>({
     ...params,
-    queryKey: [ORDER_ENDPOINTS.GET_ADDRESS, search],
-    queryFn: () =>
-      OrderService.getAddress({
-        page: 1,
-        per_page: 5,
-        search_by: 'subdistrict',
-        search,
-      }),
-  });
-
-  return query;
-}
-
-/**
- * Custom hook to fetch customers.
- * @param params - Optional parameters for the query, including select for data transformation.
- * @returns The query object containing customers.
- * @template T - The type of data returned after selection (defaults to CustomerResponse).
- */
-export function useCustomersQuery<T = CustomerResponse>(
-  params: Omit<
-    UseQueryOptions<CustomerResponse, Error, T>,
-    'queryKey' | 'queryFn'
-  > = {},
-  queryParams: CustomerRequestParams,
-): UseQueryResult<T, Error> {
-  const query = useQuery<CustomerResponse, Error, T>({
-    ...params,
-    queryKey: [CUSTOMER_ENDPOINTS.LIST_CUSTOMERS, queryParams],
-    queryFn: () =>
-      OrderService.getCustomers({
-        page: 1,
-        per_page: 10,
-        sort_by: 'created_at',
-        sort_direction: 'desc',
-        ...queryParams,
-      }),
+    queryKey: orderKeys.address(queryParams),
+    queryFn: () => OrderService.getAddress(queryParams),
   });
 
   return query;

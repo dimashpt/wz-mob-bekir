@@ -1,5 +1,5 @@
 import { API } from '@/lib/axios';
-import { SHIPMENT_ENDPOINTS } from '../../constants/endpoints';
+import { shipmentEndpoints } from '../../constants/endpoints';
 import { LogisticProvidersParams, LogisticProvidersResponse } from './types';
 
 /**
@@ -10,7 +10,7 @@ export async function getLogistics(
   params: LogisticProvidersParams,
 ): Promise<LogisticProvidersResponse> {
   const response = await API.get<LogisticProvidersResponse>(
-    SHIPMENT_ENDPOINTS.LIST_LOGISTICS,
+    shipmentEndpoints.logistics,
     { params, timeout: 100_000 },
   );
 

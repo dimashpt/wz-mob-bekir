@@ -1,6 +1,6 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { STORE_ENDPOINTS } from '../../constants/endpoints';
+import { storeEndpoints } from '../../constants/endpoints';
 import { StoreListRequestParams, StoreListResponse } from './types';
 
 /**
@@ -11,7 +11,7 @@ export async function getStores(
   params: StoreListRequestParams,
 ): Promise<StoreListResponse> {
   const response = await API.get<SuccessResponse<StoreListResponse>>(
-    STORE_ENDPOINTS.LIST_STORES,
+    storeEndpoints.list,
     { params },
   );
 

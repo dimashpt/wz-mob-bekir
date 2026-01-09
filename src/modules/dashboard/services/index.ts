@@ -1,6 +1,6 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { DASHBOARD_ENDPOINTS } from '../constants/endpoints';
+import { dashboardEndpoints } from '../constants/endpoints';
 import {
   ChartRevenueResponse,
   ChartSummaryResponse,
@@ -23,7 +23,7 @@ export async function getChartSummary(
   payload: DashboardPayload,
 ): Promise<ChartSummaryResponse> {
   const response = await API.post<SuccessResponse<ChartSummaryResponse>>(
-    DASHBOARD_ENDPOINTS.CHART_SUMMARY,
+    dashboardEndpoints.chartSummary,
     payload,
   );
 
@@ -39,7 +39,7 @@ export async function getChartRevenue(
   payload: DashboardPayload,
 ): Promise<ChartRevenueResponse> {
   const response = await API.post<SuccessResponse<ChartRevenueResponse>>(
-    DASHBOARD_ENDPOINTS.CHART_REVENUE,
+    dashboardEndpoints.chartRevenue,
     payload,
   );
 
@@ -55,7 +55,7 @@ export async function getOrderTotal(
   payload: DashboardPayload,
 ): Promise<OrderTotalResponse> {
   const response = await API.post<SuccessResponse<OrderTotalResponse>>(
-    DASHBOARD_ENDPOINTS.GET_ORDER_TOTAL,
+    dashboardEndpoints.totalOrder,
     payload,
   );
 
@@ -71,7 +71,7 @@ export async function getOrderMarketplace(
   payload: DashboardPayload,
 ): Promise<OrderMarketplaceResponse> {
   const response = await API.post<SuccessResponse<OrderMarketplaceResponse>>(
-    DASHBOARD_ENDPOINTS.GET_ORDER_MARKETPLACE,
+    dashboardEndpoints.marketplaceOrder,
     payload,
   );
 
@@ -87,7 +87,7 @@ export async function getTotalRevenue(
   payload: DashboardPayload,
 ): Promise<TotalRevenueResponse> {
   const response = await API.post<SuccessResponse<TotalRevenueResponse>>(
-    DASHBOARD_ENDPOINTS.GET_TOTAL_REVENUE,
+    dashboardEndpoints.totalRevenue,
     payload,
   );
 
@@ -103,7 +103,7 @@ export async function getTopProduct(
   payload: DashboardPayload,
 ): Promise<TopProductResponse> {
   const response = await API.post<SuccessResponse<TopProductResponse>>(
-    DASHBOARD_ENDPOINTS.GET_TOP_PRODUCT,
+    dashboardEndpoints.topProducts,
     payload,
   );
 
@@ -119,7 +119,7 @@ export async function getProcessSummary(
   payload: DashboardPayload,
 ): Promise<ProcessSummaryResponse> {
   const response = await API.post<SuccessResponse<ProcessSummaryResponse>>(
-    DASHBOARD_ENDPOINTS.GET_PROCESS_SUMMARY,
+    dashboardEndpoints.processSummary,
     payload,
   );
 
@@ -135,7 +135,7 @@ export async function getStatusMarketplace(
   payload: DashboardPayload,
 ): Promise<MarketplaceStatusResponse> {
   const response = await API.post<SuccessResponse<MarketplaceStatusResponse>>(
-    DASHBOARD_ENDPOINTS.GET_STATUS_MARKETPLACE,
+    dashboardEndpoints.marketplaceStatus,
     payload,
   );
 
@@ -151,7 +151,7 @@ export async function getPerformanceSummary(
   payload: DashboardPayload,
 ): Promise<PerformanceSummaryResponse> {
   const response = await API.post<SuccessResponse<PerformanceSummaryResponse>>(
-    DASHBOARD_ENDPOINTS.GET_PERFORMANCE_SUMMARY,
+    dashboardEndpoints.performanceSummary,
     payload,
   );
 

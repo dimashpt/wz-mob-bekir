@@ -4,7 +4,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { SHIPMENT_ENDPOINTS } from '../../constants/endpoints';
+import { shipmentKeys } from '../../constants/keys';
 import * as ShipmentService from './index';
 import { LogisticProvidersParams, LogisticProvidersResponse } from './types';
 
@@ -27,7 +27,7 @@ export function useLogisticProvidersQuery<T = LogisticProvidersResponse>(
       Boolean(queryParams.destination_code) &&
       Boolean(queryParams.weight),
     ...params,
-    queryKey: [SHIPMENT_ENDPOINTS.LIST_LOGISTICS, queryParams],
+    queryKey: shipmentKeys.logistics(queryParams),
     queryFn: () => ShipmentService.getLogistics(queryParams),
   });
 

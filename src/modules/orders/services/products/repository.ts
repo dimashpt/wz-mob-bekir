@@ -5,7 +5,7 @@ import {
   UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 
-import { PRODUCT_ENDPOINTS } from '../../constants/endpoints';
+import { productKeys } from '../../constants/keys';
 import * as ProductService from './index';
 import { ProductListRequestParams, ProductListResponse } from './types';
 
@@ -39,7 +39,7 @@ export function useProductsInfiniteQuery<T = InfiniteData<ProductListResponse>>(
     number
   >({
     ...params,
-    queryKey: [PRODUCT_ENDPOINTS.LIST_PRODUCTS, 'infinite', requestParams],
+    queryKey: productKeys.list(requestParams),
     queryFn: ({ pageParam }) =>
       ProductService.getProducts({
         sort_by: 'created_at',

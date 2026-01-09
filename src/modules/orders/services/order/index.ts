@@ -1,12 +1,10 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { CUSTOMER_ENDPOINTS, ORDER_ENDPOINTS } from '../../constants/endpoints';
+import { orderEndpoints } from '../../constants/endpoints';
 import {
   AddressRequestParams,
   AddressResponse,
   CreateOrderPayload,
-  CustomerRequestParams,
-  CustomerResponse,
   OrderDetailsResponse,
   OrderHistoryParams,
   OrderHistoryResponse,
@@ -23,7 +21,7 @@ export async function getOrders(
   params: OrderRequestParams,
 ): Promise<OrderResponse> {
   const response = await API.get<SuccessResponse<OrderResponse>>(
-    ORDER_ENDPOINTS.LIST_ORDERS,
+    orderEndpoints.list,
     { params },
   );
 
@@ -39,7 +37,7 @@ export async function getOrderDetails(
   id: string,
 ): Promise<OrderDetailsResponse> {
   const response = await API.get<SuccessResponse<OrderDetailsResponse>>(
-    ORDER_ENDPOINTS.GET_ORDER_DETAILS.replace(':id', id),
+    orderEndpoints.details.replace(':id', id),
   );
 
   return response.data.data;
@@ -55,7 +53,7 @@ export async function getOrderHistories(
   params: OrderHistoryParams,
 ): Promise<OrderHistoryResponse> {
   const response = await API.get<SuccessResponse<OrderHistoryResponse>>(
-    ORDER_ENDPOINTS.GET_ORDER_HISTORIES.replace(':id', id),
+    orderEndpoints.detailHistory.replace(':id', id),
     { params },
   );
 
@@ -71,7 +69,7 @@ export async function getAddress(
   params: AddressRequestParams,
 ): Promise<AddressResponse> {
   const response = await API.get<SuccessResponse<AddressResponse>>(
-    ORDER_ENDPOINTS.GET_ADDRESS,
+    orderEndpoints.address,
     { params },
   );
 
@@ -87,28 +85,12 @@ export async function createOrder(
   payload: CreateOrderPayload,
 ): Promise<OrderResponse> {
   const response = await API.post<SuccessResponse<OrderResponse>>(
-    ORDER_ENDPOINTS.CREATE_ORDER,
+    orderEndpoints.create,
     payload,
     { timeout: 20_000 },
   );
 
   return response.data.data;
-}
-
-/**
- * Fetches customers from the API.
- * @param params - The parameters for the request.
- * @returns A promise that resolves to the customers.
- */
-export async function getCustomers(
-  params: CustomerRequestParams,
-): Promise<CustomerResponse> {
-  const response = await API.get<CustomerResponse>(
-    CUSTOMER_ENDPOINTS.LIST_CUSTOMERS,
-    { params },
-  );
-
-  return response.data;
 }
 
 export * from './types';

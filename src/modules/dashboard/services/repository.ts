@@ -4,7 +4,7 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { DASHBOARD_ENDPOINTS } from '../constants/endpoints';
+import { dashboardKeys } from '../constants/keys';
 import * as DashboardService from './index';
 import {
   ChartRevenueResponse,
@@ -35,7 +35,7 @@ export function useChartSummaryQuery<T = ChartSummaryResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<ChartSummaryResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.CHART_SUMMARY, payload],
+    queryKey: dashboardKeys.chartSummary(payload),
     queryFn: () => DashboardService.getChartSummary(payload),
   });
 
@@ -58,7 +58,7 @@ export function useChartRevenueQuery<T = ChartRevenueResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<ChartRevenueResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.CHART_REVENUE, payload],
+    queryKey: dashboardKeys.chartRevenue(payload),
     queryFn: () => DashboardService.getChartRevenue(payload),
   });
 
@@ -81,7 +81,7 @@ export function useOrderTotalQuery<T = OrderTotalResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<OrderTotalResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_ORDER_TOTAL, payload],
+    queryKey: dashboardKeys.totalOrder(payload),
     queryFn: () => DashboardService.getOrderTotal(payload),
   });
 
@@ -104,7 +104,7 @@ export function useOrderMarketplaceQuery<T = OrderMarketplaceResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<OrderMarketplaceResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_ORDER_MARKETPLACE, payload],
+    queryKey: dashboardKeys.marketplaceOrder(payload),
     queryFn: () => DashboardService.getOrderMarketplace(payload),
   });
 
@@ -127,7 +127,7 @@ export function useTotalRevenueQuery<T = TotalRevenueResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<TotalRevenueResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_TOTAL_REVENUE, payload],
+    queryKey: dashboardKeys.totalRevenue(payload),
     queryFn: () => DashboardService.getTotalRevenue(payload),
   });
 
@@ -150,7 +150,7 @@ export function useTopProductQuery<T = TopProductResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<TopProductResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_TOP_PRODUCT, payload],
+    queryKey: dashboardKeys.topProducts(payload),
     queryFn: () => DashboardService.getTopProduct(payload),
   });
 
@@ -173,7 +173,7 @@ export function useProcessSummaryQuery<T = ProcessSummaryResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<ProcessSummaryResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_PROCESS_SUMMARY, payload],
+    queryKey: dashboardKeys.processSummary(payload),
     queryFn: () => DashboardService.getProcessSummary(payload),
   });
 
@@ -196,7 +196,7 @@ export function useStatusMarketplaceQuery<T = MarketplaceStatusResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<MarketplaceStatusResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_STATUS_MARKETPLACE, payload],
+    queryKey: dashboardKeys.marketplaceStatus(payload),
     queryFn: () => DashboardService.getStatusMarketplace(payload),
   });
 
@@ -219,7 +219,7 @@ export function usePerformanceSummaryQuery<T = PerformanceSummaryResponse>(
 ): UseQueryResult<T, Error> {
   const query = useQuery<PerformanceSummaryResponse, Error, T>({
     ...params,
-    queryKey: [DASHBOARD_ENDPOINTS.GET_PERFORMANCE_SUMMARY, payload],
+    queryKey: dashboardKeys.performanceSummary(payload),
     queryFn: () => DashboardService.getPerformanceSummary(payload),
   });
 

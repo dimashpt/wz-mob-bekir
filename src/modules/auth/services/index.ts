@@ -1,7 +1,7 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
 import { useAuthStore } from '@/store';
-import { AUTH_ENDPOINTS } from '../constants/endpoints';
+import { authEndpoints } from '../constants/endpoints';
 import {
   ChatLoginPayload,
   ChatLoginResponse,
@@ -18,7 +18,7 @@ import {
  */
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
   const response = await API.post<SuccessResponse<LoginResponse>>(
-    AUTH_ENDPOINTS.LOGIN,
+    authEndpoints.login,
     payload,
   );
 
@@ -30,10 +30,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
  * @returns A promise that resolves when the logout is successful.
  */
 export async function logout(): Promise<void> {
-  const response = await API.post<SuccessResponse<void>>(
-    AUTH_ENDPOINTS.LOGOUT,
-    {},
-  );
+  const response = await API.post<SuccessResponse<void>>(authEndpoints.logout);
 
   return response.data.data;
 }
@@ -46,7 +43,7 @@ export async function refreshToken(): Promise<LoginResponse> {
   const refreshToken = useAuthStore.getState().token?.refreshToken;
 
   const response = await API.post<SuccessResponse<LoginResponse>>(
-    AUTH_ENDPOINTS.REFRESH_TOKEN,
+    authEndpoints.refreshToken,
     { refresh_token: refreshToken },
   );
 
@@ -62,7 +59,7 @@ export async function forgotPassword(
   payload: Pick<ForgotPasswordPayload, 'email'>,
 ): Promise<void> {
   const response = await API.post<SuccessResponse<void>>(
-    AUTH_ENDPOINTS.FORGOT_PASSWORD,
+    authEndpoints.forgotPassword,
     payload,
   );
 
@@ -78,7 +75,7 @@ export async function resetPassword(
   payload: ResetPasswordPayload,
 ): Promise<void> {
   const response = await API.post<SuccessResponse<void>>(
-    AUTH_ENDPOINTS.RESET_PASSWORD,
+    authEndpoints.resetPassword,
     payload,
   );
 
@@ -92,7 +89,7 @@ export async function loginChat(
   payload: ChatLoginPayload,
 ): Promise<ChatLoginResponse> {
   const response = await API.post<ChatLoginResponse>(
-    AUTH_ENDPOINTS.CHAT_LOGIN,
+    authEndpoints.chatLogin,
     payload,
   );
 

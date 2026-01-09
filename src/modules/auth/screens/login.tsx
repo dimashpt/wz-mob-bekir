@@ -21,7 +21,7 @@ import { API } from '@/lib/axios';
 import { forgotPassword, login } from '@/modules/auth/services';
 import { useAuthStore } from '@/store';
 import { handleMutationError } from '@/utils/error-handler';
-import { AUTH_ENDPOINTS } from '../constants/endpoints';
+import { authEndpoints } from '../constants/endpoints';
 
 const Image = withUniwind(ExpoImage);
 
@@ -86,7 +86,7 @@ function LoginScreen(): JSX.Element {
   });
 
   const loginMutation = useMutation({
-    mutationKey: [AUTH_ENDPOINTS.LOGIN],
+    mutationKey: [authEndpoints.login],
     mutationFn: login,
     onSuccess: (data) => {
       API.defaults.headers.common['Authorization'] =
@@ -111,7 +111,7 @@ function LoginScreen(): JSX.Element {
   });
 
   const forgotPasswordMutation = useMutation({
-    mutationKey: [AUTH_ENDPOINTS.FORGOT_PASSWORD],
+    mutationKey: [authEndpoints.forgotPassword],
     mutationFn: forgotPassword,
     onSuccess: () => {
       Keyboard.dismiss();

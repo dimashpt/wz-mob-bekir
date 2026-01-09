@@ -1,6 +1,6 @@
 import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
-import { PRODUCT_ENDPOINTS } from '../../constants/endpoints';
+import { productEndpoints } from '../../constants/endpoints';
 import { ProductListRequestParams, ProductListResponse } from './types';
 
 /**
@@ -11,7 +11,7 @@ export async function getProducts(
   params: ProductListRequestParams,
 ): Promise<ProductListResponse> {
   const response = await API.get<SuccessResponse<ProductListResponse>>(
-    PRODUCT_ENDPOINTS.LIST_PRODUCTS,
+    productEndpoints.list,
     { params },
   );
 

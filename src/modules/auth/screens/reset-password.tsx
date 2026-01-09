@@ -19,7 +19,7 @@ import { Container, Header, InputField, snackbar, Text } from '@/components';
 import { Button } from '@/components/button';
 import { resetPassword } from '@/modules/auth/services';
 import { useAuthStore } from '@/store';
-import { AUTH_ENDPOINTS } from '../constants/endpoints';
+import { authEndpoints } from '../constants/endpoints';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const getResetPasswordSchema = (t: (key: string) => string) =>
@@ -73,7 +73,7 @@ export default function ForgotPasswordResetScreen(): JSX.Element {
     });
 
   const resetPasswordMutation = useMutation({
-    mutationKey: [AUTH_ENDPOINTS.RESET_PASSWORD],
+    mutationKey: [authEndpoints.resetPassword],
     mutationFn: resetPassword,
     onSuccess: () => {
       snackbar.success(t('reset_password.message.success'));

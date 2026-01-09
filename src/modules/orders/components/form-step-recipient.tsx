@@ -17,19 +17,12 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
-import { ORDER_ENDPOINTS } from '../constants/endpoints';
+import { orderEndpoints } from '../constants/endpoints';
 import { useOrderForm } from '../context/order-form-context';
-import {
-  Address,
-  AddressRequestParams,
-  Customer,
-  CustomerAddress,
-  getAddress,
-} from '../services/order';
-import {
-  useAddressQuery,
-  useCustomersQuery,
-} from '../services/order/repository';
+import { Customer, CustomerAddress } from '../services/customer';
+import { useCustomersQuery } from '../services/customer/repository';
+import { Address, AddressRequestParams, getAddress } from '../services/order';
+import { useAddressQuery } from '../services/order/repository';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
@@ -91,7 +84,7 @@ export function FormStepRecipient(): JSX.Element {
 
   // Handle the address search mutation
   const searchAddressesMutation = useMutation({
-    mutationKey: [ORDER_ENDPOINTS.GET_ADDRESS],
+    mutationKey: [orderEndpoints.address],
     mutationFn: (params: AddressRequestParams & { address: CustomerAddress }) =>
       getAddress({
         page: 1,

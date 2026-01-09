@@ -30,7 +30,8 @@ import { screenHeight, screenWidth, useDebounce } from '@/hooks';
 import { queryClient } from '@/lib/react-query';
 import { stringSchema } from '@/utils/validation';
 import OrderListItem from '../components/order-list-item';
-import { ORDER_ENDPOINTS } from '../constants/endpoints';
+import { orderEndpoints } from '../constants/endpoints';
+import { orderKeys } from '../constants/keys';
 import {
   ORDER_FILTER_FIELDS,
   ORDER_INTERNAL_STATUS,
@@ -99,6 +100,9 @@ export default function OrdersScreen(): JSX.Element {
   );
 
   const searchOrderMutation = useMutation({
+    mutationKey: orderKeys.list({
+      [`search[${searchKey}]`]: debouncedSearch,
+    }),
     mutationFn: handleSearchOrder,
     onSuccess: (order) => {
       searchOrderDialogRef.current?.close();
@@ -164,7 +168,7 @@ export default function OrdersScreen(): JSX.Element {
 
     // Set the query data to only contain the first page
     queryClient.setQueryData(
-      [ORDER_ENDPOINTS.LIST_ORDERS, 'infinite', { per_page: 10 }],
+      [orderEndpoints.list, 'infinite', { per_page: 10 }],
       {
         pages: [data?.pages[0] ?? []],
         pageParams: [1],

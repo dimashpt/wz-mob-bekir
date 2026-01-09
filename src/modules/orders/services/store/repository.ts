@@ -5,7 +5,7 @@ import {
   UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 
-import { STORE_ENDPOINTS } from '../../constants/endpoints';
+import { storeKeys } from '../../constants/keys';
 import * as StoreService from './index';
 import { StoreListRequestParams, StoreListResponse } from './types';
 
@@ -37,7 +37,7 @@ export function useStoresInfiniteQuery<T = InfiniteData<StoreListResponse>>(
     number
   >({
     ...params,
-    queryKey: [STORE_ENDPOINTS.LIST_STORES, 'infinite', requestParams],
+    queryKey: storeKeys.list(requestParams),
     queryFn: ({ pageParam }) =>
       StoreService.getStores({
         per_page: 10,
