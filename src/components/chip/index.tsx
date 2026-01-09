@@ -36,11 +36,11 @@ const textVariants = tv({
   variants: {
     variant: {
       blue: 'text-accent',
-      gray: 'text-foreground-muted',
+      gray: 'text-muted-foreground',
       yellow: 'text-warning',
       red: 'text-danger',
       green: 'text-success',
-      clear: 'text-foreground-muted',
+      clear: 'text-muted-foreground',
     },
   },
   defaultVariants: {

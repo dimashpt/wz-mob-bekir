@@ -110,7 +110,9 @@ function ProfileScreen(): ReactElement {
               loading={isChatProfileLoading}
               className="text-center"
             >
-              {profile?.user?.name} / {chatProfile?.name}
+              {[profile?.user?.name, chatProfile?.name]
+                .filter(Boolean)
+                .join(' / ')}
             </Text>
             <Text
               variant="bodyS"
@@ -118,11 +120,15 @@ function ProfileScreen(): ReactElement {
               loading={isChatProfileLoading}
               className="text-center"
             >
-              {profile?.user?.email} / {chatProfile?.email}
+              {[profile?.user?.email, chatProfile?.email]
+                .filter(Boolean)
+                .join(' / ')}
             </Text>
             {profile?.user && (
               <Chip
-                label={`${profile?.user?.role_name} - ${profile?.tenant?.name}`}
+                label={[profile?.user?.role_name, profile?.tenant?.name]
+                  .filter(Boolean)
+                  .join(' - ')}
                 variant="gray"
                 className="self-center"
                 textProps={{

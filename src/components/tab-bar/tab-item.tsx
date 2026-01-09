@@ -104,13 +104,15 @@ export const TabItem = ({
               }) as unknown as IconNames
             }
             size="xl"
-            color={isFocused ? accentColor : textColorMuted}
+            className={isFocused ? 'text-accent' : 'text-muted-foreground/70'}
           />
         </Animated.View>
         <Text
           variant="labelXS"
-          color={isFocused ? 'accent' : 'muted'}
-          className="text-center text-xs"
+          className={twMerge(
+            'text-center text-xs',
+            isFocused ? 'text-accent' : 'text-muted-foreground/70',
+          )}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
