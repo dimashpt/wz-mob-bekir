@@ -1,6 +1,6 @@
 import type { ImagePreviewModal as ImagePreviewModalType } from '@/components/image-preview-modal';
 
-import { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
   Linking,
@@ -23,7 +23,12 @@ import {
   SystemMessageProps,
 } from 'react-native-gifted-chat';
 import Markdown, { MarkdownIt } from 'react-native-markdown-display';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 import { useCSSVariable } from 'uniwind';
@@ -470,11 +475,22 @@ function MessageContextMenu({
   onDelete,
   onClose,
 }: MessageContextMenuProps): React.JSX.Element {
+  const blurOpacity = useSharedValue(0);
+
+  // Animate blur in on mount
+  useEffect(() => {
+    blurOpacity.value = withTiming(1, { duration: 200 });
+  }, []);
+
+  const blurStyle = useAnimatedStyle(() => ({
+    opacity: blurOpacity.value,
+  }));
+
   return (
     <Modal
       transparent
       visible
-      animationType="fade"
+      animationType="none"
       statusBarTranslucent
       onRequestClose={onClose}
     >
@@ -484,12 +500,14 @@ function MessageContextMenu({
         }}
       >
         <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-          <BlurView
-            intensity={Platform.OS === 'ios' ? 30 : 20}
-            tint="dark"
-            experimentalBlurMethod="dimezisBlurView"
-            style={StyleSheet.absoluteFill}
-          />
+          <Animated.View style={[StyleSheet.absoluteFill, blurStyle]}>
+            <BlurView
+              intensity={Platform.OS === 'ios' ? 30 : 20}
+              tint="dark"
+              experimentalBlurMethod="dimezisBlurView"
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
           <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
         </View>
         {/* Render message bubble above blur to keep it readable */}
