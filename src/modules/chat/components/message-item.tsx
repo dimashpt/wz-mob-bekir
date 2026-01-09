@@ -7,6 +7,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -229,8 +230,21 @@ export function MessageItem({
 
     // Measure position at the moment of long press to get current position
     messageLayoutRef.current.measureInWindow((x, y, width, height) => {
+      // On Android, coordinate systems differ between measureInWindow and Modal
+      // measureInWindow: includes status bar in Y coordinate
+      // Modal with statusBarTranslucent: excludes status bar from coordinate system
+      // Use safe area insets which is more reliable than StatusBar.currentHeight
+      let adjustedY = y;
+      if (Platform.OS === 'android') {
+        /**
+         * Subtract safe area top to align with Modal coordinate system
+         * Using StatusBar.currentHeight to get the height of the status bar
+         * This is more reliable than using useSafeAreaInsets() that returns 0 on Android
+         */
+        adjustedY = y + (StatusBar.currentHeight ?? 0);
+      }
       // Store message position to render it above blur
-      setMessagePosition({ x, y, width, height });
+      setMessagePosition({ x, y: adjustedY, width, height });
       const menuWidth = MENU_WIDTH;
       // More accurate menu height: 2 items × (py-sm × 2 + text height ~20px) ≈ 72px
       // Adding border and shadow buffer
@@ -241,7 +255,7 @@ export function MessageItem({
       const safeAreaBottom = 100; // Safe area at bottom
 
       // Calculate Y position - prefer below, fallback to above
-      let menuY = y + height + spacing;
+      let menuY = adjustedY + height + spacing;
       const showAbove =
         menuY + menuHeight > screenHeight - safeAreaBottom &&
         y > menuHeight + spacing;
