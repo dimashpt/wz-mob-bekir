@@ -41,6 +41,7 @@ import {
   generateEchoId,
   updateMessageByEchoIdInQuery,
 } from '../utils/message';
+import { ChatMessage } from './message-item';
 
 type Params = {
   conversation_id: string;
@@ -64,9 +65,16 @@ const ATTACHMENT_OPTIONS = [
     label: 'Macro',
   },
 ];
-export function ChatRoomInput(
-  _props: InputToolbarProps<IMessage>,
-): JSX.Element {
+
+type ChatRoomInputProps = InputToolbarProps<IMessage> & {
+  replyTo?: ChatMessage;
+  removeReply?: () => void;
+};
+
+export function ChatRoomInput({
+  replyTo,
+  removeReply,
+}: ChatRoomInputProps): JSX.Element {
   const { chatUser } = useAuthStore();
   const { conversation_id } = useLocalSearchParams<Params>();
   const { t } = useTranslation();
@@ -120,6 +128,7 @@ export function ChatRoomInput(
     onMutate: async (newMessage, context) => {
       // Clear the message input
       resetMessage();
+      removeReply?.();
 
       const messageListKey = conversationKeys.messages(
         chatUser!.account_id,
@@ -203,15 +212,15 @@ export function ChatRoomInput(
     const trimmedMessage = message.trim();
 
     // Prevent sending empty or whitespace-only messages
-    if (!trimmedMessage) {
-      return;
-    }
+    if (!trimmedMessage) return;
 
     const echoId = generateEchoId();
 
     sendMessageMutation.mutate({
       content: trimmedMessage,
-      content_attributes: {},
+      content_attributes: {
+        in_reply_to: replyTo ? replyTo.id : undefined,
+      },
       echo_id: echoId,
       private: isPrivate,
     });
@@ -350,6 +359,34 @@ export function ChatRoomInput(
           />
         )}
         <View className="gap-sm flex-1">
+          {replyTo && (
+            <View className="gap-sm bg-muted p-sm flex-row items-center rounded-sm">
+              <Icon
+                name="forward"
+                size="base"
+                className="text-muted-foreground"
+                transform="scale(-1,1)"
+              />
+              <View className="shrink">
+                <Text variant="bodyXS" color="muted">
+                  Reply to {replyTo.sender?.name ?? '-'}
+                </Text>
+                <Text variant="bodyS" numberOfLines={1} className="shrink">
+                  {replyTo.content}
+                </Text>
+              </View>
+              <Clickable
+                onPress={removeReply}
+                className="absolute top-1 right-1 z-1"
+              >
+                <Icon
+                  name="close"
+                  size="lg"
+                  className="text-muted-foreground"
+                />
+              </Clickable>
+            </View>
+          )}
           {renderAttachment()}
           <InputField
             placeholder={

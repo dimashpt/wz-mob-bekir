@@ -11,7 +11,7 @@ import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
-import { MessageItem } from '../components/message-item';
+import { ChatMessage, MessageItem } from '../components/message-item';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import { deleteMessage } from '../services/conversation';
@@ -32,12 +32,14 @@ type Params = {
 };
 
 export default function ChatRoomScreen(): JSX.Element {
-  const { conversation_id } = useLocalSearchParams<Params>();
-
-  const { bottom } = useSafeAreaInsets();
   const pagerViewRef = useRef<PagerView>(null);
-  const [activeTab, setActiveTab] = useState(0);
+
+  const { conversation_id } = useLocalSearchParams<Params>();
   const { chatUser } = useAuthStore();
+  const { bottom } = useSafeAreaInsets();
+
+  const [activeTab, setActiveTab] = useState(0);
+  const [replyMessage, setReplyMessage] = useState<ChatMessage>();
 
   const {
     data: messages,
@@ -134,7 +136,11 @@ export default function ChatRoomScreen(): JSX.Element {
             name: chatUser?.name ?? '',
           }}
           renderBubble={(props) => (
-            <MessageItem {...props} onDelete={deleteMessageMutation.mutate} />
+            <MessageItem
+              {...props}
+              onDelete={deleteMessageMutation.mutate}
+              onReply={setReplyMessage}
+            />
           )}
           listProps={{
             contentContainerClassName: 'pb-md',
@@ -153,7 +159,13 @@ export default function ChatRoomScreen(): JSX.Element {
           }}
           renderSystemMessage={MessageItem.SystemMessage}
           renderDay={MessageItem.DaySeparator}
-          renderInputToolbar={ChatRoomInput}
+          renderInputToolbar={(props) => (
+            <ChatRoomInput
+              {...props}
+              replyTo={replyMessage}
+              removeReply={() => setReplyMessage(undefined)}
+            />
+          )}
           renderAvatar={(props) => (
             <Avatar
               name={props.currentMessage.sender?.name ?? ''}

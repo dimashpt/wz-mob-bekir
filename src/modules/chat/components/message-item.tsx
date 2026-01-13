@@ -40,8 +40,8 @@ import { snackbar } from '@/components/snackbar';
 import { queryClient } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { formatFileSize } from '@/utils/formatter';
-import { conversationEndpoints } from '../constants/endpoints';
 import { MESSAGE_TYPES } from '../constants/flags';
+import { conversationKeys } from '../constants/keys';
 import {
   Attachment,
   ConversationMessagesResponse,
@@ -53,6 +53,7 @@ const MENU_WIDTH = 150;
 
 interface MessageItemProps extends BubbleProps<ChatMessage> {
   onDelete: (messageId: number) => void;
+  onReply?: (message: ChatMessage) => void;
 }
 const messageBubbleVariants = tv({
   base: 'p-sm bg-surface self-start',
@@ -97,7 +98,7 @@ type MessageType = 'incoming' | 'outgoing' | 'private' | 'template';
 interface MessageBubbleContentProps {
   message: ChatMessage;
   messageType: MessageType;
-  replyMessage?: string;
+  replyMessage?: ChatMessage;
   attachments: Attachment[];
   isReplyMessage: boolean | number | undefined;
   hasAttachments: boolean;
@@ -122,7 +123,7 @@ function MessageBubbleContent({
       {isReplyMessage && replyMessage ? (
         <Clickable
           onPress={() => {}}
-          className="gap-sm mb-xs p-xs flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
+          className="gap-sm mb-xs py-xs px-sm flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
         >
           <Icon
             name="forward"
@@ -136,7 +137,14 @@ function MessageBubbleContent({
               numberOfLines={3}
               className="text-white/70 dark:text-black/70"
             >
-              {replyMessage}
+              {replyMessage?.sender?.name ?? 'System'}
+            </Text>
+            <Text
+              variant="bodyS"
+              numberOfLines={3}
+              className="text-white/90 dark:text-black/70"
+            >
+              {replyMessage?.text}
             </Text>
           </View>
         </Clickable>
@@ -180,6 +188,7 @@ function MessageBubbleContent({
 export function MessageItem({
   currentMessage: message,
   onDelete,
+  onReply,
 }: MessageItemProps): React.JSX.Element {
   const { chatUser } = useAuthStore();
   const imagePreviewRef = useRef<ImagePreviewModalType>(null);
@@ -203,13 +212,10 @@ export function MessageItem({
   const attachments = message.attachments ?? [];
   const hasAttachments = attachments.length > 0;
 
-  const queryKey = [
-    conversationEndpoints.messages(
-      chatUser?.account_id ?? 0,
-      (message.conversation_id ?? '').toString(),
-    ),
-    'infinite',
-  ];
+  const queryKey = conversationKeys.messages(
+    chatUser?.account_id ?? 0,
+    message?.conversation_id?.toString(),
+  );
   const messages =
     queryClient.getQueryData<InfiniteData<ConversationMessagesResponse>>(
       queryKey,
@@ -223,7 +229,7 @@ export function MessageItem({
       (m) => m.id === replyMessageId,
     );
 
-    return repliedMessage?.text ?? '~';
+    return repliedMessage;
   }, [message.content_attributes.in_reply_to]);
 
   function handleOpenMenu(): void {
@@ -302,6 +308,13 @@ export function MessageItem({
   function handleDelete(): void {
     if (onDelete) {
       onDelete(message.id);
+    }
+    handleCloseMenu();
+  }
+
+  function handleReply(): void {
+    if (onReply) {
+      onReply(message);
     }
     handleCloseMenu();
   }
@@ -455,6 +468,7 @@ export function MessageItem({
           hasAttachments={hasAttachments}
           renderAttachment={renderAttachment}
           onCopy={handleCopy}
+          onReply={handleReply}
           onDelete={handleDelete}
           onClose={handleCloseMenu}
         />
@@ -468,12 +482,13 @@ interface MessageContextMenuProps {
   messagePosition: { x: number; y: number; width: number; height: number };
   message: ChatMessage;
   messageType: MessageType;
-  replyMessage?: string;
+  replyMessage?: ChatMessage;
   attachments: Attachment[];
   isReplyMessage: boolean | number | undefined;
   hasAttachments: boolean;
   renderAttachment: (attachment: Attachment) => React.JSX.Element;
   onCopy: () => void;
+  onReply: () => void;
   onDelete: () => void;
   onClose: () => void;
 }
@@ -489,6 +504,7 @@ function MessageContextMenu({
   hasAttachments,
   renderAttachment,
   onCopy,
+  onReply,
   onDelete,
   onClose,
 }: MessageContextMenuProps): React.JSX.Element {
@@ -563,6 +579,18 @@ function MessageContextMenu({
             >
               <Icon name="copy" size="base" className="text-foreground" />
               <Text variant="bodyS">Copy</Text>
+            </Clickable>
+            <Clickable
+              onPress={onReply}
+              className="px-md py-sm gap-sm border-border active:bg-surface-soft flex-row items-center border-b"
+            >
+              <Icon
+                name="forward"
+                size="base"
+                className="text-foreground"
+                transform="scale(-1,1)"
+              />
+              <Text variant="bodyS">Reply</Text>
             </Clickable>
             <Clickable
               onPress={onDelete}
