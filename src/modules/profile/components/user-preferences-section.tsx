@@ -8,6 +8,7 @@ import {
   OptionBottomSheet,
   OptionBottomSheetRef,
 } from '@/components';
+import { useSettingNotifications } from '@/modules/settings/services/repository';
 import { useAuthStore } from '@/store';
 import { profileKeys } from '../constants/keys';
 import { ChatProfileResponse, updateAvailability } from '../services';
@@ -30,6 +31,8 @@ export function UserPreferencesSection({
   const currentAccount = data?.accounts?.find(
     (account) => account.id === chatUser?.account_id,
   );
+
+  const { data: settings } = useSettingNotifications();
 
   const changeAvailabilityMutation = useMutation({
     mutationKey: profileKeys.availability,
