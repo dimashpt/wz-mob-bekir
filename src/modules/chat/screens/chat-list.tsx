@@ -17,6 +17,7 @@ import {
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useAuthStore } from '@/store';
 import ChatListItem from '../components/chat-list-item';
 import { conversationKeys } from '../constants/keys';
@@ -247,66 +248,21 @@ export default function ChatScreen(): JSX.Element {
     mutationKey: conversationKeys.unread,
     mutationFn: (conversation: Conversation) =>
       unreadConversation(chatUser?.account_id ?? 0, conversation.id),
-    onSuccess: (data, payload, __, context) => {
-      context.client.setQueryData(
-        conversationKeys.list(chatUser?.account_id ?? 0, filters),
-        (old: ListConversationsResponse) => {
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              payload: old.data.payload.map((item) =>
-                item.id === payload.id ? data : item,
-              ),
-            },
-          };
-        },
-      );
-    },
+    onSuccess: handleOptimisticUnreadConversation,
   });
 
   const muteConversationMutation = useMutation({
     mutationKey: conversationKeys.mute,
     mutationFn: (conversation: Conversation) =>
       muteConversation(chatUser?.account_id ?? 0, conversation.id.toString()),
-    onSuccess: (_, payload, ___, context) => {
-      context.client.setQueryData(
-        conversationKeys.list(chatUser?.account_id ?? 0, filters),
-        (old: ListConversationsResponse) => {
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              payload: old.data.payload.map((item) =>
-                item.id === payload.id ? { ...item, muted: true } : item,
-              ),
-            },
-          };
-        },
-      );
-    },
+    onSuccess: (_, payload) => handleOptimisticToggleMute(payload.id, true),
   });
 
   const unmuteConversationMutation = useMutation({
     mutationKey: conversationKeys.unmute,
     mutationFn: (conversationId: number) =>
       unmuteConversation(chatUser?.account_id ?? 0, conversationId.toString()),
-    onSuccess: (_, payload, ___, context) => {
-      context.client.setQueryData(
-        conversationKeys.list(chatUser?.account_id ?? 0, filters),
-        (old: ListConversationsResponse) => {
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              payload: old.data.payload.map((item) =>
-                item.id === payload ? { ...item, muted: false } : item,
-              ),
-            },
-          };
-        },
-      );
-    },
+    onSuccess: (_, payload) => handleOptimisticToggleMute(payload, false),
   });
 
   function toggleMute(conversation: Conversation): void {
@@ -316,6 +272,44 @@ export default function ChatScreen(): JSX.Element {
     }
 
     muteConversationMutation.mutate(conversation);
+  }
+
+  function handleOptimisticToggleMute(id: number, muted: boolean): void {
+    optimisticUpdateQuery<ListConversationsResponse>(
+      conversationKeys.list(chatUser?.account_id ?? 0, filters),
+      (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            payload: old.data.payload.map((item) =>
+              item.id === id ? { ...item, muted } : item,
+            ),
+          },
+        };
+      },
+    );
+  }
+
+  function handleOptimisticUnreadConversation(data: Conversation): void {
+    optimisticUpdateQuery<ListConversationsResponse>(
+      conversationKeys.list(chatUser?.account_id ?? 0, filters),
+      (old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            payload: old.data.payload.map((item) =>
+              item.id === data.id ? data : item,
+            ),
+          },
+        } as ListConversationsResponse;
+      },
+    );
   }
 
   return (

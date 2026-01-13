@@ -40,7 +40,7 @@ export interface Conversation {
   priority: null | 'low' | 'medium' | 'high' | 'urgent' | 'none';
   sla_policy_id: null;
   snoozed_until: null;
-  status: string;
+  status: ConversationStatus;
   timestamp: number;
   unread_count: number;
   uuid: string;
@@ -48,7 +48,7 @@ export interface Conversation {
 }
 
 interface Meta {
-  assignee: Assignee;
+  assignee: Agent;
   channel: string;
   hmac_verified: boolean;
   sender: MetaSender;
@@ -75,19 +75,6 @@ interface MetaSender {
   last_activity_at: number;
   name: string;
   phone_number: null;
-  thumbnail: string;
-}
-
-interface Assignee {
-  account_id: number;
-  auto_offline: boolean;
-  availability_status: string;
-  available_name: string;
-  confirmed: boolean;
-  email: string;
-  id: number;
-  name: string;
-  role: string;
   thumbnail: string;
 }
 
@@ -274,7 +261,7 @@ interface ContentAttributes {
 export interface ConversationMeta {
   additional_attributes: Additionalattributes;
   agent_last_seen_at: string;
-  assignee: Assignee;
+  assignee: Agent;
   assignee_last_seen_at: string;
   contact: Contact;
   labels: string[];
@@ -294,16 +281,6 @@ interface Contact {
 
 interface Customattributes {}
 
-interface Assignee {
-  availability_status: string;
-  available_name: string;
-  avatar_url: string;
-  id: number;
-  name: string;
-  thumbnail: string;
-  type: string;
-}
-
 interface Initiatedat {
   timestamp: string;
 }
@@ -316,18 +293,7 @@ interface Browser {
   platform_version: string;
 }
 
-export type ConversationParticipantsResponse = {
-  account_id: number;
-  auto_offline: boolean;
-  availability_status: string;
-  available_name: string;
-  confirmed: boolean;
-  email: string;
-  id: number;
-  name: string;
-  role: string;
-  thumbnail: string;
-};
+export type ConversationParticipantsResponse = Agent[];
 
 export interface UpdateTypingStatusPayload {
   is_private: boolean;

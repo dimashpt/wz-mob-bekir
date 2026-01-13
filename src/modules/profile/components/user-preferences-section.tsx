@@ -8,6 +8,7 @@ import {
   OptionBottomSheet,
   OptionBottomSheetRef,
 } from '@/components';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useSettingNotifications } from '@/modules/settings/services/repository';
 import { useAuthStore } from '@/store';
 import { profileKeys } from '../constants/keys';
@@ -37,12 +38,11 @@ export function UserPreferencesSection({
   const changeAvailabilityMutation = useMutation({
     mutationKey: profileKeys.availability,
     mutationFn: updateAvailability,
-    onSuccess: (data, _, __, context) => {
-      // Cancel any outgoing queries, so they don't overwrite our optimistic update
-      context.client.cancelQueries({ queryKey: profileKeys.chatProfile });
-
-      // Update the chat profile data with the new availability
-      context.client.setQueryData(profileKeys.chatProfile, () => data);
+    onSuccess: (data) => {
+      optimisticUpdateQuery<ChatProfileResponse>(
+        profileKeys.chatProfile,
+        () => data,
+      );
     },
   });
 

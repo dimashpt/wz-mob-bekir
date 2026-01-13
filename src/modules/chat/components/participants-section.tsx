@@ -13,6 +13,7 @@ import {
   OptionBottomSheetRef,
   Text,
 } from '@/components';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { conversationEndpoints } from '../constants/endpoints';
 import { conversationKeys } from '../constants/keys';
@@ -59,28 +60,24 @@ export function ParticipantsSection({
         conversation?.id?.toString() ?? '',
         payload,
       ),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
-        queryKey: listParticipantsQueryKey,
-      });
+    onMutate: (payload) => {
+      const previousData =
+        optimisticUpdateQuery<ConversationParticipantsResponse>(
+          listParticipantsQueryKey,
+          (old) => {
+            if (!old) return old;
 
-      const previousParticipants = context.client.getQueryData<
-        ConversationParticipantsResponse[]
-      >(listParticipantsQueryKey);
+            return (payload.user_ids ?? []).map((userId) => {
+              const participant = agents?.find(
+                (agent) => agent.value === String(userId),
+              );
 
-      context.client.setQueryData(
-        listParticipantsQueryKey,
-        (_: ConversationParticipantsResponse[]) =>
-          payload.user_ids.map((userId) => {
-            const participant = agents?.find(
-              (agent) => agent.value === String(userId),
-            );
+              return participant?.data as Agent;
+            });
+          },
+        );
 
-            return participant?.data;
-          }) ?? [],
-      );
-
-      return { previousParticipants };
+      return { previousData };
     },
     onSuccess: () => refetchParticipants(),
   });

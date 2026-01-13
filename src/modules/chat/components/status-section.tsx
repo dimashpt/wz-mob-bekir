@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, IconNames, Text } from '@/components';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { updateStatus } from '../services/conversation';
@@ -54,24 +55,17 @@ export function StatusSection({
     mutationKey: conversationKeys.updateStatus,
     mutationFn: (payload: UpdateStatusPayload) =>
       updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
-        queryKey: conversationDetailsQueryKey,
-      });
-
-      const previousStatus = context.client.getQueryData<Conversation>(
+    onMutate: async (payload) => {
+      const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,
+        (old) => {
+          if (!old) return old;
+
+          return { ...old, status: payload.status };
+        },
       );
 
-      context.client.setQueryData(
-        conversationDetailsQueryKey,
-        (old: Conversation) => ({
-          ...old,
-          status: payload.status,
-        }),
-      );
-
-      return { previousStatus };
+      return { previousData };
     },
   });
 

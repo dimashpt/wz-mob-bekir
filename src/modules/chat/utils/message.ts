@@ -1,12 +1,13 @@
 import { InfiniteData } from '@tanstack/react-query';
 import { IMessage } from 'react-native-gifted-chat';
 
-import { queryClient } from '@/lib/react-query';
+import { optimisticUpdateQuery, queryClient } from '@/lib/react-query';
 import { ChatMessage } from '../components/message-item';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import { getSortFilterOptions } from '../constants/options';
 import {
+  Conversation,
   ConversationMessagesResponse,
   ListConversationsResponse,
   Message,
@@ -26,14 +27,10 @@ export async function addMessageToQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(accountId, conversationId);
 
-  await queryClient.cancelQueries({ queryKey });
-
-  queryClient.setQueryData(
+  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
-    (old: InfiniteData<ConversationMessagesResponse>) => {
-      if (!old) {
-        return old;
-      }
+    (old) => {
+      if (!old) return old;
 
       const updatedPages = old.pages.map((page, index) => {
         if (index !== 0) {
@@ -81,14 +78,10 @@ export async function updateMessageByEchoIdInQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(accountId, conversationId);
 
-  await queryClient.cancelQueries({ queryKey });
-
-  queryClient.setQueryData(
+  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
-    (old: InfiniteData<ConversationMessagesResponse>) => {
-      if (!old) {
-        return old;
-      }
+    (old) => {
+      if (!old) return old;
 
       return {
         ...old,
@@ -119,14 +112,10 @@ export async function updateMessageByIdInQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(accountId, conversationId);
 
-  await queryClient.cancelQueries({ queryKey });
-
-  queryClient.setQueryData(
+  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
-    (old: InfiniteData<ConversationMessagesResponse>) => {
-      if (!old) {
-        return old;
-      }
+    (old) => {
+      if (!old) return old;
 
       return {
         ...old,
@@ -155,14 +144,10 @@ export async function markMessageAsDeletedInQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(accountId, conversationId);
 
-  await queryClient.cancelQueries({ queryKey });
-
-  queryClient.setQueryData(
+  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
-    (old: InfiniteData<ConversationMessagesResponse>) => {
-      if (!old) {
-        return old;
-      }
+    (old) => {
+      if (!old) return old;
 
       return {
         ...old,
@@ -269,10 +254,8 @@ export function updateConversationLastActivity(
   const queryData = queryClient.getQueriesData({ queryKey });
 
   queryData.forEach(([key]) => {
-    queryClient.setQueryData(key, (old: ListConversationsResponse) => {
-      if (!old) {
-        return old;
-      }
+    optimisticUpdateQuery<ListConversationsResponse>(key, (old) => {
+      if (!old) return old;
 
       const updatedPayload = old?.data?.payload?.map((conversation) =>
         conversation?.id === message?.conversation_id
@@ -284,7 +267,7 @@ export function updateConversationLastActivity(
               timestamp: message.created_at,
             }
           : conversation,
-      );
+      ) as Conversation[];
 
       let payload = updatedPayload;
 

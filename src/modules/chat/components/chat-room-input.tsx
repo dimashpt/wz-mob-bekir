@@ -186,17 +186,6 @@ export function ChatRoomInput({
         data,
       );
     },
-    onError: (_, __, onMutateResult, context) => {
-      const messageListKey = conversationKeys.messages(
-        chatUser!.account_id,
-        conversation_id,
-      );
-      context.client.setQueryData(
-        messageListKey,
-        onMutateResult?.previousMessages ?? {},
-      );
-    },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 
   function handleUpdateTypingStatus(

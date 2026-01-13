@@ -11,6 +11,7 @@ import {
   OptionBottomSheet,
   OptionBottomSheetRef,
 } from '@/components';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { Agent } from '../services/agent/types';
@@ -85,30 +86,26 @@ export function AssignmentSection({
     onMutate: async (payload, context) => {
       await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
 
-      const previousAssignee =
-        context.client.getQueryData<ConversationMessagesResponse>(
-          listMessagesQueryKey,
-        );
-      const assignedAgent = agents?.find(
-        (agent) => agent.value === payload.assignee_id.toString(),
-      );
+      const previousData = optimisticUpdateQuery<
+        InfiniteData<ConversationMessagesResponse>
+      >(listMessagesQueryKey, (old) => {
+        if (!old) return old;
 
-      context.client.setQueryData(
-        listMessagesQueryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          // Change the first page of the messages to include the new assignee
-          const newPages = old.pages.map((page) => ({
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
             ...page,
             meta: {
               ...page.meta,
-              assignee: assignedAgent?.data,
+              assignee: agents?.find(
+                (agent) => agent.value === payload.assignee_id.toString(),
+              )?.data as Agent,
             },
-          }));
-          return { ...old, pages: newPages };
-        },
-      );
+          })),
+        };
+      });
 
-      return { previousAssignee };
+      return { previousData };
     },
   });
 
@@ -116,29 +113,25 @@ export function AssignmentSection({
     mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneeTeamPayload) =>
       updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
-        queryKey: conversationDetailsQueryKey,
-      });
-
-      const previousTeam = context.client.getQueryData<Conversation>(
+    onMutate: async (payload) => {
+      const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,
+        (old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            meta: {
+              ...old.meta,
+              team: teams?.find(
+                (team) => team.value === payload.team_id.toString(),
+              )?.data as Team,
+            },
+          };
+        },
       );
 
-      context.client.setQueryData(
-        conversationDetailsQueryKey,
-        (old: Conversation) => ({
-          ...old,
-          meta: {
-            ...old.meta,
-            team: teams?.find(
-              (team) => team.value === payload.team_id.toString(),
-            )?.data,
-          },
-        }),
-      );
-
-      return { previousTeam };
+      return { previousData };
     },
   });
 
@@ -146,24 +139,17 @@ export function AssignmentSection({
     mutationKey: conversationKeys.updatePriority,
     mutationFn: (payload: UpdatePriorityPayload) =>
       updatePriority(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({
-        queryKey: conversationDetailsQueryKey,
-      });
-
-      const previousPriority = context.client.getQueryData<Conversation>(
+    onMutate: async (payload) => {
+      const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,
+        (old) => {
+          if (!old) return old;
+
+          return { ...old, priority: payload.priority };
+        },
       );
 
-      context.client.setQueryData(
-        conversationDetailsQueryKey,
-        (old: Conversation) => ({
-          ...old,
-          priority: payload.priority,
-        }),
-      );
-
-      return { previousPriority };
+      return { previousData };
     },
   });
 

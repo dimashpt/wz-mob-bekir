@@ -13,6 +13,7 @@ import {
   OptionBottomSheetRef,
   Text,
 } from '@/components';
+import { optimisticUpdateQuery } from '@/lib/react-query';
 import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { updateLabels } from '../services/conversation';
@@ -57,29 +58,25 @@ export function LabelsSection({
     mutationKey: conversationKeys.updateLabels,
     mutationFn: (payload: UpdateLabelConversationPayload) =>
       updateLabels(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
-    onMutate: async (payload, context) => {
-      await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
+    onMutate: (payload) => {
+      const previousData = optimisticUpdateQuery<
+        InfiniteData<ConversationMessagesResponse>
+      >(listMessagesQueryKey, (old) => {
+        if (!old) return old;
 
-      const previousAssignee =
-        context.client.getQueryData<ConversationMessagesResponse>(
-          listMessagesQueryKey,
-        );
-
-      context.client.setQueryData(
-        listMessagesQueryKey,
-        (old: InfiniteData<ConversationMessagesResponse>) => {
-          const newPages = old.pages.map((page) => ({
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({
             ...page,
             meta: {
               ...page.meta,
               labels: payload.labels,
             },
-          }));
-          return { ...old, pages: newPages };
-        },
-      );
+          })),
+        };
+      });
 
-      return { previousAssignee };
+      return { previousData };
     },
   });
 

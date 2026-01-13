@@ -151,7 +151,7 @@ export default function ChatListItem({
             </View>
             <View className="gap-md flex-row items-center justify-between">
               <View className="gap-xs shrink flex-row items-center">
-                {item.last_non_activity_message.sender.type === 'user' && (
+                {item.last_non_activity_message?.sender?.type === 'user' && (
                   <Icon
                     name="tick"
                     size="sm"

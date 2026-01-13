@@ -2,6 +2,7 @@ import {
   keepPreviousData,
   QueryCache,
   QueryClient,
+  QueryKey,
 } from '@tanstack/react-query';
 
 import { handleMutationError } from '@/utils/error-handler';
@@ -37,3 +38,19 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+export function optimisticUpdateQuery<TData>(
+  queryKey: QueryKey,
+  updateFn: (oldData?: TData) => TData | undefined,
+): TData | undefined {
+  // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+  queryClient.cancelQueries({ queryKey });
+
+  // Snapshot the previous value
+  const previousData = queryClient.getQueryData<TData>(queryKey);
+
+  // Optimistically update to the new value
+  queryClient.setQueryData<TData>(queryKey, updateFn);
+
+  return previousData;
+}
