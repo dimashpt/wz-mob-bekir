@@ -25,6 +25,7 @@ import {
 import { useAppStore, useAuthStore } from '@/store';
 import { DeveloperFeaturesSection } from '../components/developer-features-section';
 import { PreferencesSection } from '../components/preferences-section';
+import { UserPreferencesSection } from '../components/user-preferences-section';
 import { VersionCode } from '../components/version-code';
 
 function ProfileScreen(): ReactElement {
@@ -138,6 +139,7 @@ function ProfileScreen(): ReactElement {
             )}
           </View>
         </View>
+        <UserPreferencesSection data={chatProfile} />
         <PreferencesSection />
         {showBetaFeatures && <DeveloperFeaturesSection />}
         <VersionCode />

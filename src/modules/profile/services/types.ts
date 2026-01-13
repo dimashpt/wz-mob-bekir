@@ -89,3 +89,12 @@ interface Account {
 }
 
 export interface AvailabilityResponse extends ChatProfileResponse {}
+
+export interface UpdateAvailabilityPayload {
+  profile: {
+    account_id: number;
+    availability: string;
+  };
+}
+
+export interface UpdateAvailabilityResponse extends ChatProfileResponse {}

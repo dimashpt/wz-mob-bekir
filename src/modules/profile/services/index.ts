@@ -2,9 +2,10 @@ import { SuccessResponse } from '@/@types/api';
 import { API } from '@/lib/axios';
 import { profileEndpoints } from '../constants/endpoints';
 import {
-  AvailabilityResponse,
   ChatProfileResponse,
   ProfileResponse,
+  UpdateAvailabilityPayload,
+  UpdateAvailabilityResponse,
 } from './types';
 
 /**
@@ -35,13 +36,16 @@ export async function getChatProfile(): Promise<ChatProfileResponse> {
 }
 
 /**
- * Fetches the availability for the given account.
- * @param accountId - The ID of the account.
- * @returns A promise that resolves to the availability.
+ * Updates the availability status for the current user.
+ * @param status - The new availability status.
+ * @returns A promise that resolves to the updated availability.
  */
-export async function getAvailability(): Promise<AvailabilityResponse> {
-  const response = await API.get<AvailabilityResponse>(
+export async function updateAvailability(
+  payload: UpdateAvailabilityPayload,
+): Promise<UpdateAvailabilityResponse> {
+  const response = await API.post<UpdateAvailabilityResponse>(
     profileEndpoints.availability,
+    payload,
   );
 
   return response.data;
