@@ -125,7 +125,7 @@ export function ChatRoomInput({
 
       return sendMessage(chatUser!.account_id, conversation_id, payload);
     },
-    onMutate: async (newMessage, context) => {
+    onMutate: async (payload, context) => {
       // Clear the message input
       resetMessage();
       removeReply?.();
@@ -151,14 +151,14 @@ export function ChatRoomInput({
               },
             ]
           : undefined,
-        content: newMessage.content,
-        private: newMessage.private,
-        content_attributes: newMessage.content_attributes,
+        content: payload.content,
+        private: payload.private,
+        content_attributes: payload.content_attributes,
         created_at: new Date().getTime() / 1000,
         id: new Date().getTime(),
         message_type: MESSAGE_TYPES.OUTGOING,
         status: 'sending',
-        echo_id: newMessage.echo_id,
+        echo_id: payload.echo_id,
         sender: {
           id: chatUser?.account_id ?? 0,
           name: chatUser?.name ?? '',
@@ -219,7 +219,7 @@ export function ChatRoomInput({
     sendMessageMutation.mutate({
       content: trimmedMessage,
       content_attributes: {
-        in_reply_to: replyTo ? replyTo.id : undefined,
+        in_reply_to: replyTo?.id,
       },
       echo_id: echoId,
       private: isPrivate,

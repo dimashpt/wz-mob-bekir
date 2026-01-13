@@ -100,7 +100,6 @@ interface MessageBubbleContentProps {
   messageType: MessageType;
   replyMessage?: ChatMessage;
   attachments: Attachment[];
-  isReplyMessage: boolean | number | undefined;
   hasAttachments: boolean;
   renderAttachment: (attachment: Attachment) => React.JSX.Element;
 }
@@ -110,7 +109,6 @@ function MessageBubbleContent({
   messageType,
   replyMessage,
   attachments,
-  isReplyMessage,
   hasAttachments,
   renderAttachment,
 }: MessageBubbleContentProps): React.JSX.Element {
@@ -120,7 +118,7 @@ function MessageBubbleContent({
 
   return (
     <>
-      {isReplyMessage && replyMessage ? (
+      {message?.content_attributes?.in_reply_to ? (
         <Clickable
           onPress={() => {}}
           className="gap-sm mb-xs py-xs px-sm flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
@@ -137,14 +135,14 @@ function MessageBubbleContent({
               numberOfLines={3}
               className="text-white/70 dark:text-black/70"
             >
-              {replyMessage?.sender?.name ?? 'System'}
+              {replyMessage?.sender?.name ?? '-'}
             </Text>
             <Text
               variant="bodyS"
               numberOfLines={3}
               className="text-white/90 dark:text-black/70"
             >
-              {replyMessage?.text}
+              {replyMessage?.text ?? '...'}
             </Text>
           </View>
         </Clickable>
@@ -208,7 +206,6 @@ export function MessageItem({
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
-  const isReplyMessage = message.content_attributes.in_reply_to;
   const attachments = message.attachments ?? [];
   const hasAttachments = attachments.length > 0;
 
@@ -449,7 +446,6 @@ export function MessageItem({
             messageType={getMessageType()}
             replyMessage={replyMessage}
             attachments={attachments}
-            isReplyMessage={isReplyMessage}
             hasAttachments={hasAttachments}
             renderAttachment={renderAttachment}
           />
@@ -464,7 +460,6 @@ export function MessageItem({
           messageType={getMessageType()}
           replyMessage={replyMessage}
           attachments={attachments}
-          isReplyMessage={isReplyMessage}
           hasAttachments={hasAttachments}
           renderAttachment={renderAttachment}
           onCopy={handleCopy}
@@ -484,7 +479,6 @@ interface MessageContextMenuProps {
   messageType: MessageType;
   replyMessage?: ChatMessage;
   attachments: Attachment[];
-  isReplyMessage: boolean | number | undefined;
   hasAttachments: boolean;
   renderAttachment: (attachment: Attachment) => React.JSX.Element;
   onCopy: () => void;
@@ -500,7 +494,6 @@ function MessageContextMenu({
   messageType,
   replyMessage,
   attachments,
-  isReplyMessage,
   hasAttachments,
   renderAttachment,
   onCopy,
@@ -562,7 +555,6 @@ function MessageContextMenu({
               messageType={messageType}
               replyMessage={replyMessage}
               attachments={attachments}
-              isReplyMessage={isReplyMessage}
               hasAttachments={hasAttachments}
               renderAttachment={renderAttachment}
             />
@@ -574,13 +566,6 @@ function MessageContextMenu({
         >
           <View className="bg-surface border-border overflow-hidden rounded-lg border shadow-lg">
             <Clickable
-              onPress={onCopy}
-              className="px-md py-sm gap-sm border-border active:bg-surface-soft flex-row items-center border-b"
-            >
-              <Icon name="copy" size="base" className="text-foreground" />
-              <Text variant="bodyS">Copy</Text>
-            </Clickable>
-            <Clickable
               onPress={onReply}
               className="px-md py-sm gap-sm border-border active:bg-surface-soft flex-row items-center border-b"
             >
@@ -591,6 +576,13 @@ function MessageContextMenu({
                 transform="scale(-1,1)"
               />
               <Text variant="bodyS">Reply</Text>
+            </Clickable>
+            <Clickable
+              onPress={onCopy}
+              className="px-md py-sm gap-sm border-border active:bg-surface-soft flex-row items-center border-b"
+            >
+              <Icon name="copy" size="base" className="text-foreground" />
+              <Text variant="bodyS">Copy</Text>
             </Clickable>
             <Clickable
               onPress={onDelete}
