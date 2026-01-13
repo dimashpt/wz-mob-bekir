@@ -4,14 +4,21 @@ import { View } from 'react-native';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import Animated, {
+  LinearTransition,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 
-import { Avatar, Checkbox, Chip, Icon, Text } from '@/components';
-import { AnimatedComponent } from '@/components/animated-component';
+import {
+  AnimatedComponent,
+  Avatar,
+  Checkbox,
+  Chip,
+  Icon,
+  Text,
+} from '@/components';
 import { Container } from '@/components/container';
 import { Swipeable } from '@/components/swipeable';
 import { formatDisplayDate } from '@/utils/date';
@@ -83,7 +90,7 @@ export default function ChatListItem({
   });
 
   return (
-    <AnimatedComponent index={index % 10}>
+    <AnimatedComponent index={index % 10} layout={LinearTransition.springify()}>
       <Swipeable
         spacing={35}
         handlePress={handlePress}

@@ -1,9 +1,13 @@
 import React from 'react';
 import { ViewProps } from 'react-native';
 
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import Animated, {
+  AnimatedProps,
+  FadeInDown,
+  FadeOutUp,
+} from 'react-native-reanimated';
 
-interface ProductItemProps extends ViewProps {
+interface ProductItemProps extends AnimatedProps<ViewProps> {
   index?: number;
   children: React.ReactNode;
   duration?: number;

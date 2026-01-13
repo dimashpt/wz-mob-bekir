@@ -263,7 +263,7 @@ export function updateConversationLastActivity(
   message: Message,
 ): void {
   const queryKey = conversationKeys.list(accountId);
-  const [, , params] = queryKey as ReturnType<typeof conversationKeys.list>;
+  const [, , params] = queryKey;
   const filters = getSortFilterOptions();
 
   const queryData = queryClient.getQueriesData({ queryKey });
@@ -289,7 +289,7 @@ export function updateConversationLastActivity(
       let payload = updatedPayload;
 
       // Sort conversations by last_activity_at in descending order (newest first)
-      if (params?.sort_by === filters?.[0].value) {
+      if (!params?.sort_by || params?.sort_by === filters?.[0].value) {
         payload = updatedPayload?.sort(
           (a, b) => (b.last_activity_at || 0) - (a.last_activity_at || 0),
         );
