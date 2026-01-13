@@ -5,8 +5,10 @@ import { queryClient } from '@/lib/react-query';
 import { ChatMessage } from '../components/message-item';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
+import { getSortFilterOptions } from '../constants/options';
 import {
   ConversationMessagesResponse,
+  ListConversationsResponse,
   Message,
 } from '../services/conversation/types';
 
@@ -249,4 +251,54 @@ export function mapInfiniteMessagesToGiftedChatMessages(
       ...message,
     })),
   };
+}
+
+/**
+ * Updates the last activity of a conversation in the list conversations query
+ * @param accountId - The account ID
+ * @param message - The message to update the last activity with
+ */
+export function updateConversationLastActivity(
+  accountId: number,
+  message: Message,
+): void {
+  const queryKey = conversationKeys.list(accountId);
+  const [, , params] = queryKey as ReturnType<typeof conversationKeys.list>;
+  const filters = getSortFilterOptions();
+
+  const queryData = queryClient.getQueriesData({ queryKey });
+
+  queryData.forEach(([key]) => {
+    queryClient.setQueryData(key, (old: ListConversationsResponse) => {
+      if (!old) {
+        return old;
+      }
+
+      const updatedPayload = old?.data?.payload?.map((conversation) =>
+        conversation?.id === message?.conversation_id
+          ? {
+              ...conversation,
+              last_activity_at: message.created_at,
+              last_non_activity_message: message,
+              messages: [message],
+              timestamp: message.created_at,
+            }
+          : conversation,
+      );
+
+      let payload = updatedPayload;
+
+      // Sort conversations by last_activity_at in descending order (newest first)
+      if (params?.sort_by === filters?.[0].value) {
+        payload = updatedPayload?.sort(
+          (a, b) => (b.last_activity_at || 0) - (a.last_activity_at || 0),
+        );
+      }
+
+      return {
+        ...old,
+        data: { ...old.data, payload },
+      };
+    });
+  });
 }

@@ -4,6 +4,7 @@ import { WebSocketConnector } from '@/lib/action-cable';
 import { Message } from '@/modules/chat/services/conversation/types';
 import {
   addMessageToQuery,
+  updateConversationLastActivity,
   updateMessageByIdInQuery,
 } from '@/modules/chat/utils/message';
 import { useAuthStore } from '@/store';
@@ -54,12 +55,13 @@ export function useWebsocket(): void {
       }
     }
 
-    async function onMessageCreated(_: string, data: Message): Promise<void> {
-      await addMessageToQuery(account, String(data.conversation_id), data);
+    function onMessageCreated(_: string, data: Message): void {
+      addMessageToQuery(account, String(data.conversation_id), data);
+      updateConversationLastActivity(account, data);
     }
 
-    async function onMessageUpdated(_: string, data: Message): Promise<void> {
-      await updateMessageByIdInQuery(
+    function onMessageUpdated(_: string, data: Message): void {
+      updateMessageByIdInQuery(
         account,
         String(data.conversation_id),
         data.id,

@@ -1,5 +1,5 @@
 import React, { JSX, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import * as DocumentPicker from 'expo-document-picker';
@@ -331,12 +331,17 @@ export function ChatRoomInput(
     return null;
   }
 
+  function onOpenAttachmentSheet(): void {
+    Keyboard.dismiss();
+    optionBottomSheetRef.current?.present();
+  }
+
   return (
     <View className="pb-safe bg-surface gap-sm">
       <View className="pt-sm px-lg gap-sm flex-row items-end">
         {!attachment && (
           <Button
-            onPress={optionBottomSheetRef.current?.present}
+            onPress={onOpenAttachmentSheet}
             icon={
               <Icon name="plus" size="xl" className="text-muted-foreground" />
             }

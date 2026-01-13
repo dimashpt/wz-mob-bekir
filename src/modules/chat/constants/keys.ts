@@ -11,8 +11,14 @@ import { ListConversationsParams } from '../services/conversation/types';
 // Query keys factory for the conversation repository.
 export const conversationKeys = {
   // Conversations
-  list: (accountId: number, params?: ListConversationsParams) =>
-    ['conversation-list', accountId, params].filter(Boolean),
+  list: (
+    accountId: number,
+    params?: ListConversationsParams,
+  ): [string, number, ListConversationsParams?] => [
+    'conversation-list',
+    accountId,
+    params,
+  ],
   details: (accountId: number, conversationId: string) => [
     'conversation-details',
     accountId,
