@@ -24,6 +24,7 @@ import {
   Text,
 } from '@/components';
 import { useDebounce } from '@/hooks';
+import { ChatMessage } from '@/modules/@types/chat';
 import { useAuthStore } from '@/store/auth-store';
 import { formatFileSize } from '@/utils/formatter';
 import { resizeImage } from '@/utils/image';
@@ -41,7 +42,6 @@ import {
   generateEchoId,
   updateMessageByEchoIdInQuery,
 } from '../utils/message';
-import { ChatMessage } from './message-item';
 
 type Params = {
   conversation_id: string;

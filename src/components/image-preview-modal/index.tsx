@@ -322,7 +322,7 @@ export function ImagePreviewModal({
       onRequestClose={closeModal}
     >
       <GestureHandlerRootView>
-        <Animated.View className="pt-safe flex-1">
+        <Animated.View className="flex-1">
           <Animated.View className="absolute inset-0" style={blurStyle}>
             <BlurView
               intensity={Platform.OS === 'ios' ? 30 : 20}
@@ -384,7 +384,7 @@ export function ImagePreviewModal({
 
             {/* Error State */}
             {imageError && (
-              <View className="gap-sm px-lg py-md absolute bottom-[100px] flex-row items-center rounded-md bg-black/70">
+              <View className="gap-sm px-lg py-md absolute bottom-25 flex-row items-center rounded-md bg-black/70">
                 <Icon name="info" size={20} className="text-danger" />
                 <Text variant="labelM" color="danger">
                   {t('attachment_viewer.image_load_error')}
@@ -394,7 +394,7 @@ export function ImagePreviewModal({
 
             {/* Loading State */}
             {!imageLoaded && !imageError && (
-              <View className="px-lg py-md absolute bottom-[100px] rounded-md bg-black/70">
+              <View className="px-lg py-md absolute bottom-25 rounded-md bg-black/70">
                 <Text variant="bodyM" color="light">
                   {t('general.loading')}
                 </Text>

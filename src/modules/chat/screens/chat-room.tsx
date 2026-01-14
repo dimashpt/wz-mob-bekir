@@ -6,12 +6,21 @@ import { useLocalSearchParams } from 'expo-router';
 import { GiftedChat } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Avatar, Container, Header, Icon, PagerView, Text } from '@/components';
+import {
+  Avatar,
+  Container,
+  Header,
+  Icon,
+  ImagePreviewModal,
+  PagerView,
+  Text,
+} from '@/components';
 import { queryClient } from '@/lib/react-query';
+import { ChatMessage } from '@/modules/@types/chat';
 import { useAuthStore } from '@/store/auth-store';
 import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
-import { ChatMessage, MessageItem } from '../components/message-item';
+import { MessageItem } from '../components/message-item';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import { deleteMessage } from '../services/conversation';
@@ -33,6 +42,7 @@ type Params = {
 
 export default function ChatRoomScreen(): JSX.Element {
   const pagerViewRef = useRef<PagerView>(null);
+  const imagePreviewRef = useRef<ImagePreviewModal>(null);
 
   const { conversation_id } = useLocalSearchParams<Params>();
   const { chatUser } = useAuthStore();
@@ -140,6 +150,11 @@ export default function ChatRoomScreen(): JSX.Element {
               {...props}
               onDelete={deleteMessageMutation.mutate}
               onReply={setReplyMessage}
+              onPreviewAttachment={(attachment) =>
+                imagePreviewRef.current?.open(
+                  attachment.data_url ?? attachment.thumb_url,
+                )
+              }
             />
           )}
           listProps={{
@@ -188,6 +203,7 @@ export default function ChatRoomScreen(): JSX.Element {
         />
         <ChatRoomAttributes key="2" meta={meta} conversation={conversation} />
       </PagerView>
+      <ImagePreviewModal ref={imagePreviewRef} />
     </Container>
   );
 }

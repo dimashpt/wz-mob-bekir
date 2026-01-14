@@ -2,7 +2,7 @@ import { InfiniteData } from '@tanstack/react-query';
 import { IMessage } from 'react-native-gifted-chat';
 
 import { optimisticUpdateQuery, queryClient } from '@/lib/react-query';
-import { ChatMessage } from '../components/message-item';
+import { ChatMessage } from '@/modules/@types/chat';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import { getSortFilterOptions } from '../constants/options';
