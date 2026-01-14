@@ -6,7 +6,14 @@ import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { BubbleProps } from 'react-native-gifted-chat';
-import { runOnJS } from 'react-native-reanimated';
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
@@ -79,7 +86,6 @@ export function MessageItem({
   const { chatUser } = useAuthStore();
   const messageLayoutRef = useRef<View>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isHighlighted, setIsHighlighted] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
     x: number;
     y: number;
@@ -90,6 +96,12 @@ export function MessageItem({
     width: number;
     height: number;
   } | null>(null);
+
+  // Swipe gesture animation values
+  const swipeTranslateX = useSharedValue(0);
+  const swipeOpacity = useSharedValue(0);
+  const SWIPE_THRESHOLD = 40;
+
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
@@ -176,7 +188,6 @@ export function MessageItem({
 
   function handleCloseMenu(): void {
     setIsMenuOpen(false);
-    setIsHighlighted(false);
     setMenuPosition(null);
     setMessagePosition(null);
   }
@@ -208,8 +219,39 @@ export function MessageItem({
     .minDuration(500)
     .maxDistance(20)
     .onStart(() => {
-      runOnJS(setIsHighlighted)(true);
       runOnJS(handleOpenMenu)();
+    });
+
+  const panGesture = Gesture.Pan()
+    .enabled(Boolean(onReply))
+    .minDistance(30)
+    .onUpdate((event) => {
+      // Only allow rightward swipe
+      if (event.translationX > 0) {
+        swipeTranslateX.value = Math.min(event.translationX, SWIPE_THRESHOLD);
+        // Opacity increases as we swipe
+        swipeOpacity.value = interpolate(
+          event.translationX,
+          [0, SWIPE_THRESHOLD],
+          [0, 1],
+        );
+      }
+    })
+    .onEnd((event) => {
+      if (event.translationX > SWIPE_THRESHOLD) {
+        // Swipe threshold reached - trigger reply
+        runOnJS(handleReply)();
+        // Animate back to start
+        swipeTranslateX.value = withSpring(0);
+        swipeOpacity.value = withTiming(0, { duration: 200 });
+        runOnJS(Haptics.notificationAsync)(
+          Haptics.NotificationFeedbackType.Success,
+        );
+      } else {
+        // Below threshold - snap back
+        swipeTranslateX.value = withSpring(0);
+        swipeOpacity.value = withTiming(0, { duration: 200 });
+      }
     });
 
   function getMessageType(): MessageType {
@@ -307,26 +349,54 @@ export function MessageItem({
   // if (message.content_type === 'incoming_email') {}
   // if (isEmailInbox && !message.private) {}
 
+  // Animated styles for swipe gesture
+  const swipeAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: swipeTranslateX.value }],
+  }));
+
+  const swipeIconAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: swipeOpacity.value,
+  }));
+
+  const swipeGesture = Gesture.Simultaneous(longPressGesture, panGesture);
+
   // Render regular message with bubble
   return (
     <>
-      <GestureDetector gesture={longPressGesture}>
-        <View
-          ref={messageLayoutRef}
-          className={twMerge(
-            messageBubbleVariants({ type: getMessageType() }),
-            isHighlighted && 'opacity-100',
+      <GestureDetector gesture={swipeGesture}>
+        <View ref={messageLayoutRef} className="relative w-full">
+          {/* Swipe reply icon background - appears on swipe */}
+          {onReply && (
+            <Animated.View
+              style={swipeIconAnimatedStyle}
+              className="px-sm absolute top-0 bottom-0 left-0 items-center justify-center"
+              pointerEvents="none"
+            >
+              <Icon
+                name="forward"
+                size="base"
+                className="text-muted-foreground"
+                transform="scale(-1,1)"
+              />
+            </Animated.View>
           )}
-          style={isHighlighted ? { zIndex: 1000 } : undefined}
-        >
-          <MessageBubble
-            message={message}
-            messageType={getMessageType()}
-            replyMessage={replyMessage}
-            attachments={attachments}
-            hasAttachments={hasAttachments}
-            renderAttachment={renderAttachment}
-          />
+          {/* Message bubble - translates on swipe */}
+          <Animated.View
+            style={swipeAnimatedStyle}
+            className={twMerge(
+              messageBubbleVariants({ type: getMessageType() }),
+              'z-1',
+            )}
+          >
+            <MessageBubble
+              message={message}
+              messageType={getMessageType()}
+              replyMessage={replyMessage}
+              attachments={attachments}
+              hasAttachments={hasAttachments}
+              renderAttachment={renderAttachment}
+            />
+          </Animated.View>
         </View>
       </GestureDetector>
       {isMenuOpen && menuPosition && messagePosition && (
