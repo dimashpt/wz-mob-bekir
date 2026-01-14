@@ -14,7 +14,7 @@ import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
 import { Clickable } from '@/components/clickable';
-import { Icon, IconNames } from '@/components/icon';
+import { Icon, IconNames, SvgIcons } from '@/components/icon';
 import { Text } from '@/components/text';
 
 export type HeaderRef = {
@@ -28,7 +28,7 @@ interface HeaderProps {
   children?: React.ReactNode;
   onPressBack?: () => void;
   title?: string;
-  suffixIcon?: IconNames;
+  suffixIcon?: IconNames | ReactNode;
   onPressSuffix?: () => void;
   nativeProps?: NativeStackHeaderProps;
   renderTitle?: () => ReactNode;
@@ -79,7 +79,7 @@ export function Header({
       className={twMerge(headerVariants(), className)}
       style={[{ paddingTop: insets.top }, style]}
     >
-      <View className="py-sm px-lg gap-sm relative min-h-[48px] flex-row items-center">
+      <View className="py-sm px-lg gap-sm relative min-h-12 flex-row items-center">
         <Clickable
           className="size-6 items-center justify-center"
           onPress={handleBackPress}
@@ -102,13 +102,15 @@ export function Header({
           className="size-6 items-center justify-center"
           onPress={onPressSuffix}
         >
-          {suffixIcon && (
+          {typeof suffixIcon === 'string' && suffixIcon in SvgIcons ? (
             <Icon
-              name={suffixIcon}
+              name={suffixIcon as IconNames}
               size="lg"
               className="text-foreground"
               transform={[{ rotate: '90deg' }]}
             />
+          ) : (
+            suffixIcon
           )}
         </Clickable>
       </View>

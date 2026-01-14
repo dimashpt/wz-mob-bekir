@@ -118,8 +118,14 @@ export default function ChatRoomScreen(): JSX.Element {
         onPressBack={
           activeTab === 0 ? undefined : () => pagerViewRef.current?.setPage(0)
         }
+        suffixIcon={
+          activeTab === 0 && (
+            <Icon name="info" size="lg" className="text-foreground" />
+          )
+        }
+        onPressSuffix={() => pagerViewRef.current?.setPage(1)}
         renderTitle={() => (
-          <View className="gap-sm flex-row items-center">
+          <View className="gap-sm flex-1 flex-row items-center">
             <Avatar
               name={messages?.pages?.[0]?.meta?.contact?.name ?? ''}
               className="size-8"
@@ -132,7 +138,7 @@ export default function ChatRoomScreen(): JSX.Element {
         )}
       />
       <PagerView
-        key="1"
+        scrollEnabled={activeTab === 1}
         ref={pagerViewRef}
         className="flex-1"
         initialPage={activeTab}

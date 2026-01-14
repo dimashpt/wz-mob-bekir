@@ -154,7 +154,7 @@ export function MessageItem({
       if (showAbove) {
         // Position menu above: make it closer to match visual spacing when below
         // Shadow creates visual gap, so use minimal spacing
-        menuY = y - menuHeight + 6;
+        menuY = y - menuHeight - 30;
       }
 
       // Calculate X position - align based on message direction, ensure it stays on screen
