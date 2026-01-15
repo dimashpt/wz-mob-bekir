@@ -12,6 +12,7 @@ import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, Text } from '@/components';
 import { ChatMessage } from '@/modules/@types/chat';
+import { MESSAGE_TYPES } from '../constants/flags';
 import { Attachment } from '../services/conversation/types';
 import { MessageBubble, MessageType } from './message-bubble';
 
@@ -46,11 +47,8 @@ export interface MessageContextMenuProps {
   position: { x: number; y: number };
   messagePosition: { x: number; y: number; width: number; height: number };
   message: ChatMessage;
-  messageType: MessageType;
   replyMessage?: ChatMessage;
   attachments: Attachment[];
-  hasAttachments: boolean;
-  renderAttachment: (attachment: Attachment) => React.JSX.Element;
   onCopy: () => void;
   onReply: () => void;
   onDelete: () => void;
@@ -61,17 +59,18 @@ export function MessageContextMenu({
   position,
   messagePosition,
   message,
-  messageType,
   replyMessage,
   attachments,
-  hasAttachments,
-  renderAttachment,
   onCopy,
   onReply,
   onDelete,
   onClose,
 }: MessageContextMenuProps): React.JSX.Element {
   const blurOpacity = useSharedValue(0);
+
+  const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
+  const isPrivate = message.private;
+  const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
 
   // Animate blur in on mount
   useEffect(() => {
@@ -81,6 +80,16 @@ export function MessageContextMenu({
   const blurStyle = useAnimatedStyle(() => ({
     opacity: blurOpacity.value,
   }));
+
+  function getMessageType(): MessageType {
+    if (isPrivate) return 'private';
+
+    if (isTemplate) return 'template';
+
+    if (isOutgoing) return 'outgoing';
+
+    return 'incoming';
+  }
 
   return (
     <Modal
@@ -108,8 +117,8 @@ export function MessageContextMenu({
         </View>
         {/* Render message bubble above blur to keep it readable */}
         <View
+          className="absolute"
           style={{
-            position: 'absolute',
             left: messagePosition.x,
             top: messagePosition.y,
             width: messagePosition.width,
@@ -118,15 +127,14 @@ export function MessageContextMenu({
           pointerEvents="none"
         >
           <View
-            className={twMerge(messageBubbleVariants({ type: messageType }))}
+            className={twMerge(
+              messageBubbleVariants({ type: getMessageType() }),
+            )}
           >
             <MessageBubble
               message={message}
-              messageType={messageType}
               replyMessage={replyMessage}
               attachments={attachments}
-              hasAttachments={hasAttachments}
-              renderAttachment={renderAttachment}
             />
           </View>
         </View>

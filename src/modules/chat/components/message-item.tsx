@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Dimensions, Linking, Platform, StatusBar, View } from 'react-native';
+import { Dimensions, Platform, StatusBar, View } from 'react-native';
 
 import { InfiniteData } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
@@ -17,12 +17,11 @@ import Animated, {
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 
-import { Clickable, Icon, Image, Text } from '@/components';
+import { Icon } from '@/components';
 import { snackbar } from '@/components/snackbar';
 import { queryClient } from '@/lib/react-query';
 import { ChatMessage } from '@/modules/@types/chat';
 import { useAuthStore } from '@/store/auth-store';
-import { formatFileSize } from '@/utils/formatter';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import {
@@ -65,18 +64,6 @@ const messageBubbleVariants = tv({
   },
 });
 
-const messageBubbleTextVariants = tv({
-  base: 'text-foreground',
-  variants: {
-    type: {
-      incoming: 'text-foreground',
-      outgoing: 'text-foreground-inverted',
-      private: 'text-yellow-600',
-      template: 'text-foreground',
-    },
-  },
-});
-
 export function MessageItem({
   currentMessage: message,
   onDelete,
@@ -106,7 +93,6 @@ export function MessageItem({
   const isPrivate = message.private;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
   const attachments = message.attachments ?? [];
-  const hasAttachments = attachments.length > 0;
 
   const queryKey = conversationKeys.messages(
     chatUser?.account_id ?? 0,
@@ -264,86 +250,6 @@ export function MessageItem({
     return 'incoming';
   }
 
-  async function handleFilePress(fileUrl: string): Promise<void> {
-    try {
-      const canOpen = await Linking.canOpenURL(fileUrl);
-      if (canOpen) {
-        await Linking.openURL(fileUrl);
-      }
-      // eslint-disable-next-line unused-imports/no-unused-vars
-    } catch (error) {
-      // Handle error silently or show snackbar if needed
-    }
-  }
-
-  function renderAttachment(attachment: Attachment): React.JSX.Element {
-    const messageType = getMessageType();
-    const isImage = attachment.file_type === 'image';
-
-    if (isImage) {
-      const thumbnailUrl = attachment.thumb_url || attachment.data_url;
-      const aspectRatio =
-        attachment.width && attachment.height
-          ? attachment.width / attachment.height
-          : 1;
-
-      return (
-        <Clickable
-          key={attachment.id}
-          onPress={() => onPreviewAttachment(attachment)}
-          className="mb-xs overflow-hidden rounded-md"
-        >
-          <Image
-            source={{ uri: thumbnailUrl }}
-            style={{ aspectRatio }}
-            contentFit="cover"
-            className="w-full rounded-md"
-          />
-        </Clickable>
-      );
-    }
-
-    // File attachment
-    const fileName = decodeURI(attachment?.data_url?.split('/')?.pop() ?? '');
-    const fileSize = formatFileSize(attachment.file_size ?? 0);
-
-    return (
-      <Clickable
-        key={attachment.id}
-        onPress={() => handleFilePress(attachment.data_url)}
-        className={twMerge(
-          'mb-xs gap-sm bg-surface-soft p-sm flex-row items-center rounded-md border',
-          isPrivate
-            ? 'border-warning bg-warning/20'
-            : 'border-border bg-surface/20',
-        )}
-      >
-        <Icon
-          name="fileAttachment"
-          size="base"
-          className={messageBubbleTextVariants({ type: messageType })}
-        />
-        <View className="shrink">
-          <Text
-            variant="bodyS"
-            numberOfLines={1}
-            ellipsizeMode="middle"
-            className={messageBubbleTextVariants({ type: messageType })}
-          >
-            {fileName}
-          </Text>
-          <Text
-            variant="labelXS"
-            className={messageBubbleTextVariants({ type: messageType })}
-            style={{ opacity: 0.7 }}
-          >
-            {fileSize}
-          </Text>
-        </View>
-      </Clickable>
-    );
-  }
-
   // TODO: Render other message types
   // if (message.content_attributes) {}
   // if (message.content_type === 'incoming_email') {}
@@ -390,11 +296,9 @@ export function MessageItem({
           >
             <MessageBubble
               message={message}
-              messageType={getMessageType()}
               replyMessage={replyMessage}
               attachments={attachments}
-              hasAttachments={hasAttachments}
-              renderAttachment={renderAttachment}
+              onPreviewAttachment={onPreviewAttachment}
             />
           </Animated.View>
         </View>
@@ -404,11 +308,8 @@ export function MessageItem({
           position={menuPosition}
           messagePosition={messagePosition}
           message={message}
-          messageType={getMessageType()}
           replyMessage={replyMessage}
           attachments={attachments}
-          hasAttachments={hasAttachments}
-          renderAttachment={renderAttachment}
           onCopy={handleCopy}
           onReply={handleReply}
           onDelete={handleDelete}
