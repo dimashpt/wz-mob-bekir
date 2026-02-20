@@ -3,7 +3,7 @@
     "apps": [],
     "details": [
       {
-        "appID": "TEAM_ID.com.bebaschat.app",
+        "appID": "TEAM_ID.com.bebaskirim.dashboard",
         "paths": ["/auth/reset-password"]
       }
     ]

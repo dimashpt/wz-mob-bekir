@@ -1,40 +1,45 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
-export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
-  const VARIANT = process.env.APP_VARIANT;
-  const VERSION = '0.2.0';
-  const BUILD_NUMBER = 2;
-  const BUNDLE_ID = 'com.bebaschat.app';
-  const EXPO_PROJECT_ID = 'cf27c8f8-5c74-4302-9386-a44ed0d781ad';
+const APP_NAME = process.env.APP_NAME!;
+const APP_BUNDLE_ID = process.env.APP_BUNDLE_ID;
+const APP_VARIANT = process.env.APP_VARIANT;
+const APP_SCHEME = process.env.APP_SCHEME;
+const APP_VERSION = '0.1.0';
+const APP_BUILD_NUMBER = 1;
+const EXPO_SLUG = process.env.EXPO_SLUG!;
+const EXPO_PROJECT_ID = process.env.EXPO_PROJECT_ID;
+const EXPO_OWNER = process.env.EXPO_OWNER;
 
+export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
   const config: ExpoConfig = {
     ...defaultConfig,
-    name: 'Bebaschat',
-    slug: 'bebaschat',
-    owner: 'wz-technology',
-    version: VERSION,
+    name: APP_NAME,
+    slug: EXPO_SLUG,
+    owner: EXPO_OWNER,
+    version: APP_VERSION,
     orientation: 'portrait',
     icon: './src/assets/images/icon.png',
-    scheme: 'bebaschat',
+    scheme: APP_SCHEME,
     userInterfaceStyle: 'automatic',
-    newArchEnabled: true,
     experiments: {
-      reactCompiler: false,
+      reactCompiler: true,
       typedRoutes: true,
     },
     extra: {
       router: { origin: false },
       eas: { projectId: EXPO_PROJECT_ID },
     },
-    updates: { url: `https://u.expo.dev/${EXPO_PROJECT_ID}` },
+    updates: {
+      url: `https://u.expo.dev/${EXPO_PROJECT_ID}`,
+    },
     runtimeVersion: { policy: 'appVersion' },
     ios: {
       ...defaultConfig.ios,
-      bundleIdentifier: BUNDLE_ID,
+      bundleIdentifier: APP_BUNDLE_ID,
       supportsTablet: true,
-      buildNumber: BUILD_NUMBER.toString(),
+      buildNumber: APP_BUILD_NUMBER.toString(),
       // Add associatedDomains for Universal Links
-      associatedDomains: ['applinks:dashboard.bebaschat.com'],
+      associatedDomains: ['applinks:dashboard.bebaskirim.com'],
       icon: './src/assets/images/icon-ios.icon',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
@@ -44,9 +49,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     },
     android: {
       ...defaultConfig.android,
-      package: BUNDLE_ID,
-      versionCode: BUILD_NUMBER,
-      edgeToEdgeEnabled: true,
+      package: APP_BUNDLE_ID,
+      versionCode: APP_BUILD_NUMBER,
       adaptiveIcon: {
         foregroundImage: './src/assets/images/icon-android.png',
         monochromeImage: './src/assets/images/icon-android-monochrome.png',
@@ -61,7 +65,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
           data: [
             {
               scheme: 'https',
-              host: 'dashboard.bebaschat.com',
+              host: 'dashboard.bebaskirim.com',
               pathPrefix: '/auth/reset-password',
             },
           ],
@@ -133,8 +137,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
         '@sentry/react-native/expo',
         {
           url: 'https://sentry.io/',
-          project: 'bebaschat',
-          organization: 'wz-technology',
+          project: process.env.SENTRY_PROJECT!,
+          organization: process.env.SENTRY_ORGANIZATION!,
         },
       ],
       [
@@ -154,18 +158,18 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     ],
   };
 
-  if (VARIANT === 'dev') {
-    config.name = 'Bebaschat Dev';
-    config.ios!.bundleIdentifier = `${BUNDLE_ID}.dev`;
-    config.android!.package = `${BUNDLE_ID}.dev`;
+  if (APP_VARIANT === 'dev') {
+    config.name = `${APP_NAME} Dev`;
+    config.ios!.bundleIdentifier = `${APP_BUNDLE_ID}.dev`;
+    config.android!.package = `${APP_BUNDLE_ID}.dev`;
 
     config.ios!.icon = './src/assets/images/icon-ios-dev.icon';
     config.android!.adaptiveIcon!.foregroundImage =
       './src/assets/images/icon-android-dev.png';
-  } else if (VARIANT === 'preview') {
-    config.name = 'Bebaschat Preview';
-    config.ios!.bundleIdentifier = `${BUNDLE_ID}.preview`;
-    config.android!.package = `${BUNDLE_ID}.preview`;
+  } else if (APP_VARIANT === 'preview') {
+    config.name = `${APP_NAME} Preview`;
+    config.ios!.bundleIdentifier = `${APP_BUNDLE_ID}.preview`;
+    config.android!.package = `${APP_BUNDLE_ID}.preview`;
   }
 
   return config;
