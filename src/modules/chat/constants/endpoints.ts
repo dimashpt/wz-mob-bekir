@@ -1,70 +1,55 @@
-const CHAT_BASE_URL = process.env.EXPO_PUBLIC_CHAT_BASE_URL;
-
-const base = (accountId: number): string =>
-  `${CHAT_BASE_URL}/api/v1/accounts/${accountId}`;
+const BASE = '/tenant/v1/chat';
 
 export const conversationEndpoints = {
-  // Conversations
-  list: (accountId: number) => `${base(accountId)}/conversations`,
-  details: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}`,
-  updateLastSeen: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/update_last_seen`,
-  participants: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/participants`,
-  updateStatus: (accountId: number, conversationId: number) =>
-    `${base(accountId)}/conversations/${conversationId}/toggle_status`,
-  updateAssignee: (accountId: number, conversationId: number) =>
-    `${base(accountId)}/conversations/${conversationId}/assignments`,
-  updatePriority: (accountId: number, conversationId: number) =>
-    `${base(accountId)}/conversations/${conversationId}/toggle_priority`,
-  updateLabels: (accountId: number, conversationId: number) =>
-    `${base(accountId)}/conversations/${conversationId}/labels`,
-  mute: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/mute`,
-  unmute: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/unmute`,
-  unread: (accountId: number, conversationId: number) =>
-    `${base(accountId)}/conversations/${conversationId}/unread`,
-  updateBulk: (accountId: number) => `${base(accountId)}/bulk_actions`,
-  updateTypingStatus: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/toggle_typing_status`,
+  // Chat
+  list: () => BASE,
+  details: (conversationId: string) => `${BASE}/${conversationId}`,
+  updateLastSeen: (conversationId: string) =>
+    `${BASE}/${conversationId}/update_last_seen`,
+  participants: (conversationId: string) =>
+    `${BASE}/${conversationId}/participants`,
+  updateStatus: (conversationId: string) =>
+    `${BASE}/${conversationId}/toggle_status`,
+  updateAssignee: (conversationId: string) =>
+    `${BASE}/${conversationId}/assignments`,
+  updatePriority: (conversationId: string) =>
+    `${BASE}/${conversationId}/toggle_priority`,
+  updateLabels: (conversationId: string) => `${BASE}/${conversationId}/labels`,
+  mute: (conversationId: string) => `${BASE}/${conversationId}/mute`,
+  unmute: (conversationId: string) => `${BASE}/${conversationId}/unmute`,
+  unread: (conversationId: string) => `${BASE}/${conversationId}/unread`,
+  updateBulk: () => `${BASE}/bulk_actions`,
+  updateTypingStatus: (conversationId: string) =>
+    `${BASE}/${conversationId}/toggle_typing_status`,
   // Messages
-  messages: (accountId: number, conversationId: string) =>
-    `${base(accountId)}/conversations/${conversationId}/messages`,
-  sendMessage: (accountId: number, conversationId: string) =>
-    conversationEndpoints.messages(accountId, conversationId),
-  deleteMessage: (
-    accountId: number,
-    conversationId: string,
-    messageId: number,
-  ) =>
-    `${base(accountId)}/conversations/${conversationId}/messages/${messageId}`,
+  messages: (conversationId: string) => `${BASE}/${conversationId}/messages`,
+  sendMessage: (conversationId: string) =>
+    conversationEndpoints.messages(conversationId),
+  deleteMessage: (conversationId: string, messageId: number) =>
+    `${BASE}/${conversationId}/messages/${messageId}`,
 } as const;
 
 export const agentEndpoints = {
-  list: (accountId: number) => `${base(accountId)}/assignable_agents`,
+  list: () => `${BASE}/assignable_agents`,
 } as const;
 
 export const teamEndpoints = {
-  list: (accountId: number) => `${base(accountId)}/teams`,
+  list: () => `${BASE}/teams`,
 } as const;
 
 export const labelEndpoints = {
-  list: (accountId: number) => `${base(accountId)}/labels`,
+  list: () => `${BASE}/labels`,
 } as const;
 
 export const macroEndpoints = {
-  list: (accountId: number) => `${base(accountId)}/macros`,
-  execute: (accountId: number, macroId: string) =>
-    `${base(accountId)}/macros/${macroId}/execute`,
+  list: () => `${BASE}/macros`,
+  execute: (macroId: string) => `${BASE}/macros/${macroId}/execute`,
 } as const;
 
 export const inboxEndpoints = {
-  list: (accountId: number) => `${base(accountId)}/inboxes`,
+  list: () => `${BASE}/inboxes`,
 } as const;
 
 export const attributeEndpoints = {
-  list: (accountId: number) =>
-    `${base(accountId)}/custom_attribute_definitions`,
+  list: () => `${BASE}/custom_attribute_definitions`,
 } as const;

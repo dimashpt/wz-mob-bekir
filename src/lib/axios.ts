@@ -20,7 +20,7 @@ const RATE_LIMIT_WINDOW = 1000; // 1 second
 
 export const API = axios.create({
   baseURL: process.env.EXPO_PUBLIC_API_URL,
-  timeout: Number(process.env.EXPO_PUBLIC_API_TIMEOUT ?? 10_000),
+  // timeout: Number(process.env.EXPO_PUBLIC_API_TIMEOUT ?? 10_000),
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -104,19 +104,13 @@ export function initializeAuthInterceptors(
         throw new axios.Cancel(`Rate limited: ${requestKey}`);
       }
 
-      const { token, user, chatHeaders } = getAuthState();
+      const { token, user } = getAuthState();
 
       if (token?.accessToken) {
         // Token is expired or invalid - attempt refresh instead of logout
         // This will be handled by the 401 response interceptor
         config.headers['Authorization'] = `Bearer ${token.accessToken}`;
         config.headers['X-Tenant-Id'] = user?.tenant_id;
-      }
-
-      if (chatHeaders) {
-        config.headers['access-token'] = chatHeaders['access-token'];
-        config.headers['client'] = chatHeaders['client'];
-        config.headers['uid'] = chatHeaders['uid'];
       }
 
       // Add security headers

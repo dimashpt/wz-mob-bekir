@@ -50,7 +50,7 @@ import { Label } from '../services/label/types';
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
   const [showFilters, setShowFilters] = useState(false);
@@ -127,10 +127,10 @@ export default function ChatScreen(): JSX.Element {
   const bulkUpdateMutation = useMutation({
     mutationKey: conversationKeys.updateBulk,
     mutationFn: (payload: BulkUpdateActionPayload) =>
-      bulkUpdateAction(chatUser?.account_id ?? 0, payload),
+      bulkUpdateAction(user?.id ?? 0, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: conversationKeys.list(chatUser?.account_id ?? 0, filters),
+        queryKey: conversationKeys.list(user?.id ?? 0, filters),
       });
       setIsSelectionMode(false);
       setSelectedIds(new Set());
@@ -247,21 +247,21 @@ export default function ChatScreen(): JSX.Element {
   const unreadConversationMutation = useMutation({
     mutationKey: conversationKeys.unread,
     mutationFn: (conversation: Conversation) =>
-      unreadConversation(chatUser?.account_id ?? 0, conversation.id),
+      unreadConversation(user?.id ?? 0, conversation.id),
     onSuccess: handleOptimisticUnreadConversation,
   });
 
   const muteConversationMutation = useMutation({
     mutationKey: conversationKeys.mute,
     mutationFn: (conversation: Conversation) =>
-      muteConversation(chatUser?.account_id ?? 0, conversation.id.toString()),
+      muteConversation(user?.id ?? 0, conversation.id.toString()),
     onSuccess: (_, payload) => handleOptimisticToggleMute(payload.id, true),
   });
 
   const unmuteConversationMutation = useMutation({
     mutationKey: conversationKeys.unmute,
     mutationFn: (conversationId: number) =>
-      unmuteConversation(chatUser?.account_id ?? 0, conversationId.toString()),
+      unmuteConversation(user?.id ?? 0, conversationId.toString()),
     onSuccess: (_, payload) => handleOptimisticToggleMute(payload, false),
   });
 
@@ -276,7 +276,7 @@ export default function ChatScreen(): JSX.Element {
 
   function handleOptimisticToggleMute(id: number, muted: boolean): void {
     optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(chatUser?.account_id ?? 0, filters),
+      conversationKeys.list(user?.id ?? 0, filters),
       (old) => {
         if (!old) return old;
 
@@ -295,7 +295,7 @@ export default function ChatScreen(): JSX.Element {
 
   function handleOptimisticUnreadConversation(data: Conversation): void {
     optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(chatUser?.account_id ?? 0, filters),
+      conversationKeys.list(user?.id ?? 0, filters),
       (old) => {
         if (!old) return old;
 

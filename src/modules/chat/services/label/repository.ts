@@ -21,13 +21,13 @@ export function useListLabelsQuery<T = LabelListResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<LabelListResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: labelKeys.list(chatUser?.account_id ?? 0),
-    queryFn: () => listLabels(chatUser?.account_id ?? 0),
+    enabled: Boolean(user?.id),
+    queryKey: labelKeys.list(user?.id ?? 0),
+    queryFn: () => listLabels(user?.id ?? 0),
   });
 
   return query;

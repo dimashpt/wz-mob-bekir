@@ -21,13 +21,13 @@ export function useListInboxesQuery<T = InboxListResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<InboxListResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: inboxKeys.list(chatUser!.account_id),
-    queryFn: () => listInboxes(chatUser!.account_id),
+    enabled: Boolean(user?.id),
+    queryKey: inboxKeys.list(user!.id),
+    queryFn: () => listInboxes(user!.id),
   });
   return query;
 }

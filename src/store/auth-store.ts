@@ -6,11 +6,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { initializeAuthInterceptors } from '@/lib/axios';
 import { mmkvEncryptedStorage } from '@/lib/mmkv-storage';
 import { queryClient } from '@/lib/react-query';
-import {
-  ChatAuthHeaders,
-  ChatUser,
-  LoginResponse,
-} from '@/modules/auth/services/types';
+import { LoginResponse } from '@/modules/auth/services/types';
 import { User } from '@/modules/profile/services/types';
 
 type AuthStatus = 'firstLogin' | 'loggedIn' | 'loggedOut';
@@ -25,10 +21,6 @@ type AuthState = {
   token: TokenType | null;
   user: User | null;
   pushNotificationToken: string | null;
-
-  // === Chat Authentication ===
-  chatUser: ChatUser | null;
-  chatHeaders: ChatAuthHeaders | null;
 };
 
 type AuthActions = {
@@ -37,10 +29,6 @@ type AuthActions = {
   setStatus: (status: AuthStatus) => void;
   logout: () => Promise<void>;
   setPushNotificationToken: (token: AuthState['pushNotificationToken']) => void;
-
-  // === Chat Authentication ===
-  setChatUser: (user: ChatUser) => void;
-  setChatHeaders: (headers: ChatAuthHeaders) => void;
 };
 
 const initialState: AuthState = {
@@ -48,10 +36,6 @@ const initialState: AuthState = {
   token: null,
   user: null,
   pushNotificationToken: null,
-
-  // === Chat Authentication ===
-  chatUser: null,
-  chatHeaders: null,
 };
 
 export type AuthStore = AuthState & AuthActions;
@@ -96,10 +80,6 @@ export const useAuthStore = create<AuthStore>()(
           pushNotificationToken: token,
         }));
       },
-      // === Chat Authentication ===
-      setChatUser: (user: ChatUser) => set({ chatUser: user }),
-      setChatHeaders: (headers: ChatAuthHeaders) =>
-        set({ chatHeaders: headers }),
     }),
     {
       name: 'auth-storage',

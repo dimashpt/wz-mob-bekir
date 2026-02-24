@@ -43,18 +43,18 @@ const statusVariants = tv({
 export function StatusSection({
   conversation,
 }: StatusSectionProps): JSX.Element {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const conversationDetailsQueryKey = conversationKeys.details(
-    chatUser?.account_id ?? 0,
+    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const updateStatusMutation = useMutation({
     mutationKey: conversationKeys.updateStatus,
     mutationFn: (payload: UpdateStatusPayload) =>
-      updateStatus(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+      updateStatus(user?.id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,

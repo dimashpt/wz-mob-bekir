@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
-import { WebSocketConnector } from '@/lib/action-cable';
+import { echo } from '@/lib/echo';
 import { Message } from '@/modules/chat/services/conversation/types';
 import {
   addMessageToQuery,
@@ -10,20 +10,11 @@ import {
 import { useAuthStore } from '@/store';
 
 export function useWebsocket(): void {
-  const connectorRef = useRef<WebSocketConnector | null>(null);
-
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     // Only initialize if all required values are present
-    if (!chatUser?.pubsub_token || !chatUser?.account_id || !chatUser?.id) {
-      return;
-    }
-
-    // Type narrowing - TypeScript now knows these are defined
-    const token = chatUser.pubsub_token;
-    const account = chatUser.account_id;
-    const user = chatUser.id;
+    if (!user?.id) return;
 
     // Create event handlers
     const events: {
@@ -56,26 +47,25 @@ export function useWebsocket(): void {
     }
 
     function onMessageCreated(_: string, data: Message): void {
-      addMessageToQuery(account, String(data.conversation_id), data);
-      updateConversationLastActivity(account, data);
+      addMessageToQuery(user!.id, String(data.conversation_id), data);
+      updateConversationLastActivity(user!.id, data);
     }
 
     function onMessageUpdated(_: string, data: Message): void {
       updateMessageByIdInQuery(
-        account,
+        user!.id,
         String(data.conversation_id),
         data.id,
         data,
       );
     }
 
-    // Initialize the connector
-    connectorRef.current = new WebSocketConnector(token, account, user);
-    connectorRef.current.events = events;
+    // Connect to the WebSocket server
+    echo.connect();
 
-    // Cleanup function
+    // Cleanup function — disconnect Pusher on unmount or when user changes
     return () => {
-      connectorRef.current = null;
+      echo.disconnect();
     };
-  }, [chatUser]);
+  }, [user]);
 }

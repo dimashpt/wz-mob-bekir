@@ -27,13 +27,13 @@ export function useListAssignableAgentsQuery<
   > = {},
   requestParams: ConversationAssignableAgentsParams,
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ConversationAssignableAgentsResponse, Error, T>({
     ...params,
-    enabled: params.enabled ?? Boolean(chatUser?.account_id),
-    queryKey: agentKeys.list(chatUser!.account_id, requestParams),
-    queryFn: () => listAssignableAgents(chatUser!.account_id, requestParams),
+    enabled: params.enabled ?? Boolean(user?.id),
+    queryKey: agentKeys.list(user!.id, requestParams),
+    queryFn: () => listAssignableAgents(user!.id, requestParams),
   });
   return query;
 }

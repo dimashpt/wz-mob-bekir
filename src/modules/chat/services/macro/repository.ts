@@ -21,13 +21,13 @@ export function useListMacrosQuery<T = ConversationMacrosResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ConversationMacrosResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: macroKeys.list(chatUser!.account_id),
-    queryFn: () => listMacros(chatUser!.account_id),
+    enabled: Boolean(user?.id),
+    queryKey: macroKeys.list(user!.id),
+    queryFn: () => listMacros(user!.id),
   });
 
   return query;

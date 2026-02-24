@@ -7,12 +7,8 @@ import { InboxListResponse } from './types';
  * @param accountId - The ID of the account.
  * @returns A promise that resolves to the inboxes.
  */
-export async function listInboxes(
-  accountId: number,
-): Promise<InboxListResponse> {
-  const response = await API.get<InboxListResponse>(
-    inboxEndpoints.list(accountId),
-  );
+export async function listInboxes(): Promise<InboxListResponse> {
+  const response = await API.get<InboxListResponse>(inboxEndpoints.list());
 
   return response.data;
 }

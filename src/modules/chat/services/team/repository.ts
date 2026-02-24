@@ -21,13 +21,13 @@ export function useListTeamsQuery<T = ConversationTeamsResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ConversationTeamsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: teamKeys.list(chatUser!.account_id),
-    queryFn: () => listTeams(chatUser!.account_id),
+    enabled: Boolean(user?.id),
+    queryKey: teamKeys.list(user!.id),
+    queryFn: () => listTeams(user!.id),
   });
   return query;
 }

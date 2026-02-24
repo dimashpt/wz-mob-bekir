@@ -22,12 +22,12 @@ export function useSettingNotifications<T = ListNotificationSettingsResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ListNotificationSettingsResponse, Error, T>({
     ...params,
-    queryKey: settingKeys.notifications(chatUser?.account_id ?? 0),
-    queryFn: () => notificationSettingList(chatUser?.account_id ?? 0),
+    queryKey: settingKeys.notifications(user?.id ?? 0),
+    queryFn: () => notificationSettingList(user?.id ?? 0),
   });
 
   return query;

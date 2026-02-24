@@ -45,7 +45,7 @@ export default function ChatRoomScreen(): JSX.Element {
   const imagePreviewRef = useRef<ImagePreviewModal>(null);
 
   const { conversation_id } = useLocalSearchParams<Params>();
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { bottom } = useSafeAreaInsets();
 
   const [activeTab, setActiveTab] = useState(0);
@@ -70,15 +70,12 @@ export default function ChatRoomScreen(): JSX.Element {
     conversation_id,
   );
 
-  const queryKey = conversationKeys.messages(
-    chatUser?.account_id ?? 0,
-    conversation_id,
-  );
+  const queryKey = conversationKeys.messages(user?.id ?? 0, conversation_id);
 
   const deleteMessageMutation = useMutation({
     mutationKey: conversationKeys.deleteMessage,
     mutationFn: (messageId: number) =>
-      deleteMessage(chatUser?.account_id ?? 0, conversation_id, messageId),
+      deleteMessage(user?.id ?? 0, conversation_id, messageId),
     onMutate: async (messageId, context) => {
       const previousMessages =
         context.client.getQueryData<InfiniteData<ConversationMessagesResponse>>(
@@ -86,7 +83,7 @@ export default function ChatRoomScreen(): JSX.Element {
         );
 
       await markMessageAsDeletedInQuery(
-        chatUser?.account_id ?? 0,
+        user?.id ?? 0,
         conversation_id,
         messageId,
       );
@@ -95,7 +92,7 @@ export default function ChatRoomScreen(): JSX.Element {
     },
     onSuccess: async (data, messageId) => {
       await updateMessageByIdInQuery(
-        chatUser?.account_id ?? 0,
+        user?.id ?? 0,
         conversation_id,
         messageId,
         data,
@@ -108,7 +105,7 @@ export default function ChatRoomScreen(): JSX.Element {
   useEffect(() => {
     // Invalidate the list conversations query to update the unread count
     queryClient.invalidateQueries({
-      queryKey: conversationKeys.list(chatUser?.account_id ?? 0),
+      queryKey: conversationKeys.list(user?.id ?? 0),
     });
   }, [conversation]);
 
@@ -147,9 +144,9 @@ export default function ChatRoomScreen(): JSX.Element {
         <GiftedChat
           messages={messages?.messages ?? []}
           user={{
-            // Add outgoing message type to the user id, due to the given sender.id !== account_id
-            _id: `${chatUser?.account_id ?? 0}-${MESSAGE_TYPES.OUTGOING}`,
-            name: chatUser?.name ?? '',
+            // Add outgoing message type to the user id, due to the given sender.id !== id
+            _id: `${user?.id ?? 0}-${MESSAGE_TYPES.OUTGOING}`,
+            name: user?.name ?? '',
           }}
           renderBubble={(props) => (
             <MessageItem

@@ -23,13 +23,13 @@ export function useListCustomAttributeDefinitionsQuery<
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ListCustomAttributeDefinitionsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: attributeKeys.list(chatUser!.account_id),
-    queryFn: () => listCustomAttributeDefinitions(chatUser!.account_id),
+    enabled: Boolean(user?.id),
+    queryKey: attributeKeys.list(user!.id),
+    queryFn: () => listCustomAttributeDefinitions(user!.id),
   });
   return query;
 }

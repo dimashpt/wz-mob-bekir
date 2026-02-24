@@ -40,13 +40,13 @@ export function useListConversationQuery<T = ListConversationsResponse>(
   > = {},
   requestParams: ListConversationsParams = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ListConversationsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id),
-    queryKey: conversationKeys.list(chatUser?.account_id ?? 0, requestParams),
-    queryFn: () => listConversations(chatUser?.account_id ?? 0, requestParams),
+    enabled: Boolean(user?.id),
+    queryKey: conversationKeys.list(user?.id ?? 0, requestParams),
+    queryFn: () => listConversations(user?.id ?? 0, requestParams),
   });
 
   return query;
@@ -66,17 +66,13 @@ export function useConversationDetailsQuery<T = ConversationDetailsResponse>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ConversationDetailsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id && conversationId),
-    queryKey: conversationKeys.details(
-      chatUser?.account_id ?? 0,
-      conversationId,
-    ),
-    queryFn: () =>
-      conversationDetails(chatUser?.account_id ?? 0, conversationId),
+    enabled: Boolean(user?.id && conversationId),
+    queryKey: conversationKeys.details(user?.id ?? 0, conversationId),
+    queryFn: () => conversationDetails(user?.id ?? 0, conversationId),
   });
 
   return query;
@@ -96,16 +92,13 @@ export function useUpdateLastSeenQuery<T = Conversation>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<Conversation, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id && conversationId),
-    queryKey: conversationKeys.updateLastSeen(
-      chatUser?.account_id ?? 0,
-      conversationId,
-    ),
-    queryFn: () => updateLastSeen(chatUser?.account_id ?? 0, conversationId),
+    enabled: Boolean(user?.id && conversationId),
+    queryKey: conversationKeys.updateLastSeen(user?.id ?? 0, conversationId),
+    queryFn: () => updateLastSeen(user?.id ?? 0, conversationId),
   });
 
   return query;
@@ -133,7 +126,7 @@ export function useListMessagesInfiniteQuery<
   > = {},
   conversationId: string,
 ): UseInfiniteQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useInfiniteQuery<
     ConversationMessagesResponse,
@@ -143,14 +136,11 @@ export function useListMessagesInfiniteQuery<
     number
   >({
     ...params,
-    enabled: Boolean(chatUser?.account_id && conversationId),
-    queryKey: conversationKeys.messages(
-      chatUser?.account_id ?? 0,
-      conversationId,
-    ),
+    enabled: Boolean(user?.id && conversationId),
+    queryKey: conversationKeys.messages(user?.id ?? 0, conversationId),
     queryFn: ({ pageParam }) => {
       const beforeId = pageParam === 0 ? undefined : pageParam;
-      return listMessages(chatUser!.account_id, conversationId, beforeId);
+      return listMessages(user!.id, conversationId, beforeId);
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
@@ -176,16 +166,13 @@ export function useListParticipantsQuery<T = ConversationParticipantsResponse>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ConversationParticipantsResponse, Error, T>({
     ...params,
-    enabled: Boolean(chatUser?.account_id && conversationId),
-    queryKey: conversationKeys.participants(
-      chatUser?.account_id ?? 0,
-      conversationId,
-    ),
-    queryFn: () => listParticipants(chatUser!.account_id, conversationId),
+    enabled: Boolean(user?.id && conversationId),
+    queryKey: conversationKeys.participants(user?.id ?? 0, conversationId),
+    queryFn: () => listParticipants(user!.id, conversationId),
   });
 
   return query;

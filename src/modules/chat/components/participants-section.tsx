@@ -36,7 +36,7 @@ export function ParticipantsSection({
   agents,
 }: ParticipantsSectionProps): JSX.Element {
   const participantsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const { data: participants, refetch: refetchParticipants } =
@@ -44,19 +44,19 @@ export function ParticipantsSection({
 
   const listParticipantsQueryKey = [
     conversationEndpoints.participants(
-      chatUser?.account_id ?? 0,
+      user?.id ?? 0,
       conversation?.id?.toString() ?? '',
     ),
   ];
 
   const updateParticipantsMutation = useMutation({
     mutationKey: conversationKeys.participants(
-      chatUser?.account_id ?? 0,
+      user?.id ?? 0,
       conversation?.id?.toString() ?? '',
     ),
     mutationFn: (payload: UpdateParticipantsPayload) =>
       updateParticipants(
-        chatUser?.account_id ?? 0,
+        user?.id ?? 0,
         conversation?.id?.toString() ?? '',
         payload,
       ),

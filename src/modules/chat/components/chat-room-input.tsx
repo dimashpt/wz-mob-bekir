@@ -75,7 +75,7 @@ export function ChatRoomInput({
   replyTo,
   removeReply,
 }: ChatRoomInputProps): JSX.Element {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { conversation_id } = useLocalSearchParams<Params>();
   const { t } = useTranslation();
 
@@ -97,7 +97,7 @@ export function ChatRoomInput({
   const toggleTypingMutation = useMutation({
     mutationKey: conversationKeys.updateTypingStatus,
     mutationFn: (payload: UpdateTypingStatusPayload) =>
-      updateTypingStatus(chatUser!.account_id, conversation_id, payload),
+      updateTypingStatus(user!.id, conversation_id, payload),
   });
 
   const sendMessageMutation = useMutation({
@@ -123,7 +123,7 @@ export function ChatRoomInput({
         ];
       }
 
-      return sendMessage(chatUser!.account_id, conversation_id, payload);
+      return sendMessage(user!.id, conversation_id, payload);
     },
     onMutate: async (payload, context) => {
       // Clear the message input
@@ -131,7 +131,7 @@ export function ChatRoomInput({
       removeReply?.();
 
       const messageListKey = conversationKeys.messages(
-        chatUser!.account_id,
+        user!.id,
         conversation_id,
       );
 
@@ -160,17 +160,13 @@ export function ChatRoomInput({
         status: 'sending',
         echo_id: payload.echo_id,
         sender: {
-          id: chatUser?.account_id ?? 0,
-          name: chatUser?.name ?? '',
+          id: user?.id ?? 0,
+          name: user?.name ?? '',
         },
       } as Message;
 
       // Optimistically update to the new value
-      await addMessageToQuery(
-        chatUser!.account_id,
-        conversation_id,
-        messagePayload,
-      );
+      await addMessageToQuery(user!.id, conversation_id, messagePayload);
 
       setAttachment(undefined);
 
@@ -180,7 +176,7 @@ export function ChatRoomInput({
     onSuccess: async (data, payload) => {
       // Update the message status and data with the server response
       await updateMessageByEchoIdInQuery(
-        chatUser!.account_id,
+        user!.id,
         conversation_id,
         payload.echo_id,
         data,

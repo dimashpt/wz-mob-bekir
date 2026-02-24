@@ -1,7 +1,4 @@
-const CHAT_BASE_URL = process.env.EXPO_PUBLIC_CHAT_BASE_URL;
-
-const base = (accountId: number): string =>
-  `${CHAT_BASE_URL}/api/v1/accounts/${accountId}`;
+const base = (accountId: number): string => '/tenant/v1/chat';
 
 export const notificationEndpoints = {
   list: (accountId: number) => `${base(accountId)}/notifications`,

@@ -70,7 +70,7 @@ export function MessageItem({
   onReply,
   onPreviewAttachment,
 }: MessageItemProps): React.JSX.Element {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const messageLayoutRef = useRef<View>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
@@ -95,7 +95,7 @@ export function MessageItem({
   const attachments = message.attachments ?? [];
 
   const queryKey = conversationKeys.messages(
-    chatUser?.account_id ?? 0,
+    user?.id ?? 0,
     message?.conversation_id?.toString(),
   );
   const messages =

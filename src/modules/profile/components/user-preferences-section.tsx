@@ -20,18 +20,10 @@ const AVAILABILITY_OPTIONS = [
   { label: 'Offline', value: 'offline' },
 ];
 
-export function UserPreferencesSection({
-  data,
-}: {
-  data?: ChatProfileResponse;
-}): JSX.Element {
+export function UserPreferencesSection(): JSX.Element {
   const availabilityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
 
-  const { chatUser } = useAuthStore();
-
-  const currentAccount = data?.accounts?.find(
-    (account) => account.id === chatUser?.account_id,
-  );
+  const { user } = useAuthStore();
 
   const { data: settings } = useSettingNotifications();
 
@@ -52,7 +44,7 @@ export function UserPreferencesSection({
         <MenuItem.Action
           icon="info"
           label="Availability"
-          value={currentAccount?.availability}
+          // value={currentAccount?.availability}
           loading={changeAvailabilityMutation.isPending}
           onPress={() => availabilityBottomSheetRef.current?.present()}
         />
@@ -61,17 +53,17 @@ export function UserPreferencesSection({
         ref={availabilityBottomSheetRef}
         options={AVAILABILITY_OPTIONS}
         title="Availability"
-        onSelect={(option) =>
+        onSelect={(option) => {
           changeAvailabilityMutation.mutate({
             profile: {
-              account_id: currentAccount!.id,
+              account_id: user!.id,
               availability: option.value,
             },
-          })
-        }
-        selectedValue={AVAILABILITY_OPTIONS.find(
-          (option) => option.value === currentAccount?.availability,
-        )}
+          });
+        }}
+        // selectedValue={AVAILABILITY_OPTIONS.find(
+        //   (option) => option.value === currentAccount?.availability,
+        // )}
       />
     </View>
   );

@@ -43,7 +43,7 @@ export function AssignmentSection({
   const priorityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const PRIORITY_OPTIONS: { label: string; value: ConversationPriority }[] = [
@@ -70,19 +70,19 @@ export function AssignmentSection({
   });
 
   const listMessagesQueryKey = conversationKeys.messages(
-    chatUser?.account_id ?? 0,
+    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const conversationDetailsQueryKey = conversationKeys.details(
-    chatUser?.account_id ?? 0,
+    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const updateAssigneeMutation = useMutation({
     mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneePayload) =>
-      updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+      updateAssignee(user?.id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload, context) => {
       await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
 
@@ -112,7 +112,7 @@ export function AssignmentSection({
   const updateAssigneeTeamMutation = useMutation({
     mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneeTeamPayload) =>
-      updateAssignee(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+      updateAssignee(user?.id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,
@@ -138,7 +138,7 @@ export function AssignmentSection({
   const updatePriorityMutation = useMutation({
     mutationKey: conversationKeys.updatePriority,
     mutationFn: (payload: UpdatePriorityPayload) =>
-      updatePriority(chatUser?.account_id ?? 0, conversation?.id ?? 0, payload),
+      updatePriority(user?.id ?? 0, conversation?.id ?? 0, payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,

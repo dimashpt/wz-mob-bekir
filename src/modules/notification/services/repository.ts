@@ -23,12 +23,12 @@ export function useNotificationListQuery<T = ListNotificationResponse>(
   > = {},
   requestParams: ListNotificationParams = {},
 ): UseQueryResult<T, Error> {
-  const { chatUser } = useAuthStore();
+  const { user } = useAuthStore();
 
   const query = useQuery<ListNotificationResponse, Error, T>({
     ...params,
-    queryKey: notificationKeys.list(chatUser?.account_id ?? 0, requestParams),
-    queryFn: () => notificationList(chatUser?.account_id ?? 0, requestParams),
+    queryKey: notificationKeys.list(user?.id ?? 0, requestParams),
+    queryFn: () => notificationList(user?.id ?? 0, requestParams),
   });
 
   return query;
