@@ -21,11 +21,10 @@ import {
  * @param newMessage - The message to add
  */
 export async function addMessageToQuery(
-  accountId: number,
   conversationId: string,
   newMessage: Message,
 ): Promise<void> {
-  const queryKey = conversationKeys.messages(accountId, conversationId);
+  const queryKey = conversationKeys.messages(conversationId);
 
   optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
@@ -71,12 +70,11 @@ export async function addMessageToQuery(
  * @param updatedMessage - The updated message from server
  */
 export async function updateMessageByEchoIdInQuery(
-  accountId: number,
   conversationId: string,
   echoId: string,
   updatedMessage: Message,
 ): Promise<void> {
-  const queryKey = conversationKeys.messages(accountId, conversationId);
+  const queryKey = conversationKeys.messages(conversationId);
 
   optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
@@ -105,12 +103,11 @@ export async function updateMessageByEchoIdInQuery(
  * @param updatedMessage - The updated message from server
  */
 export async function updateMessageByIdInQuery(
-  accountId: number,
   conversationId: string,
   messageId: number,
   updatedMessage: Message,
 ): Promise<void> {
-  const queryKey = conversationKeys.messages(accountId, conversationId);
+  const queryKey = conversationKeys.messages(conversationId);
 
   optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
@@ -138,11 +135,10 @@ export async function updateMessageByIdInQuery(
  * @param messageId - The id of the message to mark as deleted
  */
 export async function markMessageAsDeletedInQuery(
-  accountId: number,
   conversationId: string,
   messageId: number,
 ): Promise<void> {
-  const queryKey = conversationKeys.messages(accountId, conversationId);
+  const queryKey = conversationKeys.messages(conversationId);
 
   optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
     queryKey,
@@ -240,15 +236,11 @@ export function mapInfiniteMessagesToGiftedChatMessages(
 
 /**
  * Updates the last activity of a conversation in the list conversations query
- * @param accountId - The account ID
  * @param message - The message to update the last activity with
  */
-export function updateConversationLastActivity(
-  accountId: number,
-  message: Message,
-): void {
-  const queryKey = conversationKeys.list(accountId);
-  const [, , params] = queryKey;
+export function updateConversationLastActivity(message: Message): void {
+  const queryKey = conversationKeys.list({});
+  const [, params] = queryKey;
   const filters = getSortFilterOptions();
 
   const queryData = queryClient.getQueriesData({ queryKey });

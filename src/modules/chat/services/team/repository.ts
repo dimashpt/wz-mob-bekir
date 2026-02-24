@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listTeams } from '.';
 import { teamKeys } from '../../constants/keys';
 import { ConversationTeamsResponse } from './types';
@@ -21,13 +20,10 @@ export function useListTeamsQuery<T = ConversationTeamsResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ConversationTeamsResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: teamKeys.list(user!.id),
-    queryFn: () => listTeams(user!.id),
+    queryKey: teamKeys.list,
+    queryFn: listTeams,
   });
   return query;
 }

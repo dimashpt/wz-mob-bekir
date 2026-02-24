@@ -7,11 +7,10 @@ import { ListCustomAttributeDefinitionsResponse } from './types';
  * @param accountId - The ID of the account.
  * @returns A promise that resolves to the custom attribute definitions.
  */
-export async function listCustomAttributeDefinitions(
-  accountId: number,
-): Promise<ListCustomAttributeDefinitionsResponse> {
+// eslint-disable-next-line max-len
+export async function listCustomAttributeDefinitions(): Promise<ListCustomAttributeDefinitionsResponse> {
   const response = await API.get<ListCustomAttributeDefinitionsResponse>(
-    attributeEndpoints.list(accountId),
+    attributeEndpoints.list,
   );
 
   return response.data;

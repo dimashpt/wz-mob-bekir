@@ -4,11 +4,10 @@ import { InboxListResponse } from './types';
 
 /**
  * Lists the inboxes for the given account.
- * @param accountId - The ID of the account.
  * @returns A promise that resolves to the inboxes.
  */
 export async function listInboxes(): Promise<InboxListResponse> {
-  const response = await API.get<InboxListResponse>(inboxEndpoints.list());
+  const response = await API.get<InboxListResponse>(inboxEndpoints.list);
 
   return response.data;
 }

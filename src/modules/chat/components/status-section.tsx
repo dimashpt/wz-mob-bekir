@@ -7,7 +7,6 @@ import { tv } from 'tailwind-variants';
 
 import { Clickable, Icon, IconNames, Text } from '@/components';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { updateStatus } from '../services/conversation';
 import {
@@ -43,18 +42,16 @@ const statusVariants = tv({
 export function StatusSection({
   conversation,
 }: StatusSectionProps): JSX.Element {
-  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const conversationDetailsQueryKey = conversationKeys.details(
-    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const updateStatusMutation = useMutation({
     mutationKey: conversationKeys.updateStatus,
     mutationFn: (payload: UpdateStatusPayload) =>
-      updateStatus(user?.id ?? 0, conversation?.id ?? 0, payload),
+      updateStatus(String(conversation?.id ?? 0), payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,

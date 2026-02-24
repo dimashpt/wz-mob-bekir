@@ -21,7 +21,6 @@ import { Icon } from '@/components';
 import { snackbar } from '@/components/snackbar';
 import { queryClient } from '@/lib/react-query';
 import { ChatMessage } from '@/modules/@types/chat';
-import { useAuthStore } from '@/store/auth-store';
 import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import {
@@ -70,7 +69,6 @@ export function MessageItem({
   onReply,
   onPreviewAttachment,
 }: MessageItemProps): React.JSX.Element {
-  const { user } = useAuthStore();
   const messageLayoutRef = useRef<View>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{
@@ -95,7 +93,6 @@ export function MessageItem({
   const attachments = message.attachments ?? [];
 
   const queryKey = conversationKeys.messages(
-    user?.id ?? 0,
     message?.conversation_id?.toString(),
   );
   const messages =

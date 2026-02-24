@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listCustomAttributeDefinitions } from '.';
 import { attributeKeys } from '../../constants/keys';
 import { ListCustomAttributeDefinitionsResponse } from './types';
@@ -23,13 +22,10 @@ export function useListCustomAttributeDefinitionsQuery<
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ListCustomAttributeDefinitionsResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: attributeKeys.list(user!.id),
-    queryFn: () => listCustomAttributeDefinitions(user!.id),
+    queryKey: attributeKeys.list,
+    queryFn: listCustomAttributeDefinitions,
   });
   return query;
 }

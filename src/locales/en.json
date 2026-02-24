@@ -287,7 +287,9 @@
       "latest": "Latest",
       "sort_on_created_at": "Sort on created at",
       "sort_on_priority": "Sort on priority"
-    }
+    },
+    "no_conversations": "No conversations",
+    "no_conversations_description": "You don't have any conversations yet. They will appear here once they start."
   },
   "order_details": {
     "title": "Order Details",

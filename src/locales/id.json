@@ -285,7 +285,9 @@
       "latest": "Terbaru",
       "sort_on_created_at": "Urutkan berdasarkan tanggal dibuat",
       "sort_on_priority": "Urutkan berdasarkan prioritas"
-    }
+    },
+    "no_conversations": "Tidak ada percakapan",
+    "no_conversations_description": "Anda belum mempunyai percakapan. Percakapan akan muncul di sini setelah dimulai."
   },
   "order_details": {
     "title": "Detail Pesanan",

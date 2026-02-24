@@ -14,7 +14,6 @@ import {
   Text,
 } from '@/components';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { updateLabels } from '../services/conversation';
 import {
@@ -37,7 +36,6 @@ export function LabelsSection({
   conversation,
 }: LabelsSectionProps): JSX.Element {
   const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const { data: labels } = useListLabelsQuery({
@@ -50,14 +48,13 @@ export function LabelsSection({
   });
 
   const listMessagesQueryKey = conversationKeys.messages(
-    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const updateLabelsMutation = useMutation({
     mutationKey: conversationKeys.updateLabels,
     mutationFn: (payload: UpdateLabelConversationPayload) =>
-      updateLabels(user?.id ?? 0, conversation?.id ?? 0, payload),
+      updateLabels(String(conversation?.id ?? 0), payload),
     onMutate: (payload) => {
       const previousData = optimisticUpdateQuery<
         InfiniteData<ConversationMessagesResponse>

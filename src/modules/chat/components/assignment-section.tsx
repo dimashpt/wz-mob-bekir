@@ -12,7 +12,6 @@ import {
   OptionBottomSheetRef,
 } from '@/components';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useAuthStore } from '@/store/auth-store';
 import { conversationKeys } from '../constants/keys';
 import { Agent } from '../services/agent/types';
 import { updateAssignee, updatePriority } from '../services/conversation';
@@ -43,7 +42,6 @@ export function AssignmentSection({
   const priorityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const agentsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const teamsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const PRIORITY_OPTIONS: { label: string; value: ConversationPriority }[] = [
@@ -70,19 +68,17 @@ export function AssignmentSection({
   });
 
   const listMessagesQueryKey = conversationKeys.messages(
-    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const conversationDetailsQueryKey = conversationKeys.details(
-    user?.id ?? 0,
     conversation?.id?.toString() ?? '',
   );
 
   const updateAssigneeMutation = useMutation({
     mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneePayload) =>
-      updateAssignee(user?.id ?? 0, conversation?.id ?? 0, payload),
+      updateAssignee(String(conversation?.id ?? 0), payload),
     onMutate: async (payload, context) => {
       await context.client.cancelQueries({ queryKey: listMessagesQueryKey });
 
@@ -112,7 +108,7 @@ export function AssignmentSection({
   const updateAssigneeTeamMutation = useMutation({
     mutationKey: conversationKeys.updateAssignee,
     mutationFn: (payload: UpdateAssigneeTeamPayload) =>
-      updateAssignee(user?.id ?? 0, conversation?.id ?? 0, payload),
+      updateAssignee(String(conversation?.id ?? 0), payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,
@@ -138,7 +134,7 @@ export function AssignmentSection({
   const updatePriorityMutation = useMutation({
     mutationKey: conversationKeys.updatePriority,
     mutationFn: (payload: UpdatePriorityPayload) =>
-      updatePriority(user?.id ?? 0, conversation?.id ?? 0, payload),
+      updatePriority(String(conversation?.id ?? 0), payload),
     onMutate: async (payload) => {
       const previousData = optimisticUpdateQuery<Conversation>(
         conversationDetailsQueryKey,

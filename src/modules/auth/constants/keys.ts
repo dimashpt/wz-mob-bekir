@@ -4,6 +4,4 @@ export const authKeys = {
   forgotPassword: ['forgot-password'],
   resetPassword: ['reset-password'],
   refreshToken: ['refresh-token'],
-  // Chat login
-  chatLogin: ['chat-login'],
 };

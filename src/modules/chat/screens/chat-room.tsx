@@ -70,33 +70,24 @@ export default function ChatRoomScreen(): JSX.Element {
     conversation_id,
   );
 
-  const queryKey = conversationKeys.messages(user?.id ?? 0, conversation_id);
+  const queryKey = conversationKeys.messages(conversation_id);
 
   const deleteMessageMutation = useMutation({
     mutationKey: conversationKeys.deleteMessage,
     mutationFn: (messageId: number) =>
-      deleteMessage(user?.id ?? 0, conversation_id, messageId),
+      deleteMessage(conversation_id, messageId),
     onMutate: async (messageId, context) => {
       const previousMessages =
         context.client.getQueryData<InfiniteData<ConversationMessagesResponse>>(
           queryKey,
         );
 
-      await markMessageAsDeletedInQuery(
-        user?.id ?? 0,
-        conversation_id,
-        messageId,
-      );
+      await markMessageAsDeletedInQuery(conversation_id, messageId);
 
       return { previousMessages };
     },
     onSuccess: async (data, messageId) => {
-      await updateMessageByIdInQuery(
-        user?.id ?? 0,
-        conversation_id,
-        messageId,
-        data,
-      );
+      await updateMessageByIdInQuery(conversation_id, messageId, data);
     },
   });
 
@@ -105,7 +96,7 @@ export default function ChatRoomScreen(): JSX.Element {
   useEffect(() => {
     // Invalidate the list conversations query to update the unread count
     queryClient.invalidateQueries({
-      queryKey: conversationKeys.list(user?.id ?? 0),
+      queryKey: conversationKeys.list(),
     });
   }, [conversation]);
 

@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listInboxes } from '.';
 import { inboxKeys } from '../../constants/keys';
 import { InboxListResponse } from './types';
@@ -21,13 +20,10 @@ export function useListInboxesQuery<T = InboxListResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<InboxListResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: inboxKeys.list(user!.id),
-    queryFn: () => listInboxes(user!.id),
+    queryKey: inboxKeys.list,
+    queryFn: listInboxes,
   });
   return query;
 }

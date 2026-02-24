@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listLabels } from '.';
 import { labelKeys } from '../../constants/keys';
 import { LabelListResponse } from './types';
@@ -21,13 +20,10 @@ export function useListLabelsQuery<T = LabelListResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<LabelListResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: labelKeys.list(user?.id ?? 0),
-    queryFn: () => listLabels(user?.id ?? 0),
+    queryKey: labelKeys.list,
+    queryFn: listLabels,
   });
 
   return query;

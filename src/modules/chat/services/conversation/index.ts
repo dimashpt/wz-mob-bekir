@@ -28,16 +28,14 @@ import {
 
 /**
  * Lists conversations for the given account.
- * @param accountId - The ID of the account.
  * @param params - The parameters for the request.
  * @returns A promise that resolves to the conversations.
  */
 export async function listConversations(
-  accountId: number,
   params: ListConversationsParams,
 ): Promise<ListConversationsResponse> {
   const response = await API.get<ListConversationsResponse>(
-    conversationEndpoints.list(accountId),
+    conversationEndpoints.list(),
     { params },
   );
 
@@ -46,16 +44,14 @@ export async function listConversations(
 
 /**
  * Gets the details for the given conversation.
- * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the response.
  */
 export async function conversationDetails(
-  accountId: number,
   conversationId: string,
 ): Promise<ConversationDetailsResponse> {
   const response = await API.get<ConversationDetailsResponse>(
-    conversationEndpoints.details(accountId, conversationId),
+    conversationEndpoints.details(conversationId),
   );
 
   return response.data;
@@ -69,12 +65,11 @@ export async function conversationDetails(
  * @returns A promise that resolves to the response.
  */
 export async function updateStatus(
-  accountId: number,
-  conversationId: number,
+  conversationId: string,
   payload: UpdateStatusPayload,
 ): Promise<UpdateStatusResponse> {
   const response = await API.post<UpdateStatusResponse>(
-    conversationEndpoints.updateStatus(accountId, conversationId),
+    conversationEndpoints.updateStatus(conversationId),
     payload,
   );
 
@@ -89,12 +84,11 @@ export async function updateStatus(
  * @returns A promise that resolves to the response.
  */
 export async function updateAssignee(
-  accountId: number,
-  conversationId: number,
+  conversationId: string,
   payload: UpdateAssigneePayload | UpdateAssigneeTeamPayload,
 ): Promise<UpdateAssigneeResponse> {
   const response = await API.post<UpdateAssigneeResponse>(
-    conversationEndpoints.updateAssignee(accountId, conversationId),
+    conversationEndpoints.updateAssignee(conversationId),
     payload,
   );
 
@@ -109,12 +103,11 @@ export async function updateAssignee(
  * @returns A promise that resolves to the response.
  */
 export async function updatePriority(
-  accountId: number,
-  conversationId: number,
+  conversationId: string,
   payload: UpdatePriorityPayload,
 ): Promise<UpdatePriorityResponse> {
   const response = await API.post<UpdatePriorityResponse>(
-    conversationEndpoints.updatePriority(accountId, conversationId),
+    conversationEndpoints.updatePriority(conversationId),
     payload,
   );
 
@@ -129,12 +122,11 @@ export async function updatePriority(
  * @returns A promise that resolves to the response.
  */
 export async function updateLabels(
-  accountId: number,
-  conversationId: number,
+  conversationId: string,
   payload: UpdateLabelConversationPayload,
 ): Promise<UpdateLabelConversationResponse> {
   const response = await API.post<UpdateLabelConversationResponse>(
-    conversationEndpoints.updateLabels(accountId, conversationId),
+    conversationEndpoints.updateLabels(conversationId),
     payload,
   );
 
@@ -149,12 +141,11 @@ export async function updateLabels(
  * @returns A promise that resolves to the response.
  */
 export async function updateParticipants(
-  accountId: number,
   conversationId: string,
   payload: UpdateParticipantsPayload,
 ): Promise<UpdateParticipantsResponse> {
   const response = await API.put<UpdateParticipantsResponse>(
-    conversationEndpoints.participants(accountId, conversationId),
+    conversationEndpoints.participants(conversationId),
     payload,
   );
 
@@ -163,16 +154,14 @@ export async function updateParticipants(
 
 /**
  * Bulk updates the action for the given conversations.
- * @param accountId - The ID of the account.
  * @param payload - The payload for the request.
  * @returns A promise that resolves to the response.
  */
 export async function bulkUpdateAction(
-  accountId: number,
   payload: BulkUpdateActionPayload,
 ): Promise<void> {
   const response = await API.post<void>(
-    conversationEndpoints.updateBulk(accountId),
+    conversationEndpoints.updateBulk(),
     payload,
   );
 
@@ -181,16 +170,14 @@ export async function bulkUpdateAction(
 
 /**
  * Unreads the given conversation.
- * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the response.
  */
 export async function unreadConversation(
-  accountId: number,
   conversationId: number,
 ): Promise<UnreadConversationResponse> {
   const response = await API.post<UnreadConversationResponse>(
-    conversationEndpoints.unread(accountId, conversationId),
+    conversationEndpoints.unread(conversationId),
   );
 
   return response.data;
@@ -203,11 +190,10 @@ export async function unreadConversation(
  * @returns A promise that resolves to the conversation.
  */
 export async function updateLastSeen(
-  accountId: number,
   conversationId: string,
 ): Promise<Conversation> {
   const response = await API.post<Conversation>(
-    conversationEndpoints.updateLastSeen(accountId, conversationId),
+    conversationEndpoints.updateLastSeen(conversationId),
   );
 
   return response.data;
@@ -221,12 +207,11 @@ export async function updateLastSeen(
  * @returns A promise that resolves to the messages.
  */
 export async function listMessages(
-  accountId: number,
   conversationId: string,
   before?: number,
 ): Promise<ConversationMessagesResponse> {
   const response = await API.get<ConversationMessagesResponse>(
-    conversationEndpoints.messages(accountId, conversationId),
+    conversationEndpoints.messages(conversationId),
     { params: { before } },
   );
 
@@ -235,16 +220,14 @@ export async function listMessages(
 
 /**
  * Lists the participants for the given conversation.
- * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the participants.
  */
 export async function listParticipants(
-  accountId: number,
   conversationId: string,
 ): Promise<ConversationParticipantsResponse> {
   const response = await API.get<ConversationParticipantsResponse>(
-    conversationEndpoints.participants(accountId, conversationId),
+    conversationEndpoints.participants(conversationId),
   );
 
   return response.data;
@@ -258,12 +241,11 @@ export async function listParticipants(
  * @returns A promise that resolves to the response.
  */
 export async function updateTypingStatus(
-  accountId: number,
   conversationId: string,
   payload: UpdateTypingStatusPayload,
 ): Promise<void> {
   const response = await API.post(
-    conversationEndpoints.updateTypingStatus(accountId, conversationId),
+    conversationEndpoints.updateTypingStatus(conversationId),
     payload,
   );
 
@@ -278,14 +260,13 @@ export async function updateTypingStatus(
  * @returns A promise that resolves to the response.
  */
 export async function sendMessage(
-  accountId: number,
   conversationId: string,
   payload: SendMessagePayload,
 ): Promise<Message> {
   const formData = objectToFormData(payload);
 
   const response = await API.post(
-    conversationEndpoints.sendMessage(accountId, conversationId),
+    conversationEndpoints.sendMessage(conversationId),
     payload.attachments ? formData : payload,
     {
       headers: payload.attachments
@@ -305,12 +286,11 @@ export async function sendMessage(
  * @returns A promise that resolves to the response.
  */
 export async function deleteMessage(
-  accountId: number,
   conversationId: string,
   messageId: number,
 ): Promise<Message> {
   const response = await API.delete<Message>(
-    conversationEndpoints.deleteMessage(accountId, conversationId, messageId),
+    conversationEndpoints.deleteMessage(conversationId, messageId),
   );
 
   return response.data;
@@ -318,34 +298,24 @@ export async function deleteMessage(
 
 /**
  * Mutes the given conversation.
- * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the response.
  */
-export async function muteConversation(
-  accountId: number,
-  conversationId: string,
-): Promise<void> {
-  const response = await API.post(
-    conversationEndpoints.mute(accountId, conversationId),
-  );
+export async function muteConversation(conversationId: string): Promise<void> {
+  const response = await API.post(conversationEndpoints.mute(conversationId));
 
   return response.data;
 }
 
 /**
  * Unmutes the given conversation.
- * @param accountId - The ID of the account.
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the response.
  */
 export async function unmuteConversation(
-  accountId: number,
   conversationId: string,
 ): Promise<void> {
-  const response = await API.post(
-    conversationEndpoints.unmute(accountId, conversationId),
-  );
+  const response = await API.post(conversationEndpoints.unmute(conversationId));
 
   return response.data;
 }

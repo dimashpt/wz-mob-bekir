@@ -47,17 +47,12 @@ export function useWebsocket(): void {
     }
 
     function onMessageCreated(_: string, data: Message): void {
-      addMessageToQuery(user!.id, String(data.conversation_id), data);
-      updateConversationLastActivity(user!.id, data);
+      addMessageToQuery(String(data.conversation_id), data);
+      updateConversationLastActivity(data);
     }
 
     function onMessageUpdated(_: string, data: Message): void {
-      updateMessageByIdInQuery(
-        user!.id,
-        String(data.conversation_id),
-        data.id,
-        data,
-      );
+      updateMessageByIdInQuery(String(data.conversation_id), data.id, data);
     }
 
     // Connect to the WebSocket server

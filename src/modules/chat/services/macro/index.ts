@@ -8,11 +8,9 @@ import { ConversationMacrosResponse, ExecuteMacroResponse } from './types';
  * @param conversationId - The ID of the conversation.
  * @returns A promise that resolves to the macros.
  */
-export async function listMacros(
-  accountId: number,
-): Promise<ConversationMacrosResponse> {
+export async function listMacros(): Promise<ConversationMacrosResponse> {
   const response = await API.get<ConversationMacrosResponse>(
-    macroEndpoints.list(accountId),
+    macroEndpoints.list,
   );
 
   return response.data;
@@ -20,16 +18,14 @@ export async function listMacros(
 
 /**
  * Executes the macro for the given conversation.
- * @param accountId - The ID of the account.
  * @param macroId - The ID of the macro.
  * @returns A promise that resolves to the response.
  */
 export async function executeMacro(
-  accountId: number,
   macroId: string,
 ): Promise<ExecuteMacroResponse> {
   const response = await API.post<ExecuteMacroResponse>(
-    macroEndpoints.execute(accountId, macroId),
+    macroEndpoints.execute(macroId),
   );
 
   return response.data;

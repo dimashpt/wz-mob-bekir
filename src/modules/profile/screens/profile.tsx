@@ -3,6 +3,7 @@ import { RefreshControl, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { cn } from 'tailwind-variants';
 
 import {
   Avatar,
@@ -29,10 +30,15 @@ function ProfileScreen(): ReactElement {
 
   const { t } = useTranslation();
   const { showBetaFeatures } = useAppStore();
-  const { user } = useAuthStore();
-  const { logout: logoutUser, user: _user } = useAuthStore();
+  const { logout: logoutUser, user } = useAuthStore();
 
-  const { data: profile, refetch, isRefetching } = useProfileQuery();
+  const {
+    data: profile,
+    refetch,
+    isFetching,
+    isRefetching,
+  } = useProfileQuery();
+
   const logoutMutation = useMutation({
     mutationKey: authKeys.logout,
     mutationFn: logout,
@@ -69,27 +75,32 @@ function ProfileScreen(): ReactElement {
         <View className="gap-sm items-center justify-center">
           <View>
             <Avatar
-              name={profile?.user?.name ?? ''}
+              name={profile?.user?.name ?? user?.name ?? ''}
               className="bg-surface size-20"
               textClassName="text-lg"
             />
-            {/* <View
-              className={twMerge(
+            <View
+              className={cn(
                 'absolute right-0 bottom-0 size-4 rounded-full',
-                chatProfile?.account?.availability_status === 'online'
+                user?.availability_status === 'online'
                   ? 'bg-success'
-                  : chatProfile?.account?.availability_status === 'busy'
+                  : user?.availability_status === 'busy'
                     ? 'bg-warning'
                     : 'bg-muted-foreground',
               )}
-            /> */}
+            />
           </View>
           <View className="gap-xs">
-            <Text variant="labelL" className="text-center">
-              {profile?.user?.name}
+            <Text variant="labelL" className="text-center" loading={isFetching}>
+              {profile?.user?.name ?? user?.name}
             </Text>
-            <Text variant="bodyS" color="muted" className="text-center">
-              {profile?.user?.email}
+            <Text
+              variant="bodyS"
+              color="muted"
+              className="text-center"
+              loading={isFetching}
+            >
+              {profile?.user?.email ?? user?.email}
             </Text>
             {profile?.user && (
               <Chip

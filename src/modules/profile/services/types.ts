@@ -27,6 +27,7 @@ export interface User {
   role_name: string;
   assigned_stores: unknown[];
   permissions: UserPermission[];
+  availability_status: string;
 }
 
 export interface UserPermission {

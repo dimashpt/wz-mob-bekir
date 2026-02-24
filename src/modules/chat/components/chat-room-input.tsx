@@ -97,7 +97,7 @@ export function ChatRoomInput({
   const toggleTypingMutation = useMutation({
     mutationKey: conversationKeys.updateTypingStatus,
     mutationFn: (payload: UpdateTypingStatusPayload) =>
-      updateTypingStatus(user!.id, conversation_id, payload),
+      updateTypingStatus(conversation_id, payload),
   });
 
   const sendMessageMutation = useMutation({
@@ -123,17 +123,14 @@ export function ChatRoomInput({
         ];
       }
 
-      return sendMessage(user!.id, conversation_id, payload);
+      return sendMessage(conversation_id, payload);
     },
     onMutate: async (payload, context) => {
       // Clear the message input
       resetMessage();
       removeReply?.();
 
-      const messageListKey = conversationKeys.messages(
-        user!.id,
-        conversation_id,
-      );
+      const messageListKey = conversationKeys.messages(conversation_id);
 
       // Snapshot the previous value
       const previousMessages =
@@ -166,7 +163,7 @@ export function ChatRoomInput({
       } as Message;
 
       // Optimistically update to the new value
-      await addMessageToQuery(user!.id, conversation_id, messagePayload);
+      await addMessageToQuery(conversation_id, messagePayload);
 
       setAttachment(undefined);
 
@@ -176,7 +173,6 @@ export function ChatRoomInput({
     onSuccess: async (data, payload) => {
       // Update the message status and data with the server response
       await updateMessageByEchoIdInQuery(
-        user!.id,
         conversation_id,
         payload.echo_id,
         data,

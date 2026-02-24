@@ -14,7 +14,6 @@ import {
   Text,
 } from '@/components';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useAuthStore } from '@/store/auth-store';
 import { conversationEndpoints } from '../constants/endpoints';
 import { conversationKeys } from '../constants/keys';
 import { Agent } from '../services/agent/types';
@@ -36,30 +35,21 @@ export function ParticipantsSection({
   agents,
 }: ParticipantsSectionProps): JSX.Element {
   const participantsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
-  const { user } = useAuthStore();
   const { t } = useTranslation();
 
   const { data: participants, refetch: refetchParticipants } =
     useListParticipantsQuery(undefined, conversation?.id?.toString() ?? '');
 
   const listParticipantsQueryKey = [
-    conversationEndpoints.participants(
-      user?.id ?? 0,
-      conversation?.id?.toString() ?? '',
-    ),
+    conversationEndpoints.participants(conversation?.id?.toString() ?? ''),
   ];
 
   const updateParticipantsMutation = useMutation({
     mutationKey: conversationKeys.participants(
-      user?.id ?? 0,
       conversation?.id?.toString() ?? '',
     ),
     mutationFn: (payload: UpdateParticipantsPayload) =>
-      updateParticipants(
-        user?.id ?? 0,
-        conversation?.id?.toString() ?? '',
-        payload,
-      ),
+      updateParticipants(conversation?.id?.toString() ?? '', payload),
     onMutate: (payload) => {
       const previousData =
         optimisticUpdateQuery<ConversationParticipantsResponse>(

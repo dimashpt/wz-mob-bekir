@@ -11,11 +11,10 @@ import {
  * @returns A promise that resolves to the assignable agents.
  */
 export async function listAssignableAgents(
-  accountId: number,
   params: ConversationAssignableAgentsParams,
 ): Promise<ConversationAssignableAgentsResponse> {
   const response = await API.get<ConversationAssignableAgentsResponse>(
-    agentEndpoints.list(accountId),
+    agentEndpoints.list,
     { params },
   );
 

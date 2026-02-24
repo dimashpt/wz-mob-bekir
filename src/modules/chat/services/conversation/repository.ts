@@ -8,7 +8,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import {
   conversationDetails,
   listConversations,
@@ -40,13 +39,10 @@ export function useListConversationQuery<T = ListConversationsResponse>(
   > = {},
   requestParams: ListConversationsParams = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ListConversationsResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: conversationKeys.list(user?.id ?? 0, requestParams),
-    queryFn: () => listConversations(user?.id ?? 0, requestParams),
+    queryKey: conversationKeys.list(requestParams),
+    queryFn: () => listConversations(requestParams),
   });
 
   return query;
@@ -66,13 +62,10 @@ export function useConversationDetailsQuery<T = ConversationDetailsResponse>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ConversationDetailsResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id && conversationId),
-    queryKey: conversationKeys.details(user?.id ?? 0, conversationId),
-    queryFn: () => conversationDetails(user?.id ?? 0, conversationId),
+    queryKey: conversationKeys.details(conversationId),
+    queryFn: () => conversationDetails(conversationId),
   });
 
   return query;
@@ -92,13 +85,10 @@ export function useUpdateLastSeenQuery<T = Conversation>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<Conversation, Error, T>({
     ...params,
-    enabled: Boolean(user?.id && conversationId),
-    queryKey: conversationKeys.updateLastSeen(user?.id ?? 0, conversationId),
-    queryFn: () => updateLastSeen(user?.id ?? 0, conversationId),
+    queryKey: conversationKeys.updateLastSeen(conversationId),
+    queryFn: () => updateLastSeen(conversationId),
   });
 
   return query;
@@ -126,8 +116,6 @@ export function useListMessagesInfiniteQuery<
   > = {},
   conversationId: string,
 ): UseInfiniteQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useInfiniteQuery<
     ConversationMessagesResponse,
     Error,
@@ -136,11 +124,10 @@ export function useListMessagesInfiniteQuery<
     number
   >({
     ...params,
-    enabled: Boolean(user?.id && conversationId),
-    queryKey: conversationKeys.messages(user?.id ?? 0, conversationId),
+    queryKey: conversationKeys.messages(conversationId),
     queryFn: ({ pageParam }) => {
       const beforeId = pageParam === 0 ? undefined : pageParam;
-      return listMessages(user!.id, conversationId, beforeId);
+      return listMessages(conversationId, beforeId);
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage) => {
@@ -166,13 +153,10 @@ export function useListParticipantsQuery<T = ConversationParticipantsResponse>(
   > = {},
   conversationId: string,
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ConversationParticipantsResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id && conversationId),
-    queryKey: conversationKeys.participants(user?.id ?? 0, conversationId),
-    queryFn: () => listParticipants(user!.id, conversationId),
+    queryKey: conversationKeys.participants(conversationId),
+    queryFn: () => listParticipants(conversationId),
   });
 
   return query;

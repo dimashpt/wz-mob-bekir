@@ -11,25 +11,18 @@ import { ListConversationsParams } from '../services/conversation/types';
 // Query keys factory for the conversation repository.
 export const conversationKeys = {
   // Conversations
-  list: (accountId: number, params?: ListConversationsParams) =>
-    ['conversation-list', accountId, params].filter(Boolean) as [
+  list: (params?: ListConversationsParams) =>
+    ['conversation-list', params].filter(Boolean) as [
       string,
-      number,
       ListConversationsParams?,
     ],
-  details: (accountId: number, conversationId: string) => [
-    'conversation-details',
-    accountId,
-    conversationId,
-  ],
-  updateLastSeen: (accountId: number, conversationId: string) => [
+  details: (conversationId: string) => ['conversation-details', conversationId],
+  updateLastSeen: (conversationId: string) => [
     'conversation-update-last-seen',
-    accountId,
     conversationId,
   ],
-  participants: (accountId: number, conversationId: string) => [
+  participants: (conversationId: string) => [
     'conversation-participants',
-    accountId,
     conversationId,
   ],
   updateStatus: ['conversation-update-status'],
@@ -42,9 +35,8 @@ export const conversationKeys = {
   updateBulk: ['conversation-update-bulk'],
   updateTypingStatus: ['conversation-update-typing-status'],
   // Messages
-  messages: (accountId: number, conversationId: string) => [
+  messages: (conversationId: string) => [
     'message-list',
-    accountId,
     conversationId,
     'infinite',
   ],
@@ -54,34 +46,30 @@ export const conversationKeys = {
 
 // Query keys factory for the agent repository.
 export const agentKeys = {
-  list: (accountId: number, params: ConversationAssignableAgentsParams) => [
-    'agent-list',
-    accountId,
-    params,
-  ],
+  list: (params: ConversationAssignableAgentsParams) => ['agent-list', params],
 };
 
 // Query keys factory for the team repository.
 export const teamKeys = {
-  list: (accountId: number) => ['team-list', accountId],
+  list: ['team-list'],
 };
 
 // Query keys factory for the label repository.
 export const labelKeys = {
-  list: (accountId: number) => ['label-list', accountId],
+  list: ['label-list'],
 };
 
 // Query keys factory for the macro repository.
 export const macroKeys = {
-  list: (accountId: number) => ['macro-list', accountId],
+  list: ['macro-list'],
 };
 
 // Query keys factory for the inbox repository.
 export const inboxKeys = {
-  list: (accountId: number) => ['inbox-list', accountId],
+  list: ['inbox-list'],
 };
 
 // Query keys factory for the attribute repository.
 export const attributeKeys = {
-  list: (accountId: number) => ['attribute-list', accountId],
+  list: ['attribute-list'],
 };

@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listAssignableAgents } from '.';
 import { agentKeys } from '../../constants/keys';
 import {
@@ -27,13 +26,10 @@ export function useListAssignableAgentsQuery<
   > = {},
   requestParams: ConversationAssignableAgentsParams,
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ConversationAssignableAgentsResponse, Error, T>({
     ...params,
-    enabled: params.enabled ?? Boolean(user?.id),
-    queryKey: agentKeys.list(user!.id, requestParams),
-    queryFn: () => listAssignableAgents(user!.id, requestParams),
+    queryKey: agentKeys.list(requestParams),
+    queryFn: () => listAssignableAgents(requestParams),
   });
   return query;
 }

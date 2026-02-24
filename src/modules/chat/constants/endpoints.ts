@@ -17,7 +17,8 @@ export const conversationEndpoints = {
   updateLabels: (conversationId: string) => `${BASE}/${conversationId}/labels`,
   mute: (conversationId: string) => `${BASE}/${conversationId}/mute`,
   unmute: (conversationId: string) => `${BASE}/${conversationId}/unmute`,
-  unread: (conversationId: string) => `${BASE}/${conversationId}/unread`,
+  unread: (conversationId: string | number) =>
+    `${BASE}/${conversationId}/unread`,
   updateBulk: () => `${BASE}/bulk_actions`,
   updateTypingStatus: (conversationId: string) =>
     `${BASE}/${conversationId}/toggle_typing_status`,
@@ -30,26 +31,26 @@ export const conversationEndpoints = {
 } as const;
 
 export const agentEndpoints = {
-  list: () => `${BASE}/assignable_agents`,
+  list: `${BASE}/assignable_agents`,
 } as const;
 
 export const teamEndpoints = {
-  list: () => `${BASE}/teams`,
+  list: `${BASE}/teams`,
 } as const;
 
 export const labelEndpoints = {
-  list: () => `${BASE}/labels`,
+  list: `${BASE}/labels`,
 } as const;
 
 export const macroEndpoints = {
-  list: () => `${BASE}/macros`,
+  list: `${BASE}/macros`,
   execute: (macroId: string) => `${BASE}/macros/${macroId}/execute`,
 } as const;
 
 export const inboxEndpoints = {
-  list: () => `${BASE}/inboxes`,
+  list: `${BASE}/inboxes`,
 } as const;
 
 export const attributeEndpoints = {
-  list: () => `${BASE}/custom_attribute_definitions`,
+  list: `${BASE}/custom_attribute_definitions`,
 } as const;

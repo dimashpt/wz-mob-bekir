@@ -4,7 +4,6 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { useAuthStore } from '@/store';
 import { listMacros } from '.';
 import { macroKeys } from '../../constants/keys';
 import { ConversationMacrosResponse } from './types';
@@ -21,13 +20,10 @@ export function useListMacrosQuery<T = ConversationMacrosResponse>(
     'queryKey' | 'queryFn'
   > = {},
 ): UseQueryResult<T, Error> {
-  const { user } = useAuthStore();
-
   const query = useQuery<ConversationMacrosResponse, Error, T>({
     ...params,
-    enabled: Boolean(user?.id),
-    queryKey: macroKeys.list(user!.id),
-    queryFn: () => listMacros(user!.id),
+    queryKey: macroKeys.list,
+    queryFn: listMacros,
   });
 
   return query;

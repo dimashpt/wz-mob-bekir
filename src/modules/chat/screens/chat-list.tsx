@@ -4,7 +4,9 @@ import { FlatList, RefreshControl, View } from 'react-native';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useCSSVariable } from 'uniwind';
 
+import { Illustrations } from '@/assets/illustrations';
 import {
   Button,
   Checkbox,
@@ -17,8 +19,8 @@ import {
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
+import { screenHeight, screenWidth } from '@/hooks';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useAuthStore } from '@/store';
 import ChatListItem from '../components/chat-list-item';
 import { conversationKeys } from '../constants/keys';
 import {
@@ -50,8 +52,8 @@ import { Label } from '../services/label/types';
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { user } = useAuthStore();
   const queryClient = useQueryClient();
+  const accentColor = useCSSVariable('--color-accent') as string;
 
   const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<ListConversationsParams>({
@@ -126,11 +128,10 @@ export default function ChatScreen(): JSX.Element {
 
   const bulkUpdateMutation = useMutation({
     mutationKey: conversationKeys.updateBulk,
-    mutationFn: (payload: BulkUpdateActionPayload) =>
-      bulkUpdateAction(user?.id ?? 0, payload),
+    mutationFn: (payload: BulkUpdateActionPayload) => bulkUpdateAction(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: conversationKeys.list(user?.id ?? 0, filters),
+        queryKey: conversationKeys.list(filters),
       });
       setIsSelectionMode(false);
       setSelectedIds(new Set());
@@ -247,21 +248,21 @@ export default function ChatScreen(): JSX.Element {
   const unreadConversationMutation = useMutation({
     mutationKey: conversationKeys.unread,
     mutationFn: (conversation: Conversation) =>
-      unreadConversation(user?.id ?? 0, conversation.id),
+      unreadConversation(conversation.id),
     onSuccess: handleOptimisticUnreadConversation,
   });
 
   const muteConversationMutation = useMutation({
     mutationKey: conversationKeys.mute,
     mutationFn: (conversation: Conversation) =>
-      muteConversation(user?.id ?? 0, conversation.id.toString()),
+      muteConversation(conversation.id.toString()),
     onSuccess: (_, payload) => handleOptimisticToggleMute(payload.id, true),
   });
 
   const unmuteConversationMutation = useMutation({
     mutationKey: conversationKeys.unmute,
     mutationFn: (conversationId: number) =>
-      unmuteConversation(user?.id ?? 0, conversationId.toString()),
+      unmuteConversation(conversationId.toString()),
     onSuccess: (_, payload) => handleOptimisticToggleMute(payload, false),
   });
 
@@ -276,7 +277,7 @@ export default function ChatScreen(): JSX.Element {
 
   function handleOptimisticToggleMute(id: number, muted: boolean): void {
     optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(user?.id ?? 0, filters),
+      conversationKeys.list(filters),
       (old) => {
         if (!old) return old;
 
@@ -295,7 +296,7 @@ export default function ChatScreen(): JSX.Element {
 
   function handleOptimisticUnreadConversation(data: Conversation): void {
     optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(user?.id ?? 0, filters),
+      conversationKeys.list(filters),
       (old) => {
         if (!old) return old;
 
@@ -420,12 +421,31 @@ export default function ChatScreen(): JSX.Element {
           />
         )}
         ListEmptyComponent={() => (
-          <View className="gap-sm flex-1">
-            {isLoading
-              ? Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="h-16" />
-                ))
-              : null}
+          <View className="gap-sm flex-1 items-center justify-center">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="h-16 w-full" />
+              ))
+            ) : (
+              <View className="gap-sm px-xl items-center justify-center">
+                <Illustrations.NoData
+                  color={accentColor}
+                  width={screenWidth / 3}
+                  height={screenHeight / 3}
+                />
+                <View className="gap-xs items-center">
+                  <Text variant="headingS" className="text-center">
+                    {t('chat.no_conversations')}
+                  </Text>
+                  <Text
+                    variant="bodyM"
+                    className="text-muted-foreground text-center"
+                  >
+                    {t('chat.no_conversations_description')}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
         )}
         onEndReachedThreshold={0.5}
