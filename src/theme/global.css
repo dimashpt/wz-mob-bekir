@@ -142,3 +142,7 @@
     }
   }
 }
+
+.pb-tab-bar {
+  padding-bottom: var(--spacing-tab-bar);
+}

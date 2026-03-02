@@ -18,7 +18,8 @@
     },
     "done": "Done",
     "no_data": "No data",
-    "no_data_description": "Nothing to see here!\nAdd some orders to begin",
+    "no_data_description": "You can add a new one to get started",
+    "not_found": "Not found",
     "no_data_found": "No results found for '{{search}}'",
     "continue": "Continue",
     "search": "Search",
@@ -219,7 +220,8 @@
     "created_at": "Created {{date}}",
     "track_order": "Track Order",
     "track_order_description": "Enter order code or tracking number",
-    "order_not_found": "Order not found"
+    "order_not_found": "Order not found",
+    "no_orders": "No orders yet"
   },
   "products": {
     "title": "Products"

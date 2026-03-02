@@ -314,7 +314,7 @@ export default function OrdersScreen(): JSX.Element {
         data={orders}
         keyExtractor={(item) => item.order_header_id.toString()}
         className="flex-1"
-        contentContainerClassName="gap-sm"
+        contentContainerClassName="flex-1 gap-sm"
         contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
         scrollEnabled={!isLoading}
         onScroll={floatingActionButtonRef.current?.onScroll}
@@ -334,7 +334,7 @@ export default function OrdersScreen(): JSX.Element {
                 <Skeleton key={index} className="h-24" />
               ))
             ) : (
-              <>
+              <View className="gap-sm px-xl pb-tab-bar flex-1 items-center justify-center">
                 {debouncedSearch ? (
                   <Illustrations.SearchNotFound
                     color={accentColor}
@@ -348,12 +348,22 @@ export default function OrdersScreen(): JSX.Element {
                     height={screenHeight / 3}
                   />
                 )}
-                <Text variant="bodyM" className="text-center">
-                  {debouncedSearch
-                    ? t('general.no_data_found', { search: debouncedSearch })
-                    : t('general.no_data_description')}
-                </Text>
-              </>
+                <View className="gap-xs items-center">
+                  <Text variant="headingS" className="text-center">
+                    {debouncedSearch
+                      ? t('general.not_found', { search: debouncedSearch })
+                      : t('orders.no_orders')}
+                  </Text>
+                  <Text
+                    variant="bodyM"
+                    className="text-muted-foreground text-center"
+                  >
+                    {debouncedSearch
+                      ? t('general.no_data_found', { search: debouncedSearch })
+                      : t('general.no_data_description')}
+                  </Text>
+                </View>
+              </View>
             )}
           </View>
         )}

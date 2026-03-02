@@ -421,13 +421,13 @@ export default function ChatScreen(): JSX.Element {
           />
         )}
         ListEmptyComponent={() => (
-          <View className="gap-sm flex-1 items-center justify-center">
+          <View className="gap-sm flex-1 items-center">
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({ length: 10 }).map((_, index) => (
                 <Skeleton key={index} className="h-16 w-full" />
               ))
             ) : (
-              <View className="gap-sm px-xl items-center justify-center">
+              <View className="gap-sm px-xl pb-tab-bar flex-1 items-center justify-center">
                 <Illustrations.NoData
                   color={accentColor}
                   width={screenWidth / 3}
