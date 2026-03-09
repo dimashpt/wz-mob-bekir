@@ -131,13 +131,13 @@ export default function ChatListItem({
             >
               <Checkbox isSelected={isSelected} size="medium" />
             </Animated.View>
-            <Avatar name={item.meta.sender.name} textClassName="text-lg" />
+            <Avatar name={item?.contact?.name} textClassName="text-lg" />
           </View>
           <View className="flex-1">
             <View className="gap-xs flex-row items-start justify-between">
               <View className="gap-xs flex-row items-center">
                 <Text variant="labelM" className="pr-xxs capitalize">
-                  {item.meta.sender.name}
+                  {item?.contact?.name}
                 </Text>
                 <Text variant="bodyS" color="muted">
                   #{item.id}
@@ -145,23 +145,23 @@ export default function ChatListItem({
               </View>
               <View className="gap-xs flex-row items-center">
                 <Text variant="bodyXS" color="muted">
-                  {formatDisplayDate(dayjs(item.timestamp * 1000), false)}
+                  {formatDisplayDate(dayjs(item.updated_at), false)}
                 </Text>
               </View>
             </View>
             <View className="gap-md flex-row items-center justify-between">
               <View className="gap-xs shrink flex-row items-center">
-                {item.last_non_activity_message?.sender?.type === 'user' && (
+                {item.last_message?.metadata?.message?.from_me && (
                   <Icon
                     name="tick"
                     size="sm"
                     className="text-muted-foreground"
                   />
                 )}
-                {item.last_non_activity_message.attachments?.length ? (
+                {item.last_message?.metadata?.message?.attachments?.length ? (
                   <Icon
                     name={
-                      item.last_non_activity_message.attachments?.[0]
+                      item.last_message?.metadata?.message?.attachments?.[0]
                         .file_type === 'image'
                         ? 'image'
                         : 'fileAttachment'
@@ -176,7 +176,7 @@ export default function ChatListItem({
                   numberOfLines={1}
                   className="shrink"
                 >
-                  {item.last_non_activity_message.content}
+                  {item?.last_message?.content}
                 </Text>
               </View>
               <View className="gap-sm flex-row items-center">
@@ -193,8 +193,8 @@ export default function ChatListItem({
                     className="text-muted-foreground"
                   />
                 )}
-                {item.meta.assignee && (
-                  <Avatar name={item.meta.assignee.name} className="size-5" />
+                {item.assignee && (
+                  <Avatar name={item.meta.assignee} className="size-5" />
                 )}
                 {item.unread_count > 0 && (
                   <Chip

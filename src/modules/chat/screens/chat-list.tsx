@@ -57,13 +57,13 @@ export default function ChatScreen(): JSX.Element {
 
   const [showFilters, setShowFilters] = useState(false);
   const [filters, _setFilters] = useState<ListConversationsParams>({
-    page: 1,
-    assignee_type: 'me',
+    // page: 1,
+    // assignee_type: 'me',
     status: 'open',
-    sort_by: 'latest',
+    // sort_by: 'latest',
   });
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
   const assigneeBottomSheetRef = useRef<OptionBottomSheetRef>(null);
@@ -79,9 +79,9 @@ export default function ChatScreen(): JSX.Element {
     filters,
   );
 
-  const conversations = data?.data?.payload ?? [];
+  const conversations = data?.data ?? [];
   const selectedConversations = conversations.filter((conv) =>
-    selectedIds.has(conv.uuid),
+    selectedIds.has(conv.id),
   );
   const uniqueInboxIds = useMemo(
     () =>
@@ -205,24 +205,24 @@ export default function ChatScreen(): JSX.Element {
     _setFilters(finalFilters);
   }
 
-  function handleItemPress(itemUuid: string): void {
+  function handleItemPress(itemId: number): void {
     if (isSelectionMode) {
       setSelectedIds((prev) => {
         const newSet = new Set(prev);
-        if (newSet.has(itemUuid)) {
-          newSet.delete(itemUuid);
+        if (newSet.has(itemId)) {
+          newSet.delete(itemId);
         } else {
-          newSet.add(itemUuid);
+          newSet.add(itemId);
         }
         return newSet;
       });
     }
   }
 
-  function handleItemLongPress(itemUuid: string): void {
+  function handleItemLongPress(itemId: number): void {
     if (!isSelectionMode) {
       setIsSelectionMode(true);
-      setSelectedIds(new Set([itemUuid]));
+      setSelectedIds(new Set([itemId]));
     }
   }
 
@@ -231,17 +231,17 @@ export default function ChatScreen(): JSX.Element {
     setSelectedIds(new Set());
   }
 
-  const allItemUuids = conversations.map((item) => item.uuid);
+  const allItemIds = conversations.map((item) => item.id);
   const isAllSelected =
     isSelectionMode &&
-    allItemUuids.length > 0 &&
-    allItemUuids.every((uuid) => selectedIds.has(uuid));
+    allItemIds.length > 0 &&
+    allItemIds.every((id) => selectedIds.has(id));
 
   function handleSelectAll(): void {
     if (isAllSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(allItemUuids));
+      setSelectedIds(new Set(allItemIds));
     }
   }
 
@@ -285,7 +285,7 @@ export default function ChatScreen(): JSX.Element {
           ...old,
           data: {
             ...old.data,
-            payload: old.data.payload.map((item) =>
+            payload: old.data.map((item) =>
               item.id === id ? { ...item, muted } : item,
             ),
           },
@@ -304,7 +304,7 @@ export default function ChatScreen(): JSX.Element {
           ...old,
           data: {
             ...old.data,
-            payload: old.data.payload.map((item) =>
+            payload: old.data.map((item) =>
               item.id === data.id ? data : item,
             ),
           },
@@ -399,8 +399,8 @@ export default function ChatScreen(): JSX.Element {
         </Filter>
       )}
       <FlatList
-        data={data?.data?.payload ?? []}
-        keyExtractor={(item) => item.uuid}
+        data={conversations}
+        keyExtractor={(item) => `conversation-${item.id}`}
         className="flex-1"
         contentContainerClassName="flex-1 gap-sm"
         contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
@@ -411,11 +411,11 @@ export default function ChatScreen(): JSX.Element {
             item={item}
             index={index}
             isSelectionMode={isSelectionMode}
-            isSelected={selectedIds.has(item.uuid)}
+            isSelected={selectedIds.has(item.id)}
             onPress={
-              isSelectionMode ? () => handleItemPress(item.uuid) : undefined
+              isSelectionMode ? () => handleItemPress(item.id) : undefined
             }
-            onLongPress={() => handleItemLongPress(item.uuid)}
+            onLongPress={() => handleItemLongPress(item.id)}
             handleUnread={() => unreadConversationMutation.mutate(item)}
             handleMute={() => toggleMute(item)}
           />

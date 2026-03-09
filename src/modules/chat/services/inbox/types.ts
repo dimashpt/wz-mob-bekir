@@ -2,7 +2,7 @@ export interface InboxListResponse {
   payload: Inbox[];
 }
 
-interface Inbox {
+export interface Inbox {
   allow_messages_after_resolved: boolean;
   auto_assignment_config: {};
   avatar_url: string;

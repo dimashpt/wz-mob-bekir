@@ -1,4 +1,5 @@
 import { Agent } from '../agent/types';
+import { Inbox } from '../inbox/types';
 
 type ConversationStatusFilter = ConversationStatus | 'all';
 type AssigneeTypeFilter = 'me' | 'unassigned' | 'all';
@@ -13,39 +14,111 @@ export interface ListConversationsParams {
 }
 
 export interface ListConversationsResponse {
-  data: {
-    meta: ConversationCounter;
-    payload: Conversation[];
-  };
+  data: Conversation[];
 }
 
 export interface Conversation {
-  account_id: number;
-  additional_attributes: Additionalattributes;
-  agent_last_seen_at: number;
-  assignee_last_seen_at: number;
-  can_reply: boolean;
-  contact_last_seen_at: number;
-  created_at: number;
-  custom_attributes: Customattributes;
-  first_reply_created_at: number;
   id: number;
   inbox_id: number;
-  labels: string[];
-  last_activity_at: number;
-  last_non_activity_message: LastNonActivityMessage;
-  messages: LastNonActivityMessage[];
-  meta: Meta;
-  muted: boolean;
-  priority: null | 'low' | 'medium' | 'high' | 'urgent' | 'none';
-  sla_policy_id: null;
+  contact_id: number;
+  status: string;
+  assignee_id: null;
+  team_id: null;
   snoozed_until: null;
-  status: ConversationStatus;
-  timestamp: number;
-  unread_count: number;
-  uuid: string;
-  waiting_since: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: null;
+  last_message_id: string;
+  contact: Contact;
+  last_message: Message;
+  labels: string[];
+  team: null;
+  inbox: Inbox;
+  assignee: null;
+  assignees: Agent[];
+  // Upcoming feature flags
+  muted?: boolean;
 }
+
+// interface Inbox {
+//   id: number;
+//   name: string;
+//   channel_type: string;
+//   settings: Settings;
+//   created_at: string;
+//   updated_at: string;
+//   deleted_at: null;
+// }
+
+// interface Settings {
+//   phone_number: string;
+//   api_key: string;
+//   webhook_url: null;
+//   assignment_mode: string;
+// }
+
+// interface Lastmessage {
+//   conversation_id: number;
+//   content: string;
+//   message_type: string;
+//   status: string;
+//   content_type: string;
+//   content_attributes: any[];
+//   reply_to_message_id: null;
+//   updated_at: string;
+//   created_at: string;
+//   metadata: Metadata;
+//   external_id: string;
+//   id: string;
+// }
+
+// interface Metadata {
+//   sent: boolean;
+//   message: Message;
+// }
+
+// interface Message {
+//   from_me: boolean;
+//   type: string;
+//   chat_id: string;
+//   timestamp: number;
+//   source: string;
+//   device_id: number;
+//   status: string;
+//   text: Text;
+//   from: string;
+//   id: string;
+// }
+
+// interface Text {
+//   body: string;
+// }
+
+// interface Contact {
+//   id: number;
+//   name: string;
+//   phone_number: string;
+//   email: string;
+//   thumbnail: string;
+//   additional_attributes: null;
+//   created_at: string;
+//   updated_at: string;
+//   conversations: Conversation[];
+// }
+
+// interface Conversation {
+//   id: number;
+//   inbox_id: number;
+//   contact_id: number;
+//   status: string;
+//   assignee_id: null;
+//   team_id: null;
+//   snoozed_until: null;
+//   created_at: string;
+//   updated_at: string;
+//   deleted_at: null;
+//   last_message_id: string;
+// }
 
 interface Meta {
   assignee: Agent;
