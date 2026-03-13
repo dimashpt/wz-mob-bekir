@@ -40,7 +40,7 @@ export function MessageBubble({
   onPreviewAttachment,
 }: MessageBubbleProps): React.JSX.Element {
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
-  const isPrivate = message.private;
+  const isPrivate = message.message_type === MESSAGE_TYPES.PRIVATE;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
   const hasAttachments = attachments.length > 0;
 
@@ -137,7 +137,7 @@ export function MessageBubble({
   return (
     <>
       {/* Render replied message */}
-      {message?.content_attributes?.in_reply_to ? (
+      {message?.reply_to ? (
         <Clickable
           onPress={() => {}}
           className="gap-sm mb-xs py-xs px-sm flex-row items-center rounded-sm bg-white/20 dark:bg-black/20"
@@ -154,7 +154,7 @@ export function MessageBubble({
               numberOfLines={3}
               className="text-white/70 dark:text-black/70"
             >
-              {replyMessage?.sender?.name ?? '-'}
+              {replyMessage?.user.name ?? '-'}
             </Text>
             <Text
               variant="bodyS"

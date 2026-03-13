@@ -25,7 +25,7 @@ import { MESSAGE_TYPES } from '../constants/flags';
 import { conversationKeys } from '../constants/keys';
 import {
   Attachment,
-  ConversationMessagesResponse,
+  ConversationDetailsResponse,
 } from '../services/conversation/types';
 import { mapInfiniteMessagesToGiftedChatMessages } from '../utils/message';
 import { MessageBubble, MessageType } from './message-bubble';
@@ -34,7 +34,7 @@ import { MessageSeparator } from './message-separator';
 import { MessageSystem } from './message-system';
 
 interface MessageItemProps extends BubbleProps<ChatMessage> {
-  onDelete: (messageId: number) => void;
+  onDelete: (messageId: string) => void;
   onReply?: (message: ChatMessage) => void;
   onPreviewAttachment: (attachment: Attachment) => void;
 }
@@ -88,19 +88,19 @@ export function MessageItem({
   const SWIPE_THRESHOLD = 40;
 
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
-  const isPrivate = message.private;
+  const isPrivate = message.message_type === MESSAGE_TYPES.PRIVATE;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
-  const attachments = message.attachments ?? [];
+  const attachments = message.attachment ?? [];
 
   const queryKey = conversationKeys.messages(
     message?.conversation_id?.toString(),
   );
   const messages =
-    queryClient.getQueryData<InfiniteData<ConversationMessagesResponse>>(
+    queryClient.getQueryData<InfiniteData<ConversationDetailsResponse>>(
       queryKey,
     );
   const replyMessage = useMemo(() => {
-    const replyMessageId = message.content_attributes.in_reply_to;
+    const replyMessageId = message.reply_to_message_id;
     const mappedMessages = mapInfiniteMessagesToGiftedChatMessages(
       messages ?? { pages: [], pageParams: [] },
     );
@@ -109,7 +109,7 @@ export function MessageItem({
     );
 
     return repliedMessage;
-  }, [message.content_attributes.in_reply_to]);
+  }, [message.reply_to_message_id]);
 
   function handleOpenMenu(): void {
     if (!messageLayoutRef.current) return;

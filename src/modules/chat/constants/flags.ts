@@ -8,10 +8,11 @@ export const CONVERSATION_STATUS = {
 };
 
 export const MESSAGE_TYPES = {
-  INCOMING: 0,
-  OUTGOING: 1,
-  ACTIVITY: 2,
-  TEMPLATE: 3,
+  INCOMING: 'incoming',
+  OUTGOING: 'outgoing',
+  PRIVATE: 'private',
+  ACTIVITY: 'activity',
+  TEMPLATE: 'system',
 };
 
 export const MESSAGE_STATUS = {

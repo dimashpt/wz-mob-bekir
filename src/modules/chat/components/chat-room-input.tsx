@@ -350,7 +350,7 @@ export function ChatRoomInput({
               />
               <View className="shrink">
                 <Text variant="bodyXS" color="muted">
-                  Reply to {replyTo.sender?.name ?? '-'}
+                  Reply to {replyTo.user?.name ?? '-'}
                 </Text>
                 <Text variant="bodyS" numberOfLines={1} className="shrink">
                   {replyTo.content}

@@ -32,7 +32,6 @@ type ChatListItemProps = {
   onPress?: () => void;
   onLongPress?: () => void;
   handleUnread: (conversationId: number) => void;
-  handleMute: (conversationId: number) => void;
 };
 export default function ChatListItem({
   item,
@@ -42,7 +41,6 @@ export default function ChatListItem({
   onPress,
   onLongPress,
   handleUnread,
-  handleMute,
 }: ChatListItemProps): React.JSX.Element {
   const router = useRouter();
 
@@ -108,9 +106,6 @@ export default function ChatListItem({
         rightElement={
           <Icon name="notificationOff" size="2xl" className="text-white" />
         }
-        handleRightElementPress={() => handleMute(item.id)}
-        handleOnRightOverswiped={() => handleMute(item.id)}
-        rightElementClassName={item.muted ? 'bg-success' : 'bg-danger'}
       >
         <Container.Card
           className={twMerge(
@@ -158,7 +153,7 @@ export default function ChatListItem({
                     className="text-muted-foreground"
                   />
                 )}
-                {item.last_message?.metadata?.message?.attachments?.length ? (
+                {/* {item.last_message?.metadata?.message?.attachments?.length ? (
                   <Icon
                     name={
                       item.last_message?.metadata?.message?.attachments?.[0]
@@ -169,7 +164,7 @@ export default function ChatListItem({
                     size="sm"
                     className="text-muted-foreground"
                   />
-                ) : null}
+                ) : null} */}
                 <Text
                   variant="bodyXS"
                   color="muted"
@@ -180,23 +175,23 @@ export default function ChatListItem({
                 </Text>
               </View>
               <View className="gap-sm flex-row items-center">
-                {item.priority && (
+                {/* {item.priority && (
                   <Icon
                     name="signal"
                     className={priorityClassName[item.priority]}
                   />
-                )}
-                {item.muted && (
+                )} */}
+                {/* {item.muted && (
                   <Icon
                     name="notificationOff"
                     size="sm"
                     className="text-muted-foreground"
                   />
-                )}
-                {item.assignee && (
+                )} */}
+                {/* {item.assignee && (
                   <Avatar name={item.meta.assignee} className="size-5" />
-                )}
-                {item.unread_count > 0 && (
+                )} */}
+                {/* {item.unread_count > 0 && (
                   <Chip
                     label={item.unread_count.toString()}
                     variant="blue"
@@ -205,7 +200,7 @@ export default function ChatListItem({
                       className: 'text-foreground-inverted',
                     }}
                   />
-                )}
+                )} */}
               </View>
             </View>
             {item.labels.length ? (

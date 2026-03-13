@@ -69,7 +69,7 @@ export function MessageContextMenu({
   const blurOpacity = useSharedValue(0);
 
   const isOutgoing = message.message_type === MESSAGE_TYPES.OUTGOING;
-  const isPrivate = message.private;
+  const isPrivate = message.message_type === MESSAGE_TYPES.PRIVATE;
   const isTemplate = message.message_type === MESSAGE_TYPES.TEMPLATE;
 
   // Animate blur in on mount

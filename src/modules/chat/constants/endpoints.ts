@@ -4,30 +4,13 @@ export const conversationEndpoints = {
   // Chat
   list: () => BASE,
   details: (conversationId: string) => `${BASE}/${conversationId}`,
-  updateLastSeen: (conversationId: string) =>
-    `${BASE}/${conversationId}/update_last_seen`,
-  participants: (conversationId: string) =>
-    `${BASE}/${conversationId}/participants`,
   updateStatus: (conversationId: string) =>
     `${BASE}/${conversationId}/toggle_status`,
   updateAssignee: (conversationId: string) =>
-    `${BASE}/${conversationId}/assignments`,
+    `${BASE}/${conversationId}/assign`,
   updatePriority: (conversationId: string) =>
     `${BASE}/${conversationId}/toggle_priority`,
   updateLabels: (conversationId: string) => `${BASE}/${conversationId}/labels`,
-  mute: (conversationId: string) => `${BASE}/${conversationId}/mute`,
-  unmute: (conversationId: string) => `${BASE}/${conversationId}/unmute`,
-  unread: (conversationId: string | number) =>
-    `${BASE}/${conversationId}/unread`,
-  updateBulk: () => `${BASE}/bulk_actions`,
-  updateTypingStatus: (conversationId: string) =>
-    `${BASE}/${conversationId}/toggle_typing_status`,
-  // Messages
-  messages: (conversationId: string) => `${BASE}/${conversationId}/messages`,
-  sendMessage: (conversationId: string) =>
-    conversationEndpoints.messages(conversationId),
-  deleteMessage: (conversationId: string, messageId: number) =>
-    `${BASE}/${conversationId}/messages/${messageId}`,
 } as const;
 
 export const agentEndpoints = {

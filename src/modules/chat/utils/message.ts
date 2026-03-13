@@ -8,7 +8,7 @@ import { conversationKeys } from '../constants/keys';
 import { getSortFilterOptions } from '../constants/options';
 import {
   Conversation,
-  ConversationMessagesResponse,
+  ConversationDetailsResponse,
   ListConversationsResponse,
   Message,
 } from '../services/conversation/types';
@@ -26,7 +26,7 @@ export async function addMessageToQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(conversationId);
 
-  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
+  optimisticUpdateQuery<InfiniteData<ConversationDetailsResponse>>(
     queryKey,
     (old) => {
       if (!old) return old;
@@ -37,7 +37,7 @@ export async function addMessageToQuery(
         }
 
         // Check for duplicates by echo_id or id before adding
-        const isDuplicate = page.payload.some(
+        const isDuplicate = page.data.messages.some(
           (msg) =>
             (msg.echo_id && msg.echo_id === newMessage.echo_id) ||
             msg.id === newMessage.id,
@@ -49,7 +49,10 @@ export async function addMessageToQuery(
 
         return {
           ...page,
-          payload: [...page.payload, newMessage],
+          data: {
+            ...page.data,
+            messages: [...page.data.messages, newMessage],
+          },
         };
       });
 
@@ -76,7 +79,7 @@ export async function updateMessageByEchoIdInQuery(
 ): Promise<void> {
   const queryKey = conversationKeys.messages(conversationId);
 
-  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
+  optimisticUpdateQuery<InfiniteData<ConversationDetailsResponse>>(
     queryKey,
     (old) => {
       if (!old) return old;
@@ -85,9 +88,12 @@ export async function updateMessageByEchoIdInQuery(
         ...old,
         pages: old.pages.map((page) => ({
           ...page,
-          payload: page.payload.map((message) =>
-            message.echo_id === echoId ? updatedMessage : message,
-          ),
+          data: {
+            ...page.data,
+            messages: page.data.messages.map((message) =>
+              message.echo_id === echoId ? updatedMessage : message,
+            ),
+          },
         })),
       };
     },
@@ -104,12 +110,12 @@ export async function updateMessageByEchoIdInQuery(
  */
 export async function updateMessageByIdInQuery(
   conversationId: string,
-  messageId: number,
+  messageId: string,
   updatedMessage: Message,
 ): Promise<void> {
   const queryKey = conversationKeys.messages(conversationId);
 
-  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
+  optimisticUpdateQuery<InfiniteData<ConversationDetailsResponse>>(
     queryKey,
     (old) => {
       if (!old) return old;
@@ -118,9 +124,12 @@ export async function updateMessageByIdInQuery(
         ...old,
         pages: old.pages.map((page) => ({
           ...page,
-          payload: page.payload.map((message) =>
-            message.id === messageId ? updatedMessage : message,
-          ),
+          data: {
+            ...page.data,
+            messages: page.data.messages.map((message) =>
+              message.id === messageId ? updatedMessage : message,
+            ),
+          },
         })),
       };
     },
@@ -136,11 +145,11 @@ export async function updateMessageByIdInQuery(
  */
 export async function markMessageAsDeletedInQuery(
   conversationId: string,
-  messageId: number,
+  messageId: string,
 ): Promise<void> {
   const queryKey = conversationKeys.messages(conversationId);
 
-  optimisticUpdateQuery<InfiniteData<ConversationMessagesResponse>>(
+  optimisticUpdateQuery<InfiniteData<ConversationDetailsResponse>>(
     queryKey,
     (old) => {
       if (!old) return old;
@@ -149,18 +158,21 @@ export async function markMessageAsDeletedInQuery(
         ...old,
         pages: old.pages.map((page) => ({
           ...page,
-          payload: page.payload.map((message) =>
-            message.id === messageId
-              ? {
-                  ...message,
-                  content: 'This message was deleted',
-                  content_attributes: {
-                    ...message.content_attributes,
-                    deleted: true,
-                  },
-                }
-              : message,
-          ),
+          data: {
+            ...page.data,
+            messages: page.data.messages.map((message) =>
+              message.id === messageId
+                ? {
+                    ...message,
+                    content: 'This message was deleted',
+                    content_attributes: {
+                      ...message.content_attributes,
+                      deleted: true,
+                    },
+                  }
+                : message,
+            ),
+          },
         })),
       };
     },
@@ -189,20 +201,18 @@ export function mapMessageToGiftedChatMessage(message: Message): IMessage {
   return {
     _id: message.id,
     text: message.content,
-    createdAt: message.created_at * 1000,
+    createdAt: new Date(message.created_at).getTime(),
     user: {
       _id:
-        message.message_type === MESSAGE_TYPES.TEMPLATE
-          ? 'system'
-          : `${message.sender?.id ?? 0}-${message.message_type}`,
+        message.message_type === MESSAGE_TYPES.OUTGOING
+          ? 'me'
+          : message.message_type,
       name:
         message.message_type === MESSAGE_TYPES.TEMPLATE
           ? 'System Bot'
-          : (message.sender?.name ?? ''),
+          : (message.message_type ?? ''),
     },
-    system:
-      message.message_type === MESSAGE_TYPES.ACTIVITY ||
-      message.content_attributes.deleted,
+    system: message.message_type === MESSAGE_TYPES.ACTIVITY,
     pending: message.status === 'sending',
     sent: message.status === 'sent',
   };
@@ -210,19 +220,24 @@ export function mapMessageToGiftedChatMessage(message: Message): IMessage {
 
 /**
  * Maps infinite messages to GiftedChat messages
- * @param {InfiniteData<ConversationMessagesResponse>} data - The infinite data to map
- * @returns {InfiniteData<ConversationMessagesResponse> & { messages: Array<ChatMessage> }} - The mapped data
+ * @param {InfiniteData<ConversationDetailsResponse>} data - The infinite data to map
+ * @returns {InfiniteData<ConversationDetailsResponse> & { messages: Array<ChatMessage> }} - The mapped data
  */
 export function mapInfiniteMessagesToGiftedChatMessages(
-  data: InfiniteData<ConversationMessagesResponse>,
-): InfiniteData<ConversationMessagesResponse> & {
+  data: InfiniteData<ConversationDetailsResponse>,
+): InfiniteData<ConversationDetailsResponse> & {
   messages: Array<ChatMessage>;
 } {
   // Merge all pages into a single array
-  const mergedMessages = data.pages.flatMap((page) => page?.payload ?? []);
+  const mergedMessages = data.pages.flatMap(
+    (page) => page?.data?.messages ?? [],
+  );
 
   // Sort messages from oldest to newest
-  const sortedMessages = mergedMessages.sort((a, b) => b.id - a.id);
+  const sortedMessages = mergedMessages.sort(
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+  );
 
   // Map messages to the expected format
   return {
@@ -249,7 +264,7 @@ export function updateConversationLastActivity(message: Message): void {
     optimisticUpdateQuery<ListConversationsResponse>(key, (old) => {
       if (!old) return old;
 
-      const updatedPayload = old?.data?.payload?.map((conversation) =>
+      const updatedPayload = old?.data?.map((conversation) =>
         conversation?.id === message?.conversation_id
           ? {
               ...conversation,
@@ -266,7 +281,8 @@ export function updateConversationLastActivity(message: Message): void {
       // Sort conversations by last_activity_at in descending order (newest first)
       if (!params?.sort_by || params?.sort_by === filters?.[0].value) {
         payload = updatedPayload?.sort(
-          (a, b) => (b.last_activity_at || 0) - (a.last_activity_at || 0),
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         );
       }
 

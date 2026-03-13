@@ -1,7 +1,6 @@
-import React, { JSX, useMemo, useRef, useState } from 'react';
+import React, { JSX, useRef, useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useCSSVariable } from 'uniwind';
@@ -12,47 +11,25 @@ import {
   Checkbox,
   Container,
   Filter,
-  Option,
-  OptionBottomSheet,
   OptionBottomSheetRef,
   Skeleton,
   Text,
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { screenHeight, screenWidth } from '@/hooks';
-import { optimisticUpdateQuery } from '@/lib/react-query';
 import ChatListItem from '../components/chat-list-item';
-import { conversationKeys } from '../constants/keys';
 import {
   getAssigneeFilterOptions,
-  getBulkStatusOptions,
   getSortFilterOptions,
   getStatusFilterOptions,
 } from '../constants/options';
-import { useListAssignableAgentsQuery } from '../services/agent/repository';
-import { Agent } from '../services/agent/types';
-import {
-  bulkUpdateAction,
-  muteConversation,
-  unmuteConversation,
-  unreadConversation,
-} from '../services/conversation';
 import { useListConversationQuery } from '../services/conversation/repository';
-import {
-  BulkUpdateActionPayload,
-  Conversation,
-  ConversationStatus,
-  ListConversationsParams,
-  ListConversationsResponse,
-} from '../services/conversation/types';
+import { ListConversationsParams } from '../services/conversation/types';
 import { useListInboxesQuery } from '../services/inbox/repository';
-import { useListLabelsQuery } from '../services/label/repository';
-import { Label } from '../services/label/types';
 
 export default function ChatScreen(): JSX.Element {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const queryClient = useQueryClient();
   const accentColor = useCSSVariable('--color-accent') as string;
 
   const [showFilters, setShowFilters] = useState(false);
@@ -72,7 +49,6 @@ export default function ChatScreen(): JSX.Element {
   const STATUS_OPTIONS = getStatusFilterOptions();
   const ASSIGNEE_OPTIONS = getAssigneeFilterOptions();
   const SORT_OPTIONS = getSortFilterOptions();
-  const BULK_STATUS_OPTIONS = getBulkStatusOptions();
 
   const { data, isLoading, isRefetching, refetch } = useListConversationQuery(
     {},
@@ -80,25 +56,6 @@ export default function ChatScreen(): JSX.Element {
   );
 
   const conversations = data?.data ?? [];
-  const selectedConversations = conversations.filter((conv) =>
-    selectedIds.has(conv.id),
-  );
-  const uniqueInboxIds = useMemo(
-    () =>
-      Array.from(
-        new Set(selectedConversations.map((conv) => conv.inbox_id)),
-      ).filter((id) => id > 0),
-    [selectedConversations],
-  );
-
-  const { data: labels } = useListLabelsQuery({
-    select: (data) =>
-      (data.payload ?? []).map((label) => ({
-        label: label.title,
-        value: label.title,
-        data: label,
-      })),
-  });
 
   const { data: inboxes } = useListInboxesQuery({
     select: (data) =>
@@ -108,86 +65,6 @@ export default function ChatScreen(): JSX.Element {
         data: inbox,
       })),
   });
-
-  const { data: agents } = useListAssignableAgentsQuery(
-    {
-      enabled: isSelectionMode && uniqueInboxIds.length > 0,
-      select: (data) =>
-        (data.payload ?? []).map((agent) => ({
-          label: agent.name,
-          value: String(agent.id),
-          data: agent,
-        })),
-    },
-    {
-      inbox_ids: uniqueInboxIds,
-    },
-  );
-
-  const selectedConversationIds = selectedConversations.map((conv) => conv.id);
-
-  const bulkUpdateMutation = useMutation({
-    mutationKey: conversationKeys.updateBulk,
-    mutationFn: (payload: BulkUpdateActionPayload) => bulkUpdateAction(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: conversationKeys.list(filters),
-      });
-      setIsSelectionMode(false);
-      setSelectedIds(new Set());
-    },
-  });
-
-  function handleBulkUpdateLabels(selectedLabels: Option<Label>[]): void {
-    if (selectedConversationIds.length === 0) return;
-
-    labelsBottomSheetRef.current?.close();
-
-    bulkUpdateMutation.mutate({
-      ids: selectedConversationIds,
-      type: 'Conversation',
-      labels: {
-        add: selectedLabels.map((label) => label.value),
-      },
-    });
-  }
-
-  function handleBulkUpdateAssignee(option: Option): void {
-    if (selectedConversationIds.length === 0) return;
-
-    assigneeBottomSheetRef.current?.close();
-
-    const assigneeId = Number(option.value);
-    const payload: BulkUpdateActionPayload = {
-      ids: selectedConversationIds,
-      type: 'Conversation',
-    };
-
-    if (assigneeId === 0) {
-      // Unassign - set assignee_id to 0 or omit it based on API behavior
-      // Check API docs, but typically unassigning might require a different approach
-      // For now, we'll set it to 0
-      payload.fields = { assignee_id: 0 };
-    } else {
-      payload.fields = { assignee_id: assigneeId };
-    }
-
-    bulkUpdateMutation.mutate(payload);
-  }
-
-  function handleBulkUpdateStatus(option: Option<ConversationStatus>): void {
-    if (selectedConversationIds.length === 0) return;
-
-    statusBottomSheetRef.current?.close();
-
-    bulkUpdateMutation.mutate({
-      ids: selectedConversationIds,
-      type: 'Conversation',
-      fields: {
-        status: option.value as ConversationStatus,
-      },
-    });
-  }
 
   function setFilters(newFilters: Partial<ListConversationsParams>): void {
     const finalFilters = { ...filters, ...newFilters };
@@ -243,74 +120,6 @@ export default function ChatScreen(): JSX.Element {
     } else {
       setSelectedIds(new Set(allItemIds));
     }
-  }
-
-  const unreadConversationMutation = useMutation({
-    mutationKey: conversationKeys.unread,
-    mutationFn: (conversation: Conversation) =>
-      unreadConversation(conversation.id),
-    onSuccess: handleOptimisticUnreadConversation,
-  });
-
-  const muteConversationMutation = useMutation({
-    mutationKey: conversationKeys.mute,
-    mutationFn: (conversation: Conversation) =>
-      muteConversation(conversation.id.toString()),
-    onSuccess: (_, payload) => handleOptimisticToggleMute(payload.id, true),
-  });
-
-  const unmuteConversationMutation = useMutation({
-    mutationKey: conversationKeys.unmute,
-    mutationFn: (conversationId: number) =>
-      unmuteConversation(conversationId.toString()),
-    onSuccess: (_, payload) => handleOptimisticToggleMute(payload, false),
-  });
-
-  function toggleMute(conversation: Conversation): void {
-    if (conversation.muted) {
-      unmuteConversationMutation.mutate(conversation.id);
-      return;
-    }
-
-    muteConversationMutation.mutate(conversation);
-  }
-
-  function handleOptimisticToggleMute(id: number, muted: boolean): void {
-    optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(filters),
-      (old) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            payload: old.data.map((item) =>
-              item.id === id ? { ...item, muted } : item,
-            ),
-          },
-        };
-      },
-    );
-  }
-
-  function handleOptimisticUnreadConversation(data: Conversation): void {
-    optimisticUpdateQuery<ListConversationsResponse>(
-      conversationKeys.list(filters),
-      (old) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          data: {
-            ...old.data,
-            payload: old.data.map((item) =>
-              item.id === data.id ? data : item,
-            ),
-          },
-        } as ListConversationsResponse;
-      },
-    );
   }
 
   return (
@@ -416,8 +225,7 @@ export default function ChatScreen(): JSX.Element {
               isSelectionMode ? () => handleItemPress(item.id) : undefined
             }
             onLongPress={() => handleItemLongPress(item.id)}
-            handleUnread={() => unreadConversationMutation.mutate(item)}
-            handleMute={() => toggleMute(item)}
+            handleUnread={() => {}}
           />
         )}
         ListEmptyComponent={() => (
@@ -480,37 +288,6 @@ export default function ChatScreen(): JSX.Element {
           />
         </View>
       )}
-      <OptionBottomSheet
-        ref={labelsBottomSheetRef}
-        options={labels ?? []}
-        title={t('chat.labels.title')}
-        multiselect
-        onSelect={(selectedLabels) =>
-          handleBulkUpdateLabels(selectedLabels as Option<Label>[])
-        }
-        selectedValues={[]}
-      />
-      <OptionBottomSheet
-        ref={assigneeBottomSheetRef}
-        options={[
-          {
-            label: t('chat.assignment.priority_none'),
-            value: String(0),
-            data: {} as Agent,
-          },
-          ...(agents ?? []),
-        ]}
-        title={t('chat.assignment.agent')}
-        onSelect={(option) => handleBulkUpdateAssignee(option as Option)}
-      />
-      <OptionBottomSheet
-        ref={statusBottomSheetRef}
-        options={BULK_STATUS_OPTIONS}
-        title={t('chat.filters.status_label')}
-        onSelect={(option) =>
-          handleBulkUpdateStatus(option as Option<ConversationStatus>)
-        }
-      />
     </Container>
   );
 }
