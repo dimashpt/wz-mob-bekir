@@ -131,3 +131,11 @@ export interface Attachment {
   thumb_url: string;
   width: number | null;
 }
+
+export interface UpdateLabelConversationPayload {
+  labels: string[];
+}
+
+export interface UpdateLabelConversationResponse {
+  payload: string[];
+}

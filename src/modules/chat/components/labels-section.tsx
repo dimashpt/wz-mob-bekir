@@ -18,21 +18,18 @@ import { conversationKeys } from '../constants/keys';
 import { updateLabels } from '../services/conversation';
 import {
   Conversation,
-  ConversationMessagesResponse,
-  ConversationMeta,
+  ConversationDetailsResponse,
   UpdateLabelConversationPayload,
 } from '../services/conversation/types';
 import { useListLabelsQuery } from '../services/label/repository';
 import { Label } from '../services/label/types';
 
 type LabelsSectionProps = {
-  meta?: ConversationMeta;
   conversation?: Conversation;
   labels?: Option<Label>[];
 };
 
 export function LabelsSection({
-  meta,
   conversation,
 }: LabelsSectionProps): JSX.Element {
   const labelsBottomSheetRef = useRef<OptionBottomSheetRef>(null);
@@ -57,7 +54,7 @@ export function LabelsSection({
       updateLabels(String(conversation?.id ?? 0), payload),
     onMutate: (payload) => {
       const previousData = optimisticUpdateQuery<
-        InfiniteData<ConversationMessagesResponse>
+        InfiniteData<ConversationDetailsResponse>
       >(listMessagesQueryKey, (old) => {
         if (!old) return old;
 
@@ -65,9 +62,12 @@ export function LabelsSection({
           ...old,
           pages: old.pages.map((page) => ({
             ...page,
-            meta: {
-              ...page.meta,
-              labels: payload.labels,
+            data: {
+              ...page.data,
+              conversation: {
+                ...page.data.conversation,
+                labels: payload.labels,
+              },
             },
           })),
         };
@@ -82,8 +82,9 @@ export function LabelsSection({
   }
 
   const selectedLabels = useMemo(
-    () => labels?.filter((label) => meta?.labels?.includes(label.value)),
-    [labels, meta?.labels],
+    () =>
+      labels?.filter((label) => conversation?.labels?.includes(label.value)),
+    [labels, conversation?.labels],
   );
 
   return (
@@ -92,7 +93,7 @@ export function LabelsSection({
         <Text variant="labelM">{t('chat.labels.title')}</Text>
 
         <View className="gap-sm flex-row flex-wrap">
-          {meta?.labels.map((label) => (
+          {(conversation?.labels ?? []).map((label) => (
             <Chip
               key={label}
               label={label}

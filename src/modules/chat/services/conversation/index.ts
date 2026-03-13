@@ -4,6 +4,8 @@ import {
   ConversationDetailsResponse,
   ListConversationsParams,
   ListConversationsResponse,
+  UpdateLabelConversationPayload,
+  UpdateLabelConversationResponse,
 } from './types';
 
 /**
@@ -34,6 +36,25 @@ export async function conversationDetails(
   const response = await API.get<ConversationDetailsResponse>(
     conversationEndpoints.details(conversationId),
     { params: { before } },
+  );
+
+  return response.data;
+}
+
+/**
+ * Updates the labels for the given conversation.
+ * @param accountId - The ID of the account.
+ * @param conversationId - The ID of the conversation.
+ * @param payload - The payload for the request.
+ * @returns A promise that resolves to the response.
+ */
+export async function updateLabels(
+  conversationId: string,
+  payload: UpdateLabelConversationPayload,
+): Promise<UpdateLabelConversationResponse> {
+  const response = await API.post<UpdateLabelConversationResponse>(
+    conversationEndpoints.updateLabels(conversationId),
+    payload,
   );
 
   return response.data;

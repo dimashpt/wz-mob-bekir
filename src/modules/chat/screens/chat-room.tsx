@@ -16,6 +16,7 @@ import {
 } from '@/components';
 import { ChatMessage } from '@/modules/@types/chat';
 import { useAuthStore } from '@/store/auth-store';
+import { ChatRoomAttributes } from '../components/chat-room-attributes';
 import { ChatRoomInput } from '../components/chat-room-input';
 import { MessageItem } from '../components/message-item';
 import { useConversationDetailsQuery } from '../services/conversation/repository';
@@ -41,6 +42,9 @@ export default function ChatRoomScreen(): JSX.Element {
       { select: mapInfiniteMessagesToGiftedChatMessages },
       conversation_id,
     );
+
+  const conversation = data?.pages?.[0].data.conversation;
+  const meta = {};
 
   return (
     <Container className="bg-background flex-1">
@@ -109,7 +113,7 @@ export default function ChatRoomScreen(): JSX.Element {
             },
           }}
           renderSystemMessage={MessageItem.SystemMessage}
-          renderDay={MessageItem.DaySeparator}
+          renderDay={(props) => <MessageItem.DaySeparator {...props} />}
           renderInputToolbar={(props) => (
             <ChatRoomInput
               {...props}
@@ -136,8 +140,7 @@ export default function ChatRoomScreen(): JSX.Element {
             keyboardVerticalOffset: bottom + (Platform.OS === 'ios' ? 50 : 64),
           }}
         />
-        <View />
-        {/* <ChatRoomAttributes key="2" meta={meta} conversation={conversation} /> */}
+        <ChatRoomAttributes key="2" conversation={conversation} />
       </PagerView>
       <ImagePreviewModal ref={imagePreviewRef} />
     </Container>
