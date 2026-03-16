@@ -456,6 +456,13 @@
       "submit": "Confirm",
       "cancel": "Cancel"
     },
+    "draft_confirmation": {
+      "title": "Save as Draft",
+      "description": "Are you sure you want to save this order as a draft? You can continue editing it later.",
+      "submit": "Save Draft",
+      "cancel": "Cancel",
+      "success": "Draft saved"
+    },
     "message": {
       "success": "Order created successfully",
       "form_error": "Please fix the form errors and try again"

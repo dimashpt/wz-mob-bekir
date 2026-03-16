@@ -245,15 +245,6 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
               </Clickable>
             )}
           </View>
-          {helpers ? (
-            <View style={{ maxWidth: width * 0.85 }}>
-              <View className="gap-xs flex-row items-center">
-                <Text variant="bodyXS" color="muted">
-                  {helpers}
-                </Text>
-              </View>
-            </View>
-          ) : null}
           {errors?.length ? (
             <View>
               {(Array.isArray(errors) ? errors : [errors]).map((error) =>
@@ -263,6 +254,14 @@ export const InputField = forwardRef<TextInput, CustomTextInputProps>(
                   </Text>
                 ) : null,
               )}
+            </View>
+          ) : helpers ? (
+            <View style={{ maxWidth: width * 0.85 }}>
+              <View className="gap-xs flex-row items-center">
+                <Text variant="bodyXS" color="muted">
+                  {helpers}
+                </Text>
+              </View>
             </View>
           ) : null}
         </View>

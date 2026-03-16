@@ -19,11 +19,14 @@ import { Warehouse } from '../services/warehouse';
 
 const baseRecipientStepSchema = z.object({
   customer: z.object({
-    name: z.object({
-      value: stringSchema,
-      label: stringSchema,
-      data: z.custom<Customer>().optional(),
-    }),
+    name: z.object(
+      {
+        value: stringSchema,
+        label: stringSchema,
+        data: z.custom<Customer>().optional(),
+      },
+      { error: required },
+    ),
     phone: phoneSchema,
     email: optionalEmailSchema,
     full_address: stringSchema,
@@ -186,8 +189,8 @@ const shipmentStepSchema = z.object({
 const summaryStepSchema = z.object({}).optional();
 
 export const orderFormSchema = z.object({
-  step_order: orderStepSchema,
   step_recipient: recipientStepSchema,
+  step_order: orderStepSchema,
   step_item: itemStepSchema,
   step_shipment: shipmentStepSchema,
   step_summary: summaryStepSchema,

@@ -329,6 +329,7 @@ export interface CreateOrderPayload {
   products: Product[];
   package: Package;
   price: Price;
+  internal_status?: 'Draft';
 }
 
 interface Price {

@@ -63,6 +63,7 @@ export default function OrderFormScreen(): JSX.Element {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const confirmationSheetRef = useRef<BottomSheetModal>(null);
+  const saveDraftSheetRef = useRef<BottomSheetModal>(null);
   const [routes] = useState<TabRoute[]>([
     { key: 'recipient', title: t('order_form.steps.recipient_info') },
     { key: 'order', title: t('order_form.steps.order_details') },
@@ -94,6 +95,17 @@ export default function OrderFormScreen(): JSX.Element {
     onSettled: () => confirmationSheetRef.current?.close(),
   });
 
+  const saveDraftMutation = useMutation({
+    mutationKey: [...orderKeys.create, 'draft'],
+    mutationFn: createOrder,
+    onSuccess: () => {
+      snackbar.success(t('order_form.draft_confirmation.success'));
+      router.back();
+      queryClient.invalidateQueries({ queryKey: orderKeys.list() });
+    },
+    onSettled: () => saveDraftSheetRef.current?.close(),
+  });
+
   async function handleNext(): Promise<void> {
     if (activeIndex < routes.length - 1) {
       const currentStepField = stepFieldNames[activeIndex];
@@ -115,11 +127,35 @@ export default function OrderFormScreen(): JSX.Element {
     confirmationSheetRef.current?.present();
   }
 
+  function confirmSaveDraft(): void {
+    saveDraftSheetRef.current?.present();
+  }
+
   function handleSubmit(values: OrderFormValues): void {
     const payload = mapToOrderPayload(values);
 
     createOrderMutation.mutate({
       ...payload,
+      price: {
+        ...payload.price,
+        sub_total_price: subTotal,
+        total_discount_price: totalDiscount,
+        cod_fee: codFee,
+        cod_price: grandTotal,
+        grand_total_order_price: grandTotal,
+        insurance_price: insuranceFee,
+      },
+    });
+  }
+
+  function handleSaveDraft(): void {
+    const values = form.getValues();
+    const payload = mapToOrderPayload(values);
+
+    saveDraftMutation.mutate({
+      ...payload,
+      is_draft: true,
+      internal_status: 'Draft',
       price: {
         ...payload.price,
         sub_total_price: subTotal,
@@ -238,7 +274,14 @@ export default function OrderFormScreen(): JSX.Element {
 
   return (
     <Container className="bg-background flex-1">
-      <Header title={t('order_form.title')} className="border-b-0" />
+      <Header
+        title={t('order_form.title')}
+        className="border-b-0"
+        onPressSuffix={confirmSaveDraft}
+        suffixIcon={
+          <Icon name="saveDraft" size="xl" className="text-foreground" />
+        }
+      />
       <TabView
         navigationState={{ index: activeIndex, routes }}
         renderScene={SceneMap({
@@ -309,6 +352,22 @@ export default function OrderFormScreen(): JSX.Element {
         }}
         closeButtonProps={{
           text: t('order_form.confirmation.cancel'),
+        }}
+      />
+      <BottomSheet.Confirm
+        ref={saveDraftSheetRef}
+        variant="info"
+        title={t('order_form.draft_confirmation.title')}
+        description={t('order_form.draft_confirmation.description')}
+        dismissable={!saveDraftMutation.isPending}
+        handleSubmit={handleSaveDraft}
+        showCloseButton
+        submitButtonProps={{
+          loading: saveDraftMutation.isPending,
+          text: t('order_form.draft_confirmation.submit'),
+        }}
+        closeButtonProps={{
+          text: t('order_form.draft_confirmation.cancel'),
         }}
       />
     </Container>

@@ -38,6 +38,7 @@ import product from './product.svg';
 import refresh from './refresh.svg';
 import robot from './robot.svg';
 import rocket from './rocket.svg';
+import saveDraft from './save-draft.svg';
 import searchFile from './search-file.svg';
 import search from './search.svg';
 import send from './send.svg';
@@ -98,6 +99,7 @@ export const Icons = {
   refresh,
   robot,
   rocket,
+  saveDraft,
   search,
   searchFile,
   signal,

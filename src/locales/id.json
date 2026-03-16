@@ -453,6 +453,13 @@
       "submit": "Konfirmasi",
       "cancel": "Batal"
     },
+    "draft_confirmation": {
+      "title": "Simpan sebagai Draft",
+      "description": "Simpan pesanan ini sebagai draft dan lanjutkan nanti?",
+      "submit": "Simpan Draft",
+      "cancel": "Batal",
+      "success": "Draft tersimpan"
+    },
     "message": {
       "success": "Order berhasil dibuat",
       "form_error": "Perbaiki kesalahan pada form dan coba lagi"

@@ -9,7 +9,6 @@ import {
   OptionBottomSheetRef,
 } from '@/components';
 import { optimisticUpdateQuery } from '@/lib/react-query';
-import { useSettingNotifications } from '@/modules/settings/services/repository';
 import { useAuthStore } from '@/store';
 import { profileKeys } from '../constants/keys';
 import { ChatProfileResponse, updateAvailability } from '../services';
@@ -24,8 +23,6 @@ export function UserPreferencesSection(): JSX.Element {
   const availabilityBottomSheetRef = useRef<OptionBottomSheetRef>(null);
 
   const { user } = useAuthStore();
-
-  const { data: settings } = useSettingNotifications();
 
   const changeAvailabilityMutation = useMutation({
     mutationKey: profileKeys.availability,

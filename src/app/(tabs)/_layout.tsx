@@ -12,7 +12,7 @@ export default function TabLayout(): JSX.Element {
   const { status } = useAuthStore();
   const { t } = useTranslation();
 
-  const hiddenTabs = showBetaFeatures ? [] : [];
+  const hiddenTabs = showBetaFeatures ? [] : ['notification', 'chat'];
 
   if (status !== 'loggedIn') {
     return <Redirect href="/login" />;
