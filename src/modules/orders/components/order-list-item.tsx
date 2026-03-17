@@ -32,13 +32,20 @@ export default function OrderListItem({
   const { t } = useTranslation();
   const router = useRouter();
 
+  function onPressItem(): void {
+    if (item.internal_status === 'Draft') {
+      router.navigate(`/order-form?id=${item.order_header_id}`);
+      return;
+    }
+
+    router.navigate(`/order-details?id=${item.order_header_id}`);
+  }
+
   return (
     <AnimatedComponent index={index}>
       <Clickable
         className="bg-surface border-border p-md gap-xs rounded-md border"
-        onPress={() => {
-          router.navigate(`/order-details?id=${item.order_header_id}`);
-        }}
+        onPress={onPressItem}
       >
         <View className="flex-row items-end justify-between">
           <View className="gap-xs flex-row items-center">

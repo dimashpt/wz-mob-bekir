@@ -1,9 +1,9 @@
-import React, { JSX, useRef, useState } from 'react';
+import React, { JSX, useEffect, useRef, useState } from 'react';
 import { useWindowDimensions, View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FieldErrors, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,8 +39,12 @@ import { FormStepSummary } from '../components/form-step-summary';
 import { orderKeys } from '../constants/keys';
 import { useOrderForm } from '../context/order-form-context';
 import { createOrder } from '../services/order';
+import { useOrderDetailsQuery } from '../services/order/repository';
 import { OrderFormValues } from '../utils/order-form-schema';
-import { mapToOrderPayload } from '../utils/order-helpers';
+import {
+  mapToOrderFormValues,
+  mapToOrderPayload,
+} from '../utils/order-helpers';
 
 const TabBar = withUniwind(RNTabBar);
 const MappedLinearGradient = withUniwind(LinearGradient);
@@ -51,15 +55,22 @@ type TabRoute = Route & {
   title: string;
 };
 
+type Params = {
+  id: string;
+};
+
 export default function OrderFormScreen(): JSX.Element {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const spacingLg = useCSSVariable('--spacing-lg') as number;
+  const { id } = useLocalSearchParams<Params>();
+  const [spacingLg] = useCSSVariable(['--spacing-lg']) as number[];
   const layout = useWindowDimensions();
-  const accentColor = useCSSVariable('--color-accent') as string;
-  const mutedColor = useCSSVariable('--color-muted-foreground') as string;
-  const backgroundColor = useCSSVariable('--color-background') as string;
+  const [accentColor, mutedColor, backgroundColor] = useCSSVariable([
+    '--color-accent',
+    '--color-muted-foreground',
+    '--color-background',
+  ]) as string[];
 
   const [activeIndex, setActiveIndex] = useState(0);
   const confirmationSheetRef = useRef<BottomSheetModal>(null);
@@ -84,6 +95,11 @@ export default function OrderFormScreen(): JSX.Element {
   const { subTotal, insuranceFee, codFee, totalDiscount, grandTotal } =
     useOrderForm();
 
+  const { data: details } = useOrderDetailsQuery(
+    { select: (data) => data.order, enabled: Boolean(id) },
+    id,
+  );
+
   const createOrderMutation = useMutation({
     mutationKey: orderKeys.create,
     mutationFn: createOrder,
@@ -106,6 +122,14 @@ export default function OrderFormScreen(): JSX.Element {
     onSettled: () => saveDraftSheetRef.current?.close(),
   });
 
+  useEffect(() => {
+    if (details) {
+      const resetValues = mapToOrderFormValues(details);
+
+      form.reset(resetValues);
+    }
+  }, [details]);
+
   async function handleNext(): Promise<void> {
     if (activeIndex < routes.length - 1) {
       const currentStepField = stepFieldNames[activeIndex];
@@ -127,7 +151,7 @@ export default function OrderFormScreen(): JSX.Element {
     confirmationSheetRef.current?.present();
   }
 
-  function confirmSaveDraft(): void {
+  function confirmSaveDraft(_: OrderFormValues): void {
     saveDraftSheetRef.current?.present();
   }
 
@@ -155,7 +179,6 @@ export default function OrderFormScreen(): JSX.Element {
     saveDraftMutation.mutate({
       ...payload,
       is_draft: true,
-      internal_status: 'Draft',
       price: {
         ...payload.price,
         sub_total_price: subTotal,
@@ -275,9 +298,9 @@ export default function OrderFormScreen(): JSX.Element {
   return (
     <Container className="bg-background flex-1">
       <Header
-        title={t('order_form.title')}
+        title={id ? t('order_form.draft_title') : t('order_form.title')}
         className="border-b-0"
-        onPressSuffix={confirmSaveDraft}
+        onPressSuffix={form.handleSubmit(confirmSaveDraft, handleFormError)}
         suffixIcon={
           <Icon name="saveDraft" size="xl" className="text-foreground" />
         }

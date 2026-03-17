@@ -22,7 +22,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     scheme: APP_SCHEME,
     userInterfaceStyle: 'automatic',
     experiments: {
-      reactCompiler: true,
+      reactCompiler: false,
       typedRoutes: true,
     },
     extra: {

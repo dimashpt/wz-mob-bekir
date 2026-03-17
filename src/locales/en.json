@@ -472,7 +472,8 @@
     "helpers": {
       "warehouse_change": "Changing warehouse will change available products",
       "recipient_address_change": "Changing recipient address will change shipment"
-    }
+    },
+    "draft_title": "Edit Draft Order"
   },
   "validation": {
     "required": "Field is required",

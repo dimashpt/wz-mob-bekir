@@ -1,24 +1,26 @@
+import dayjs from 'dayjs';
+import { UseFormReset } from 'react-hook-form';
+
 import {
   CreateOrderPayload,
+  OrderDetails,
   OrderInternalStatus,
 } from '../services/order/types';
 import { OrderFormValues } from './order-form-schema';
 
-export const statusToTranslationKey = (status: OrderInternalStatus): string => {
+export function statusToTranslationKey(status: OrderInternalStatus): string {
   return status
     .toLowerCase()
     .replace(/\s+/g, '_')
     .replace(/[^a-z0-9_]/g, '');
-};
+}
 
 /**
  * Maps the form values to the order payload.
  * @param values - The form values to map to the order payload.
  * @returns The order payload.
  */
-export const mapToOrderPayload = (
-  values: OrderFormValues,
-): CreateOrderPayload => {
+export function mapToOrderPayload(values: OrderFormValues): CreateOrderPayload {
   const { step_order, step_recipient, step_item, step_shipment } = values;
 
   return {
@@ -111,4 +113,156 @@ export const mapToOrderPayload = (
       insurance_price: 0,
     },
   };
-};
+}
+
+/**
+ * Maps the order details to the form values.
+ * @param details - The order details to map to the form values.
+ * @returns The form values.
+ */
+export function mapToOrderFormValues(
+  details: OrderDetails,
+): Parameters<UseFormReset<OrderFormValues>>[0] {
+  type StepItemProduct = OrderFormValues['step_item']['products'][number];
+
+  function mapToStepItemProduct(
+    product: OrderDetails['active_products'][number],
+  ): StepItemProduct {
+    return {
+      quantity: product.quantity,
+      product_id: product.product_id,
+      name: product.product_name,
+      sku: product.sku,
+      brand: null,
+      category_name: '',
+      featured_image_url: product.media_url ?? null,
+      weight: product.unit_weight,
+      width: '',
+      height: '',
+      length: '',
+      volume: 0,
+      is_bundle: false,
+      cost_price: product.unit_price,
+      published_price: product.unit_price,
+      status: '',
+      created_at: '',
+      created_by: '',
+      updated_at: '',
+      updated_by: '',
+      mapping_count: 0,
+      available: null,
+    };
+  }
+
+  const isSameAsCustomer: boolean =
+    details.buyer_name === details.recipient_name &&
+    (details.buyer_phone === details.recipient_phone ||
+      details.buyer_email === details.recipient_email);
+
+  const customer: OrderFormValues['step_recipient']['customer'] = {
+    name: {
+      // TODO: Map value to customer id
+      value: details.buyer_name,
+      label: details.buyer_name,
+    },
+    phone: details.buyer_phone ?? '',
+    email: details.buyer_email ?? undefined,
+    full_address: details.buyer_full_address ?? '',
+  };
+
+  const subdistrict: OrderFormValues['step_recipient']['subdistrict'] = {
+    label: details.recipient_subdistrict ?? '',
+    // TODO: Map value to subdistrict id
+    value: details.recipient_subdistrict ?? '',
+  };
+
+  const packageSize: OrderFormValues['step_item']['package'] = {
+    weight: Number(details.package_weight),
+    length: Number(details.package_length),
+    width: Number(details.package_width),
+    height: Number(details.package_height),
+  };
+
+  const products: OrderFormValues['step_item']['products'] =
+    details.active_products.map(mapToStepItemProduct);
+
+  const step_recipient: OrderFormValues['step_recipient'] = isSameAsCustomer
+    ? {
+        customer,
+        is_same_as_customer: true,
+        name: details.recipient_name ?? undefined,
+        phone: details.recipient_phone ?? undefined,
+        email: details.recipient_email ?? undefined,
+        subdistrict,
+        country: details.recipient_country,
+        province: details.recipient_province,
+        city: details.recipient_city,
+        district: details.recipient_district,
+        postal_code: details.recipient_postal_code,
+        full_address: details.recipient_full_address ?? undefined,
+        remarks: details.recipient_remarks ?? undefined,
+      }
+    : {
+        customer,
+        is_same_as_customer: false,
+        name: details.recipient_name,
+        phone: details.recipient_phone,
+        email: details.recipient_email ?? undefined,
+        subdistrict,
+        country: details.recipient_country,
+        province: details.recipient_province,
+        city: details.recipient_city,
+        district: details.recipient_district,
+        postal_code: details.recipient_postal_code,
+        full_address: details.recipient_full_address,
+        remarks: details.recipient_remarks ?? undefined,
+      };
+
+  const step_item: OrderFormValues['step_item'] = details.is_dropship
+    ? {
+        is_dropship: true,
+        dropshipper_email: details.dropshipper_email ?? '',
+        dropshipper_full_address: details.dropshipper_full_address ?? '',
+        dropshipper_name: details.dropshipper_name ?? '',
+        dropshipper_phone: details.dropshipper_phone ?? '',
+        package: packageSize,
+        products,
+      }
+    : {
+        is_dropship: false,
+        dropshipper_email: details.dropshipper_email ?? undefined,
+        dropshipper_full_address: details.dropshipper_full_address ?? undefined,
+        dropshipper_name: details.dropshipper_name ?? undefined,
+        dropshipper_phone: details.dropshipper_phone ?? undefined,
+        package: packageSize,
+        products,
+      };
+
+  return {
+    step_recipient,
+    step_order: {
+      order_code: details.order_code,
+      payment_method: {
+        value: details.payment_via,
+        label: details.payment_via,
+      },
+      payment_type: {
+        value: details.payment_method,
+        label: details.payment_method,
+      },
+      store: {
+        value: details.store_id.toString(),
+        label: details.store_name,
+      },
+      warehouse: {
+        value: details.location_id.toString(),
+        label: details.location_name,
+      },
+      checkout_time: dayjs(details.checkout_at * 1000),
+      sales: details.sales_pic ?? undefined,
+      remarks: details.buyer_remarks ?? undefined,
+    },
+    step_item,
+    step_shipment: {},
+  };
+}

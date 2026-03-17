@@ -469,7 +469,8 @@
     "helpers": {
       "warehouse_change": "Mengubah gudang akan mengubah produk yang tersedia",
       "recipient_address_change": "Mengubah alamat penerima akan mengubah pengiriman"
-    }
+    },
+    "draft_title": "Edit Draft Order"
   },
   "validation": {
     "required": "Input wajib diisi",
