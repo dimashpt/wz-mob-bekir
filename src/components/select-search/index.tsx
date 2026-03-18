@@ -8,6 +8,7 @@ import React, {
 import { FlatList, FlatListProps, Keyboard, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
+import { twMerge } from 'tailwind-merge';
 
 import { AnimatedComponent } from '@/components/animated-component';
 import { Clickable } from '@/components/clickable';
@@ -207,37 +208,50 @@ function SelectSearchInner<TData = unknown>(
               />
             ) : null
           }
-          renderItem={({ item, index }) => (
-            // disable exit animation because it's conflicting with the dialog
-            <AnimatedComponent index={index} disableExitAnimation>
-              <Clickable
-                onPress={() => handleSelect(item)}
-                className="p-md rounded-md"
-              >
-                {renderItem ? (
-                  renderItem({
-                    item,
-                    index,
-                    onSelect: () => handleSelect(item),
-                  })
-                ) : (
-                  <>
-                    <Text
-                      variant="labelS"
-                      className="font-map-medium font-medium"
-                    >
-                      {item.label}
-                    </Text>
-                    {item.description ? (
-                      <Text variant="bodyXS" color="muted">
-                        {item.description}
-                      </Text>
-                    ) : null}
-                  </>
-                )}
-              </Clickable>
-            </AnimatedComponent>
-          )}
+          renderItem={({ item, index }) => {
+            const isSelected = selected?.value === item.value;
+
+            return (
+              // disable exit animation because it's conflicting with the dialog
+              <AnimatedComponent index={index} disableExitAnimation>
+                <Clickable
+                  onPress={() => handleSelect(item)}
+                  className={twMerge(
+                    'p-md flex-row items-center',
+                    isSelected ? 'bg-accent-soft' : '',
+                  )}
+                >
+                  <View className="flex-1">
+                    {renderItem ? (
+                      renderItem({
+                        item,
+                        index,
+                        onSelect: () => handleSelect(item),
+                      })
+                    ) : (
+                      <>
+                        <Text
+                          variant="labelS"
+                          className="font-map-medium font-medium"
+                        >
+                          {item.label}
+                        </Text>
+                        {item.description ? (
+                          <Text variant="bodyXS" color="muted">
+                            {item.description}
+                          </Text>
+                        ) : null}
+                      </>
+                    )}
+                  </View>
+                  <Icon
+                    name="tickCircle"
+                    className={isSelected ? 'text-accent' : 'text-transparent'}
+                  />
+                </Clickable>
+              </AnimatedComponent>
+            );
+          }}
         />
       </Dialog>
     </View>

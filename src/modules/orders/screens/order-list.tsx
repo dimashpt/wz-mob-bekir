@@ -312,9 +312,9 @@ export default function OrdersScreen(): JSX.Element {
       </View>
       <List
         data={orders}
-        keyExtractor={(item) => item.order_header_id.toString()}
+        keyExtractor={(item) => item.tx_id}
         className="flex-1"
-        contentContainerClassName="flex-1 gap-sm"
+        contentContainerClassName="gap-sm"
         contentContainerStyle={{ paddingBottom: TAB_BAR_HEIGHT }}
         scrollEnabled={!isLoading}
         onScroll={floatingActionButtonRef.current?.onScroll}

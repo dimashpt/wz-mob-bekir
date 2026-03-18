@@ -144,7 +144,7 @@ export function FormStepOrder(): JSX.Element {
               label={t('order_form.payment_type')}
               onSelect={onSelectPaymentType}
               options={PAYMENT_TYPE_OPTIONS}
-              value={value?.value}
+              selected={value}
               onBlur={onBlur}
               errors={error?.message}
               placeholder={t('order_form.select_payment_method')}
@@ -166,7 +166,7 @@ export function FormStepOrder(): JSX.Element {
                 onSelect={onChange}
                 disabled={!watchPaymentMethodType}
                 options={PAYMENT_VIA_OPTIONS}
-                value={value?.value}
+                selected={value}
                 onBlur={onBlur}
                 errors={error?.message}
                 placeholder={t('order_form.select_payment_via')}
@@ -247,7 +247,7 @@ export function FormStepOrder(): JSX.Element {
                 resetLogistic();
               }}
               options={warehouseOptions}
-              value={value?.label}
+              selected={value}
               onBlur={onBlur}
               errors={error?.message}
               flatListProps={{

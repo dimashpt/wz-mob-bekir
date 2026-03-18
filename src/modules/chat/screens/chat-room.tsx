@@ -44,7 +44,6 @@ export default function ChatRoomScreen(): JSX.Element {
     );
 
   const conversation = data?.pages?.[0].data.conversation;
-  const meta = {};
 
   return (
     <Container className="bg-background flex-1">
