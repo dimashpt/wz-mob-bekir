@@ -1,7 +1,8 @@
-import React, { JSX, useRef } from 'react';
+import React, { JSX, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
 import { useMutation } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,24 +18,36 @@ import {
 } from '@/components';
 import { TAB_BAR_HEIGHT } from '@/constants/ui';
 import { useDebounce } from '@/hooks';
+import { queryClient } from '@/lib/react-query';
 import { orderKeys } from '../constants/keys';
 import { useOrderForm } from '../context/order-form-context';
 import { Customer, CustomerAddress } from '../services/customer';
 import { useCustomersQuery } from '../services/customer/repository';
-import { Address, AddressRequestParams, getAddress } from '../services/order';
+import {
+  Address,
+  AddressRequestParams,
+  getAddress,
+  OrderDetailsResponse,
+} from '../services/order';
 import { useAddressQuery } from '../services/order/repository';
 import { OrderFormValues } from '../utils/order-form-schema';
 
 export function FormStepRecipient(): JSX.Element {
   const customerSearchRef = useRef<SelectSearchRef>(null);
   const subdistrictSearchRef = useRef<SelectSearchRef>(null);
+  const hasInitializedSubdistrict = useRef(false);
+  const { id } = useLocalSearchParams() as { id: string | undefined };
   const { t } = useTranslation();
+  const details = queryClient.getQueryData<OrderDetailsResponse>(
+    orderKeys.details(id as string),
+  );
+
   const [
     ,
     setSubdistrictSearch,
     debouncedSubdistrictSearch,
     isAddressSearchDebouncing,
-  ] = useDebounce();
+  ] = useDebounce(details?.order.recipient_subdistrict ?? '');
   const [
     ,
     setCustomerSearch,
@@ -146,6 +159,31 @@ export function FormStepRecipient(): JSX.Element {
     control,
     name: 'step_recipient.customer',
   });
+
+  /*
+   * NOTE: Initialize the subdistrict field with the order details when the component is mounted.
+   * This is necessary because the response from the order details API doesn't include the subdistrict code,
+   * but only the subdistrict name. So, we need to find the matching subdistrict from the address list
+   * and set it as the initial value for the subdistrict field.
+   */
+  useEffect(() => {
+    if (hasInitializedSubdistrict.current || !id || !details || !addresses) {
+      return;
+    }
+
+    const matchedSubdistrict = addresses.find(
+      (address) => address.label === details.order.recipient_subdistrict,
+    );
+
+    if (matchedSubdistrict) {
+      form.setValue('step_recipient.subdistrict', matchedSubdistrict, {
+        shouldValidate: true,
+      });
+    }
+
+    // Prevent subsequent search result changes from re-initializing this field.
+    hasInitializedSubdistrict.current = true;
+  }, [details, id, addresses]);
 
   function onSelectSubdistrict(value: Option<Address> | null): void {
     if (!value) {
