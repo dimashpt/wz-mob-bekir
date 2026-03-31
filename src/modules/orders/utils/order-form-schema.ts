@@ -132,8 +132,9 @@ const baseItemStepSchema = z.object({
         mapping_count: numberSchema,
         available: numberSchema.nullable(),
       }),
+      { error: required },
     )
-    .min(1),
+    .min(1, { error: required }),
   package: z.object({
     weight: z.coerce.number<number>({ error: required }),
     length: z.coerce.number<number>({ error: required }).optional(),
