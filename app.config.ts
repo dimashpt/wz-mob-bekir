@@ -1,26 +1,23 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
-  const APP_NAME = 'Bebaskirim';
-  const APP_VARIANT = process.env.APP_VARIANT;
-  const APP_BUNDLE_ID = 'com.bebaskirim.dashboard';
-  const APP_SCHEME = 'bebaskirim';
-  const APP_VERSION = '0.1.0';
-  const APP_BUILD_NUMBER = 1;
-  const EXPO_SLUG = 'bebaskirim';
+  const VARIANT = process.env.APP_VARIANT;
+  const VERSION = '0.1.0';
+  const BUILD_NUMBER = 2;
+  const BUNDLE_ID = 'com.bebaskirim.app';
   const EXPO_PROJECT_ID = 'da7d7c28-ab2e-4d0f-a669-d5c99591b5b1';
-  const EXPO_OWNER = 'wz-technology';
 
   const config: ExpoConfig = {
     ...defaultConfig,
-    name: APP_NAME,
-    slug: EXPO_SLUG,
-    owner: EXPO_OWNER,
-    version: APP_VERSION,
+    name: 'Bebaskirim',
+    slug: 'bebaskirim',
+    owner: 'wz-technology',
+    version: VERSION,
     orientation: 'portrait',
     icon: './src/assets/images/icon.png',
-    scheme: APP_SCHEME,
+    scheme: 'bebaskirim',
     userInterfaceStyle: 'automatic',
+    newArchEnabled: true,
     experiments: {
       reactCompiler: false,
       typedRoutes: true,
@@ -29,15 +26,13 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
       router: { origin: false },
       eas: { projectId: EXPO_PROJECT_ID },
     },
-    updates: {
-      url: `https://u.expo.dev/${EXPO_PROJECT_ID}`,
-    },
+    updates: { url: `https://u.expo.dev/${EXPO_PROJECT_ID}` },
     runtimeVersion: { policy: 'appVersion' },
     ios: {
       ...defaultConfig.ios,
-      bundleIdentifier: APP_BUNDLE_ID,
+      bundleIdentifier: BUNDLE_ID,
       supportsTablet: true,
-      buildNumber: APP_BUILD_NUMBER.toString(),
+      buildNumber: BUILD_NUMBER.toString(),
       // Add associatedDomains for Universal Links
       associatedDomains: ['applinks:dashboard.bebaskirim.com'],
       icon: './src/assets/images/icon-ios.icon',
@@ -49,8 +44,9 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     },
     android: {
       ...defaultConfig.android,
-      package: APP_BUNDLE_ID,
-      versionCode: APP_BUILD_NUMBER,
+      package: BUNDLE_ID,
+      versionCode: BUILD_NUMBER,
+      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: './src/assets/images/icon-android.png',
         monochromeImage: './src/assets/images/icon-android-monochrome.png',
@@ -137,8 +133,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
         '@sentry/react-native/expo',
         {
           url: 'https://sentry.io/',
-          project: process.env.SENTRY_PROJECT ?? '',
-          organization: process.env.SENTRY_ORGANIZATION ?? '',
+          project: 'bebaskirim',
+          organization: 'wz-technology',
         },
       ],
       [
@@ -158,18 +154,18 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     ],
   };
 
-  if (APP_VARIANT === 'development') {
-    config.name = `${APP_NAME} Dev`;
-    config.ios!.bundleIdentifier = `${APP_BUNDLE_ID}.dev`;
-    config.android!.package = `${APP_BUNDLE_ID}.dev`;
+  if (VARIANT === 'dev') {
+    config.name = 'Bebaskirim Dev';
+    config.ios!.bundleIdentifier = `${BUNDLE_ID}.dev`;
+    config.android!.package = `${BUNDLE_ID}.dev`;
 
     config.ios!.icon = './src/assets/images/icon-ios-dev.icon';
     config.android!.adaptiveIcon!.foregroundImage =
       './src/assets/images/icon-android-dev.png';
-  } else if (APP_VARIANT === 'preview') {
-    config.name = `${APP_NAME} Preview`;
-    config.ios!.bundleIdentifier = `${APP_BUNDLE_ID}.preview`;
-    config.android!.package = `${APP_BUNDLE_ID}.preview`;
+  } else if (VARIANT === 'preview') {
+    config.name = 'Bebaskirim Preview';
+    config.ios!.bundleIdentifier = `${BUNDLE_ID}.preview`;
+    config.android!.package = `${BUNDLE_ID}.preview`;
   }
 
   return config;
