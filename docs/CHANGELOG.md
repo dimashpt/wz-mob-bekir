@@ -1,3 +1,6 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
 
 ## [0.1.0] - 2026-03-31
 
@@ -255,7 +258,4 @@
 
 ### 🔗 Other
 
-- v0.2.0 ([521dc62](../../commit/521dc62))
 - initial commit ([ba01285](../../commit/ba01285))
-
-

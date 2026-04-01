@@ -1,16 +1,16 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
-const APP_NAME = process.env.APP_NAME!;
-const APP_BUNDLE_ID = process.env.APP_BUNDLE_ID;
-const APP_VARIANT = process.env.APP_VARIANT;
-const APP_SCHEME = process.env.APP_SCHEME;
-const APP_VERSION = '0.1.0';
-const APP_BUILD_NUMBER = 1;
-const EXPO_SLUG = process.env.EXPO_SLUG!;
-const EXPO_PROJECT_ID = process.env.EXPO_PROJECT_ID;
-const EXPO_OWNER = process.env.EXPO_OWNER;
-
 export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
+  const APP_NAME = 'Bebaskirim';
+  const APP_VARIANT = process.env.APP_VARIANT;
+  const APP_BUNDLE_ID = 'com.bebaskirim.dashboard';
+  const APP_SCHEME = 'bebaskirim';
+  const APP_VERSION = '0.1.0';
+  const APP_BUILD_NUMBER = 1;
+  const EXPO_SLUG = 'bebaskirim';
+  const EXPO_PROJECT_ID = 'da7d7c28-ab2e-4d0f-a669-d5c99591b5b1';
+  const EXPO_OWNER = 'wz-technology';
+
   const config: ExpoConfig = {
     ...defaultConfig,
     name: APP_NAME,
@@ -137,8 +137,8 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
         '@sentry/react-native/expo',
         {
           url: 'https://sentry.io/',
-          project: process.env.SENTRY_PROJECT!,
-          organization: process.env.SENTRY_ORGANIZATION!,
+          project: process.env.SENTRY_PROJECT ?? '',
+          organization: process.env.SENTRY_ORGANIZATION ?? '',
         },
       ],
       [
@@ -158,7 +158,7 @@ export default ({ config: defaultConfig }: ConfigContext): ExpoConfig => {
     ],
   };
 
-  if (APP_VARIANT === 'dev') {
+  if (APP_VARIANT === 'development') {
     config.name = `${APP_NAME} Dev`;
     config.ios!.bundleIdentifier = `${APP_BUNDLE_ID}.dev`;
     config.android!.package = `${APP_BUNDLE_ID}.dev`;
